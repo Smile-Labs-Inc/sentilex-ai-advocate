@@ -52,7 +52,7 @@ def get_law_rag_chain():
     """
     
     prompt = ChatPromptTemplate.from_template(template)
-    model = ChatGoogleGenerativeAI(model="gemini-pro")
+    model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
     
     chain = (
         {"context": retriever, "question": RunnablePassthrough()}
