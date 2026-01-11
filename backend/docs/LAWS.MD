@@ -41,3 +41,5 @@ Concerns for "Young People" (those aged 18–22) and their transition into adult
 - **Rehabilitative Justice**: Transitioning from punitive measures to age-appropriate rehabilitation for offenders under 22.
 - **Access to Justice**: Problems involving a lack of legal representation or inability to pay fines for minor offenses.
 - **Education & Employment Deficits**: Systematic lack of access to schooling or vocational training, which is linked to increased risk of juvenile offending.
+
+
