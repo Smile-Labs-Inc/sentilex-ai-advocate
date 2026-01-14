@@ -56,8 +56,10 @@ curl -X POST http://localhost:8000/test/query
 ## 📚 Documentation
 
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Complete system architecture and design
+- **[TECHNICAL_SPEC.md](TECHNICAL_SPEC.md)** - Technical specification
+- **[QUICKSTART.md](QUICKSTART.md)** - Step-by-step setup guide
+- **[IMPLEMENTATION.md](IMPLEMENTATION.md)** - Implementation summary
 - **[API Docs](http://localhost:8000/docs)** - Interactive API documentation (when server is running)
-- **Code Documentation** - All agents and modules are fully documented
 
 ---
 
@@ -76,14 +78,14 @@ User Query → Planner → Research (MCP) → Reasoning → Validation → Branc
 
 | Component | Role | File |
 |-----------|------|------|
-| **Planner** | Routing logic | [`agents/planner.py`](agents/planner.py) |
-| **Research** | MCP retrieval | [`agents/research.py`](agents/research.py) |
-| **Reasoning** | Legal analysis | [`agents/reasoning.py`](agents/reasoning.py) |
-| **Validation** | Gatekeeper | [`agents/validation.py`](agents/validation.py) |
-| **Synthesizer** | Presentation | [`agents/synthesizer.py`](agents/synthesizer.py) |
-| **Main Chain** | Orchestration | [`chains/main_chain.py`](chains/main_chain.py) |
-| **MCP Client** | Legal sources | [`mcp_client/client.py`](mcp_client/client.py) |
-| **Audit Logger** | Court trail | [`logging/audit.py`](logging/audit.py) |
+| **Planner** | Routing logic | `agents/planner.py` |
+| **Research** | MCP retrieval | `agents/research.py` |
+| **Reasoning** | Legal analysis | `agents/reasoning.py` |
+| **Validation** | Gatekeeper | `agents/validation.py` |
+| **Synthesizer** | Presentation | `agents/synthesizer.py` |
+| **Main Chain** | Orchestration | `chains/main_chain.py` |
+| **MCP Client** | Legal sources | `mcp_client/client.py` |
+| **Audit Logger** | Court trail | `logging/audit.py` |
 
 ---
 
@@ -243,7 +245,7 @@ All logs are stored in:
 
 ## 📝 License
 
-See [LICENSE](../LICENSE) file.
+See [LICENSE](../../LICENSE) file.
 
 ---
 
