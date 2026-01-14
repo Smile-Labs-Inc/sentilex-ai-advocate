@@ -25,16 +25,16 @@ def get_llm(model: Optional[str] = None, temperature: float = 0.0):
         try:
             from langchain_google_genai import ChatGoogleGenerativeAI
             
-            # Map OpenAI model names to Gemini equivalents
-            # Using actual available Gemini model names
+            # Map OpenAI model names to available Gemini models
+            # Using models with available quota and good rate limits
             model_map = {
-                "gpt-4o": "gemini-2.5-pro",
-                "gpt-4o-mini": "gemini-2.5-flash",
-                "gpt-4": "gemini-pro-latest",
-                "gpt-3.5-turbo": "gemini-flash-latest"
+                "gpt-4o": "gemini-2.5-flash",           # Capable model (5 RPM)
+                "gpt-4o-mini": "gemini-2.5-flash-lite", # Fastest model (10 RPM)
+                "gpt-4": "gemini-3-flash",              # Latest model (5 RPM)
+                "gpt-3.5-turbo": "gemini-2.5-flash-lite" # Fast and efficient
             }
             
-            gemini_model = model_map.get(model, "gemini-flash-latest") if model else "gemini-flash-latest"
+            gemini_model = model_map.get(model, "gemini-2.5-flash-lite") if model else "gemini-2.5-flash-lite"
             
             print(f"Using Gemini model: {gemini_model}")
             
