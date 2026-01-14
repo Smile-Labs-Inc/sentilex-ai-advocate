@@ -17,9 +17,9 @@ Only the final analysis is shown.
 from typing import Dict, Any, Tuple
 from langchain_core.runnables import Runnable, RunnableLambda
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 
 from schemas.messages import ResearchOutput, ReasoningOutput, LegalSource
+from .llm_factory import get_llm
 
 
 # Prompt template for legal reasoning
@@ -72,21 +72,21 @@ Apply these sources to answer the query. Remember: use ONLY these sources.""")
 ])
 
 
-def create_reasoning_runnable(llm: ChatOpenAI = None) -> Runnable:
+def create_reasoning_runnable(llm=None) -> Runnable:
     """
     Create the Legal Reasoning agent as a LangChain Runnable.
 
     This agent applies legal reasoning using ONLY provided MCP sources.
 
     Args:
-        llm: Language model for reasoning (should be capable model like GPT-4)
+        llm: Language model for reasoning (should be capable model like GPT-4 or Gemini Pro)
 
     Returns:
         Runnable that takes ResearchOutput and returns ReasoningOutput
     """
     # Use a capable model for legal reasoning
     if llm is None:
-        llm = ChatOpenAI(
+        llm = get_llm(
             model="gpt-4o",  # Use capable model for legal reasoning
             temperature=0.0,  # Deterministic
         )
@@ -176,11 +176,11 @@ def create_reasoning_runnable(llm: ChatOpenAI = None) -> Runnable:
     return RunnableLambda(reasoning_chain)
 
 
-def create_structured_reasoning_runnable(llm: ChatOpenAI = None) -> Runnable:
+def create_structured_reasoning_runnable(llm=None) -> Runnable:
     """
     Create reasoning agent with structured output (JSON mode).
 
-    This variant uses OpenAI's structured output for more reliable parsing.
+    This variant uses structured output for more reliable parsing.
 
     Args:
         llm: Language model with JSON mode support
@@ -191,10 +191,9 @@ def create_structured_reasoning_runnable(llm: ChatOpenAI = None) -> Runnable:
     import json
 
     if llm is None:
-        llm = ChatOpenAI(
+        llm = get_llm(
             model="gpt-4o",
             temperature=0.0,
-            model_kwargs={"response_format": {"type": "json_object"}}
         )
 
     # Simplified prompt for JSON output

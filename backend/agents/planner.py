@@ -10,9 +10,9 @@ It is a deterministic routing mechanism, not an intelligent agent.
 from typing import Dict, Any
 from langchain_core.runnables import Runnable, RunnableLambda
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 
 from schemas.messages import UserQuery, PlannerOutput
+from .llm_factory import get_llm
 
 
 # Prompt template for the planner
@@ -52,7 +52,7 @@ Query processing rules:
 ])
 
 
-def create_planner_runnable(llm: ChatOpenAI = None) -> Runnable:
+def create_planner_runnable(llm=None) -> Runnable:
     """
     Create the Planner agent as a LangChain Runnable.
 
@@ -67,7 +67,7 @@ def create_planner_runnable(llm: ChatOpenAI = None) -> Runnable:
     """
 
     if llm is None:
-        llm = ChatOpenAI(
+        llm = get_llm(
             model="gpt-4o-mini",
             temperature=0.0,
         )

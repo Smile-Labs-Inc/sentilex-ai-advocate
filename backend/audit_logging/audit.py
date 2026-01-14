@@ -86,12 +86,14 @@ class AuditLogger:
         Returns:
             The created AuditLogEntry
         """
+        exec_time = execution_time_ms or 0.0
+
         entry = AuditLogEntry(
             timestamp=datetime.utcnow().isoformat(),
             agent=agent,
             input_data=input_data,
             output_data=output_data,
-            execution_time_ms=execution_time_ms or 0.0,
+            execution_time_ms=exec_time,
             metadata=metadata or {}
         )
 
@@ -104,7 +106,7 @@ class AuditLogger:
 
         # Log to standard logger
         self.logger.info(
-            f"Agent '{agent}' executed in {execution_time_ms:.2f}ms"
+            f"Agent '{agent}' executed in {exec_time:.2f}ms"
         )
 
         return entry

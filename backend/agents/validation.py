@@ -17,7 +17,6 @@ This is the most critical agent for court admissibility.
 from typing import Dict, Any, List, Tuple
 from langchain_core.runnables import Runnable, RunnableLambda
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 
 from mcp_client import get_mcp_client
 from schemas.messages import (
@@ -26,6 +25,7 @@ from schemas.messages import (
     ValidationOutput,
     ValidationIssue
 )
+from .llm_factory import get_llm
 
 
 # Validation prompt template
@@ -92,7 +92,7 @@ Validate this output.""")
 ])
 
 
-def create_validation_runnable(llm: ChatOpenAI = None) -> Runnable:
+def create_validation_runnable(llm=None) -> Runnable:
     """
     Create the Validation agent as a LangChain Runnable.
 
@@ -106,10 +106,9 @@ def create_validation_runnable(llm: ChatOpenAI = None) -> Runnable:
         Runnable that takes (ResearchOutput, ReasoningOutput) and returns ValidationOutput
     """
     if llm is None:
-        llm = ChatOpenAI(
+        llm = get_llm(
             model="gpt-4o",  # Use capable model for critical validation
             temperature=0.0,
-            model_kwargs={"response_format": {"type": "json_object"}}
         )
 
     mcp_client = get_mcp_client()
