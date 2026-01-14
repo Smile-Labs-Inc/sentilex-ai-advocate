@@ -73,10 +73,11 @@ class ResearchOutput(BaseModel):
     )
 
     @validator('sources')
-    def validate_sources(cls, v):
-        if not v:
+    def validate_sources(cls, v, values):
+        # Allow empty sources only when status is 'empty'
+        if not v and values.get('status') != 'empty':
             raise ValueError(
-                "Research output must contain at least one source or status must be 'empty'")
+                "Research output must contain at least one source unless status is 'empty'")
         return v
 
 
