@@ -2,7 +2,7 @@ backend/.env
 backend/venv/
 .venv/
 __pycache__/
-*.py[cod]
+*.py[co]
 *$py.class
 *.so
 .Python
