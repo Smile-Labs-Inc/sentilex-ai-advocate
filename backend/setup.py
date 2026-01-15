@@ -5,7 +5,6 @@ This script helps set up the development environment.
 Run with: python setup.py
 """
 
-import os
 import sys
 import subprocess
 from pathlib import Path
