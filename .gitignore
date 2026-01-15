@@ -1,2 +1,4 @@
 backend/.env
 backend/mcp/__pycache__/server.cpython-313.pyc
+backend/venv/
+.venv/
