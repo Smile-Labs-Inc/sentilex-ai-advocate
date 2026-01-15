@@ -18,7 +18,7 @@ from datetime import datetime
 from langchain_core.runnables import Runnable, RunnableLambda
 
 from mcp_client import get_mcp_client, MCPClientError
-from schemas.messages import PlannerOutput, ResearchOutput, LegalSource
+from schemas.messages import PlannerOutput, ResearchOutput
 
 
 def create_research_runnable() -> Runnable:
