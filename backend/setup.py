@@ -123,7 +123,7 @@ def verify_structure():
         "chains/__init__.py",
         "schemas/__init__.py",
         "mcp_client/__init__.py",
-        "logging/__init__.py",
+        "audit_logging/__init__.py",
     ]
 
     all_good = True
