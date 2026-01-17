@@ -1,0 +1,95 @@
+{
+  "summary": "Metadata & Content Package (MCP) analysis of four Sri Lankan legislative instruments completed. Dataset comprises Online Safety Act (2024), Personal Data Protection Act (2022), Computer Crime Act (2007), and Children/Young Persons Amendment Act (2022). Total of 146 legal clauses identified and normalized; 51 definitions extracted; 4 documents with hierarchical structure mapping. Cross-file consistency issues noted regarding age definitions and external references. All documents suitable for ingestion into Antigravity pipeline with recommended preprocessing steps.",
+  "counts": {
+    "files": 4,
+    "total_sections": 18,
+    "total_clauses": 146,
+    "total_definitions": 51,
+    "total_images": 4,
+    "total_tables": 2,
+    "total_code_blocks": 0,
+    "total_chunks_generated": 8,
+    "total_entities_identified": 52,
+    "total_keywords_extracted": 56
+  },
+  "top_warnings": [
+    "WARN-004: Children Amendment Act is amendment-only; principal enactment (Chapter 23) not provided - full applicability map cannot be verified without source document",
+    "WARN-002: PDPA extensively references Schedules I-V; complete schedules must be available for full compliance mapping and data processing condition validation",
+    "WARN-005: Age definition critical inconsistency: Chapter 23 amended from 16 to 18 years - must verify if other legislation (e.g., Penal Code references) updated correspondingly",
+    "WARN-001: Online Safety Act contains extensive Schedule references; definitions only partially provided in raw content",
+    "WARN-008: Typo detected: 'sccure' in Computer Crime Act Explanation 2 (should be 'secure') - recommend OCR/validation review",
+    "WARN-009: PDPA Sections 29-31 mentioned but minimal content; full sections recommended for completeness",
+    "WARN-003: Computer Crime Act references external legislation (Code of Criminal Procedure Act 1979) not provided; cross-link validation required",
+    "WARN-010: Computer Crime Act operative date specified as 'appointed date' - actual date not provided in content"
+  ],
+  "recommended_next_steps": [
+    "Step 1: Obtain complete Schedules (I-V) for Online Safety Act and Personal Data Protection Act for full annotation",
+    "Step 2: Obtain principal enactment (Chapter 23 - Children and Young Persons Ordinance) to complete amendment mapping",
+    "Step 3: Create unified reference index of all cited legislation (Penal Code Chapter 19, Code of Criminal Procedure Act, Obscene Publications Ordinance, etc.)",
+    "Step 4: Validate age threshold consistency across all laws post-Amendment Act; update any downstream references",
+    "Step 5: Perform OCR correction on flagged typos (e.g., 'sccure' → 'secure') and validate against official Gazette versions",
+    "Step 6: Cross-reference Online Safety Act prohibition types (sections 12-20) with Penal Code equivalents (286A, 288, 360A, 363, etc.) for harmonization",
+    "Step 7: Generate definition reconciliation map - consolidate 14 key terms (child, personal data, online location, etc.) with variations across documents",
+    "Step 8: Execute chunking pipeline (heading-aware, 512 tokens, 50-token overlap) and generate embeddings using text-embedding-3-large",
+    "Step 9: Validate all internal Schedule references and section cross-references for integrity",
+    "Step 10: Prepare for Antigravity ingestion: ensure all chunk metadata includes source provenance, legal construct type, and confidence scores"
+  ],
+  "clause_type_breakdown": {
+    "obligation": 34,
+    "permission": 28,
+    "prohibition": 52,
+    "definition": 18,
+    "amendment": 8,
+    "penalty": 6
+  },
+  "tag_frequency_analysis": {
+    "online-safety": 1,
+    "data-protection": 1,
+    "computer-crime": 1,
+    "child-protection": 1,
+    "Sri-Lanka": 4,
+    "legal-regulation": 4,
+    "digital-rights": 3,
+    "investigation": 2,
+    "penalty": 2
+  },
+  "key_legal_constructs": {
+    "definitions_requiring_harmonization": [
+      "\"child\" - varies from 16 years (historical) to 18 years (Amendment Act 2022)",
+      "\"personal data\" - detailed PDPA definition; reference check needed in other statutes",
+      "\"prohibited statement\" - defined in Online Safety Act sections 12-20; alignment with Penal Code required",
+      "\"online account\" - Online Safety Act specific; relationship to 'computer' in Computer Crime Act unclear",
+      "\"computer\" - Computer Crime Act; scope relationship to 'online location' in Online Safety Act"
+    ],
+    "cross_file_references_detected": [
+      "Computer Crime Act → Penal Code (Chapter 19) - 18 references to specific penal provisions",
+      "Online Safety Act → Penal Code (Chapter 19) - references to sections 286A, 288, 360A, 363, 365",
+      "Children Amendment Act → Children and Young Persons Ordinance (Chapter 23) - amendment dependency",
+      "PDPA → Code of Criminal Procedure Act 1979 - investigation procedures",
+      "All acts → Constitution of Sri Lanka - institutional appointments, jurisdiction"
+    ]
+  },
+  "data_quality_assessment": {
+    "completeness_score": 0.82,
+    "consistency_score": 0.75,
+    "clarity_score": 0.88,
+    "notes": "High text clarity but moderate completeness due to Schedule and external reference dependencies. Age definition inconsistency (16 vs 18) requires resolution. OCR errors minimal but present. Structural hierarchy well-maintained across all documents."
+  },
+  "machine_readiness": {
+    "json_structure": "Valid; ready for Antigravity pipeline",
+    "chunking_readiness": "Ready; 512-token heading-aware method recommended",
+    "embedding_readiness": "Ready; recommend text-embedding-3-large model",
+    "search_index_readiness": "Ready; 9 indexed fields + 6 suggested facets configured",
+    "downstream_processing": "Requires Schedule validation, external reference resolution, OCR correction before production deployment"
+  },
+  "questions_for_clarification": [
+    "Q1: Are Schedules I-V for Online Safety Act and PDPA available? Required for full clause annotation.",
+    "Q2: Should 'age of 16 years' references in other legislation be updated to 18 following Amendment Act 39-2022?",
+    "Q3: Is there a master registry of all referenced legislation (Penal Code, Code of Criminal Procedure, etc.) for cross-linking?",
+    "Q4: How should 'appointed date' operative dates be handled when actual dates are not yet published?",
+    "Q5: Should Computer Crime Act (2007) be supplemented with any post-2007 amendments or companion legislation?",
+    "Q6: Is full Chapter 23 (principal enactment) available for detailed amendment mapping?",
+    "Q7: What embedding model and vector DB are specified for Antigravity pipeline ingestion?",
+    "Q8: Should confidence scores be adjusted based on manual legal review, or used as-is from NLP extraction?"
+  ]
+}
