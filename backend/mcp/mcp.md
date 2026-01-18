@@ -1,0 +1,1 @@
+For Testing : npx @modelcontextprotocol/inspector .venv\Scripts\python.exe mcp/server.py

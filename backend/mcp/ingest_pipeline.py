@@ -9,7 +9,7 @@ from typing import Dict, Any, List
 from index_engine import AntigravityIndex
 
 # Configuration
-DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 MCP_FULL_PATH = os.path.join(DATA_DIR, "full_mcp_manifest.json")
 MCP_FAST_PATH = os.path.join(DATA_DIR, "mcp_fast.json")
 MCP_REPORT_PATH = os.path.join(DATA_DIR, "antigravity_analysis.json")
