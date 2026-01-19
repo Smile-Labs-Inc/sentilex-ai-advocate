@@ -7,8 +7,12 @@ from dotenv import load_dotenv
 from typing import Optional, Union, Dict, Any
 import traceback
 
+
 from schemas.messages import UserQuery, SynthesizerOutput, RefusalOutput
 from chains import invoke_chain
+
+from routers import lawyers
+
 
 # Import OpenAI exceptions for better error handling
 try:
@@ -26,6 +30,8 @@ app = FastAPI(
     description="Backend for the legally-compliant, forensically-secure AI system.",
     version="0.1.0"
 )
+
+app.include_router(lawyers.router)
 
 # CORS Configuration
 origins = [
