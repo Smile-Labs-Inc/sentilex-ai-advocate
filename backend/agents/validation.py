@@ -18,7 +18,7 @@ from typing import Tuple
 from langchain_core.runnables import Runnable, RunnableLambda
 from langchain_core.prompts import ChatPromptTemplate
 
-from mcp_client import get_mcp_client
+from mcp_server.mcp_client import get_mcp_client
 from schemas.messages import (
     ResearchOutput,
     ReasoningOutput,

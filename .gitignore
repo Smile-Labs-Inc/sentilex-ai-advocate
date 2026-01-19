@@ -2,3 +2,8 @@ backend/.env
 backend/mcp/__pycache__/server.cpython-313.pyc
 backend/venv/
 .venv/
+/backend/agents/__pycache__
+/backend/agents/__pycache__
+/backend/agents/__pycache__
+/backend/mcp_server/__pycache__
+/backend/chains/__pycache__
