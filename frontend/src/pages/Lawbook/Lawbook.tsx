@@ -1,0 +1,148 @@
+import { useState } from 'preact/hooks';
+import { DashboardLayout } from '../../components/templates/DashboardLayout/DashboardLayout';
+import { LawbookViewer } from '../../components/organisms/LawbookViewer/LawbookViewer';
+import { LawbookChat } from '../../components/organisms/LawbookChat/LawbookChat';
+import { LawbookSidebarItem } from '../../components/molecules/LawbookSidebarItem/LawbookSidebarItem';
+import { mockLawbookData } from '../../data/mockLawbook';
+import { mockUser } from '../../data/mockData';
+import type { NavItem, Bookmark, ChatMessage } from '../../types';
+
+export interface LawbookPageProps {
+    onNavigate?: (item: NavItem) => void;
+}
+
+export function LawbookPage({ onNavigate }: LawbookPageProps) {
+    const [activeChapterId, setActiveChapterId] = useState(mockLawbookData[0].id);
+    const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+        {
+            id: 'msg_welcome',
+            role: 'assistant',
+            content: 'Hello! I am your legal assistant. I can help explain complex terms or guide you to the right section. What information are you looking for today?',
+            timestamp: new Date()
+        }
+    ]);
+    const [isChatLoading, setIsChatLoading] = useState(false);
+
+    const activeChapter = mockLawbookData.find(c => c.id === activeChapterId) || mockLawbookData[0];
+
+    const handleToggleBookmark = (chapterId: string, sectionId: string, title: string) => {
+        setBookmarks(prev => {
+            const exists = prev.find(b => b.chapterId === chapterId && b.sectionId === sectionId);
+            if (exists) {
+                return prev.filter(b => b.id !== exists.id);
+            } else {
+                return [...prev, {
+                    id: `bm_${Math.random().toString(36).substr(2, 9)}`,
+                    chapterId,
+                    sectionId,
+                    title,
+                    createdAt: new Date()
+                }];
+            }
+        });
+    };
+
+    const handleChatSend = (text: string) => {
+        // Add user message
+        const userMsg: ChatMessage = {
+            id: Date.now().toString(),
+            role: 'user',
+            content: text,
+            timestamp: new Date()
+        };
+        setChatMessages(prev => [...prev, userMsg]);
+        setIsChatLoading(true);
+
+        // Simulate AI response
+        setTimeout(() => {
+            const aiMsg: ChatMessage = {
+                id: (Date.now() + 1).toString(),
+                role: 'assistant',
+                content: `Here is some information regarding "${text}". \n\nBased on Indian Law, specifically IT Act 2000, specialized provisions exist for handling such cases. You might want to check the "Cyberbullying & Harassment" chapter.\n\nDisclaimer: This is AI generated information and not professional legal advice.`,
+                timestamp: new Date()
+            };
+            setChatMessages(prev => [...prev, aiMsg]);
+            setIsChatLoading(false);
+        }, 1500);
+    };
+
+    return (
+        <DashboardLayout
+            user={mockUser}
+            currentPath="/lawbook"
+            onNavigate={onNavigate}
+        >
+            <div className="flex h-[calc(100vh-8rem)] gap-6">
+
+                {/* Left Panel: Table of Contents (25%) */}
+                <div className="w-1/4 hidden lg:flex flex-col gap-4">
+                    <div className="bg-card/40 border border-border rounded-xl p-4 backdrop-blur-sm h-full flex flex-col">
+                        <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-4 px-2">
+                            Table of Contents
+                        </h2>
+                        <div className="space-y-1 flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                            {mockLawbookData.map(chapter => (
+                                <LawbookSidebarItem
+                                    key={chapter.id}
+                                    chapter={chapter}
+                                    isActive={chapter.id === activeChapterId}
+                                    onClick={() => setActiveChapterId(chapter.id)}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Bookmarks Section */}
+                        {bookmarks.length > 0 && (
+                            <div className="mt-6 pt-4 border-t border-border">
+                                <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 px-2">
+                                    Bookmarks
+                                </h2>
+                                <div className="space-y-2">
+                                    {bookmarks.map(bm => (
+                                        <button
+                                            key={bm.id}
+                                            onClick={() => {
+                                                setActiveChapterId(bm.chapterId);
+                                                // Ideally scroll to section
+                                            }}
+                                            className="w-full text-left px-3 py-2 rounded-lg text-xs bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 transition-colors truncate"
+                                        >
+                                            {bm.title}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Center: Content Viewer (50%) */}
+                <div className="flex-1 lg:w-2/4 bg-card border border-border rounded-xl shadow-lg relative overflow-hidden flex flex-col">
+                    <LawbookViewer
+                        chapter={activeChapter}
+                        bookmarks={bookmarks}
+                        onToggleBookmark={handleToggleBookmark}
+                    />
+                </div>
+
+                {/* Right Panel: AI Chat (25%) */}
+                <div className="w-1/4 hidden xl:block">
+                    <div className="h-full bg-card/40 border border-border rounded-xl backdrop-blur-sm overflow-hidden flex flex-col">
+                        <div className="p-3 border-b border-white/5 bg-white/5">
+                            <h3 className="font-semibold text-sm text-center">Legal Assistant</h3>
+                        </div>
+                        <LawbookChat
+                            messages={chatMessages}
+                            onSendMessage={handleChatSend}
+                            isLoading={isChatLoading}
+                            className="flex-1 border-0 shadow-none bg-transparent"
+                        />
+                    </div>
+                </div>
+
+                {/* Mobile/Tablet Fallbacks/Adjustments could go here */}
+            </div>
+        </DashboardLayout>
+    );
+}
