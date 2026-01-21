@@ -7,3 +7,4 @@ backend/venv/
 /backend/agents/__pycache__
 /backend/mcp_server/__pycache__
 /backend/chains/__pycache__
+backend/project_idea.md
