@@ -1,0 +1,24 @@
+{
+  "pipeline_version": "1.0",
+  "processed_at": "2026-01-18T07:18:32.192269Z",
+  "input_files": 3,
+  "total_documents": 4,
+  "total_chunks": 9,
+  "total_embeddings": 9,
+  "fastmap_indexes_created": [
+    "inverted_index",
+    "vector_index",
+    "faceted_index",
+    "graph"
+  ],
+  "warnings_resolved": 1,
+  "warnings_pending": 7,
+  "query_endpoints": [
+    "/search?q=<query>&filters=<facets>",
+    "/similar?chunk_id=<id>&k=10",
+    "/clause?type=<type>&jurisdiction=<jur>",
+    "/graph?entity=<id>&depth=2"
+  ],
+  "errors": [],
+  "health_status": "ready"
+}

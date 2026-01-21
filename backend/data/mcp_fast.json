@@ -1,0 +1,162 @@
+{
+  "fast_mcp_id": "SL-LEGAL-2024-001-FAST",
+  "generated_at": "2026-01-17T21:14:00Z",
+  "items": [
+    {
+      "file_id": "file:09-2024",
+      "title": "Online Safety Act, No. 9 of 2024",
+      "snippet": "An Act to establish the Online Safety Commission; to provide safety from prohibited statements made online; to prevent the use of online accounts and inauthentic online accounts for prohibited purposes; to make provisions to identify and declare online locations used for prohibited purposes in Sri Lanka; to suppress the financing and other support of communication of prohibited statements.",
+      "top_tags": [
+        "online-safety",
+        "prohibited-statements",
+        "online-accounts",
+        "digital-regulation",
+        "internet-intermediaries"
+      ],
+      "primary_clauses": [
+        {
+          "id": "file:09-2024::clause-001",
+          "type": "definition",
+          "short": "Short title: Online Safety Act, No. 9 of 2024"
+        },
+        {
+          "id": "file:09-2024::clause-002",
+          "type": "clause",
+          "short": "Act applies to offences by citizens, harm to State/residents, regardless of location"
+        },
+        {
+          "id": "file:09-2024::clause-003",
+          "type": "clause",
+          "short": "Objectives: protect from prohibited statements, protect judicial authority, detect bot misuse, prevent financing"
+        }
+      ],
+      "first_chunks": [
+        {
+          "chunk_id": "file:09-2024::chunk-001",
+          "snippet": "This Act may be cited as the Online Safety Act, No. 9 of 2024. The provisions of this Act shall apply where a person commits an offence under this Act in respect of a citizen of Sri Lanka..."
+        },
+        {
+          "chunk_id": "file:09-2024::chunk-002",
+          "snippet": "The objectives of this Act are: to protect persons against harm caused by communication of prohibited statements via online account or online location; to ensure protection from statements in contempt of court..."
+        }
+      ]
+    },
+    {
+      "file_id": "file:09-2022",
+      "title": "Personal Data Protection Act, No. 9 of 2022",
+      "snippet": "An Act to provide for the regulation of processing of personal data; to identify and strengthen the rights of data subjects in relation to the protection of personal data; to provide for the establishment of the Data Protection Authority.",
+      "top_tags": [
+        "data-protection",
+        "privacy",
+        "personal-data",
+        "data-subject-rights",
+        "GDPR-inspired"
+      ],
+      "primary_clauses": [
+        {
+          "id": "file:09-2022::clause-050",
+          "type": "obligation",
+          "short": "Controllers must ensure lawful processing per Schedule I, II, III, or IV"
+        },
+        {
+          "id": "file:09-2022::clause-100",
+          "type": "permission",
+          "short": "Data subjects have right to access personal data upon written request"
+        },
+        {
+          "id": "file:09-2022::clause-101",
+          "type": "permission",
+          "short": "Data subjects can withdraw consent or request erasure of personal data"
+        }
+      ],
+      "first_chunks": [
+        {
+          "chunk_id": "file:09-2022::chunk-001",
+          "snippet": "The processing of personal data shall be lawful if a controller is in compliance with conditions specified in Schedule I for general data, Schedule II for special categories..."
+        },
+        {
+          "chunk_id": "file:09-2022::chunk-002",
+          "snippet": "Every data subject shall have the right to access personal data of such data subject and to be provided with confirmation as to whether personal data has been processed..."
+        }
+      ]
+    },
+    {
+      "file_id": "file:24-2007",
+      "title": "Computer Crime Act, No. 24 of 2007",
+      "snippet": "An Act to provide for the identification of computer crime and to provide the procedure for the investigation and prevention of such crimes; and to provide for matters connected therewith and incidental thereto.",
+      "top_tags": [
+        "computer-crime",
+        "cybercrime",
+        "unauthorized-access",
+        "data-interception",
+        "investigation"
+      ],
+      "primary_clauses": [
+        {
+          "id": "file:24-2007::clause-300",
+          "type": "prohibition",
+          "short": "No unauthorized access to computer or information; penalty: 100K rupees or 5 years imprisonment"
+        },
+        {
+          "id": "file:24-2007::clause-350",
+          "type": "prohibition",
+          "short": "No computer function causing danger to national security, economy, or public order"
+        },
+        {
+          "id": "file:24-2007::clause-370",
+          "type": "prohibition",
+          "short": "No illegal interception of data or unauthorized disclosure of access information"
+        }
+      ],
+      "first_chunks": [
+        {
+          "chunk_id": "file:24-2007::chunk-001",
+          "snippet": "Any person who intentionally does any act to secure unauthorized access to any computer or information held therein, knowing or having reason to believe they lack lawful authority, commits an offence..."
+        },
+        {
+          "chunk_id": "file:24-2007::chunk-002",
+          "snippet": "Any person who intentionally causes a computer to perform a function resulting in danger or imminent danger to national security, national economy, or public order commits an offence..."
+        }
+      ]
+    },
+    {
+      "file_id": "file:39-2022",
+      "title": "Children and Young Persons (Amendment) Act, No. 39 of 2022",
+      "snippet": "An Act to amend the Children and Young Persons Ordinance (Chapter 23). Key changes: age threshold raised from 16 to 18 years; consolidates terminology from 'young persons' to 'children'; updates protection and detention frameworks.",
+      "top_tags": [
+        "child-protection",
+        "juvenile-justice",
+        "amendments",
+        "age-threshold",
+        "remand-home"
+      ],
+      "primary_clauses": [
+        {
+          "id": "file:39-2022::clause-400",
+          "type": "definition",
+          "short": "Short title: Children and Young Persons (Amendment) Act, No. 39 of 2022"
+        },
+        {
+          "id": "file:39-2022::clause-410",
+          "type": "amendment",
+          "short": "Age threshold changed from 16 to 18 years; terminology consolidated"
+        },
+        {
+          "id": "file:39-2022::clause-420",
+          "type": "clause",
+          "short": "Child cannot be imprisoned; psychological assessment required for 16-18 year olds in certain cases"
+        }
+      ],
+      "first_chunks": [
+        {
+          "chunk_id": "file:39-2022::chunk-001",
+          "snippet": "This Act may be cited as the Children and Young Persons (Amendment) Act, No. 39 of 2022. Provisions come into operation on dates appointed by the Minister via Gazette Order..."
+        },
+        {
+          "chunk_id": "file:39-2022::chunk-002",
+          "snippet": "Amendments to Chapter 23: 'Children and Young Persons Ordinance' becomes 'Children's Ordinance'; 'children and young persons' becomes 'children'; age threshold changed from sixteen to eighteen years..."
+        }
+      ]
+    }
+  ]
+}

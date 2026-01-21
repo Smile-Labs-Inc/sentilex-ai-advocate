@@ -26,7 +26,7 @@ from schemas.messages import (
 )
 from chains import invoke_chain
 from logging.audit import get_audit_logger, configure_audit_logger
-from mcp_client import get_mcp_client
+from mcp_server.mcp_client import get_mcp_client
 
 
 # Initialize FastAPI app
@@ -37,6 +37,8 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+
 
 # Configure CORS
 app.add_middleware(

@@ -1,0 +1,1145 @@
+{
+  "mcp_id": "SL-LEGAL-2024-001",
+  "mcp_name": "Sri Lanka Legislative Framework Package",
+  "mcp_version": "1.0.0",
+  "created_at": "2026-01-17T21:14:00Z",
+  "files": [
+    {
+      "file_id": "file:09-2024",
+      "filename": "09-2024_E.md",
+      "title": "Online Safety Act, No. 9 of 2024",
+      "subtitle": "An Act to establish the Online Safety Commission and provide safety from prohibited online statements",
+      "author": ["Parliament of the Democratic Socialist Republic of Sri Lanka"],
+      "created_at": "2024-02-01T00:00:00Z",
+      "last_modified": "2024-02-01T00:00:00Z",
+      "version": "No. 9 of 2024",
+      "tags": ["online safety", "prohibited statements", "online accounts", "Sri Lanka", "digital regulation", "internet intermediaries"],
+      "jurisdiction": "Sri Lanka",
+      "raw_markdown": "# **PARLIAMENT OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA**\n\n**ONLINE SAFETY ACT, No. 9 OF 2024**\n\n**[Certified on 01st of February, 2024]**\n\n*Printed on the Order of Government*\n\nPublished as a Supplement to Part II of the **Gazette of the Democratic Socialist Republic of Sri Lanka** of February 02, 2024\n\nPRINTED AT THE DEPARTMENT OF GOVERNMENT PRINTING, SRI LANKA\n\nTO BE PURCHASED AT THE GOVERNMENT PUBLICATIONS BUREAU, COLOMBO 5\n\n**Price : Rs. 96.00 Postage : Rs. 150.00**\n\n*This Act can be downloaded from* www.documents.gov.lk\n\n## *Online Safety Act, No. 9 of 2024* 1\n\n## [Certified on 01st of February, 2024]\n\n## L.D.-O. 34/2021\n\nAN ACT TO ESTABLISH THE ONLINE SAFETY COMMISSION; TO PROVIDE SAFETY FROM PROHIBITED STATEMENTS MADE ONLINE; TO PREVENT THE USE OF ONLINE ACCOUNTS AND INAUTHENTIC ONLINE ACCOUNTS FOR PROHIBITED PURPOSES; TO MAKE PROVISIONS TO IDENTIFY AND DECLARE ONLINE LOCATIONS USED FOR PROHIBITED PURPOSES IN SRI LANKA; TO SUPPRESS THE FINANCING AND OTHER SUPPORT OF COMMUNICATION OF PROHIBITED STATEMENTS AND FOR MATTERS CONNECTED THEREWITH OR INCIDENTAL THERETO.\n\nBE it enacted by the Parliament of the Democratic Socialist Republic of Sri Lanka as follows: -\n\n**1.** This Act may be cited as the Online Safety Act, No. 9 of 2024.\n\nShort title\n\n**2.** The provisions of this Act shall apply where –\n\nApplication of the Act\n\n- (*a*) a person commits an offence under this Act in respect of a citizen of Sri Lanka, while being present in Sri Lanka or outside Sri Lanka;\n- (*b*) a loss, damage or harm is caused within or outside Sri Lanka by the commission of an offence under this Act, to the State or to a person resident in Sri Lanka; or\n- (*c*) an offence under this Act, wherever committed, is committed by a person who is a citizen of Sri Lanka.\n- **3.** The objectives of this Act shall be-\n\nObjectives of the Act\n\n(*a*) to protect persons against harm caused by communication of prohibited statements, by way of an online account or through an online location;\n\n- (*b*) to ensure protection from communication of statements in contempt of court or prejudicial to the maintenance of the authority and impartiality of the judiciary, by way of an online account or through an online location;\n- (*c*) to introduce measures to detect, prevent and safeguard against the misuses of online accounts and bots to commit offences under this Act; and\n- (*d*) to prevent the financing, promotion and other support of online locations which repeatedly communicate prohibited statements in Sri Lanka, by way of online account or through an online location.",
+      "text_plain": "PARLIAMENT OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA\nONLINE SAFETY ACT, No. 9 OF 2024\nCertified on 01st of February, 2024\nAn Act to establish the Online Safety Commission; to provide safety from prohibited statements made online; to prevent the use of online accounts and inauthentic online accounts for prohibited purposes; to make provisions to identify and declare online locations used for prohibited purposes in Sri Lanka; to suppress the financing and other support of communication of prohibited statements and for matters connected therewith or incidental thereto.\nBE it enacted by the Parliament of the Democratic Socialist Republic of Sri Lanka as follows:\nSection 1: This Act may be cited as the Online Safety Act, No. 9 of 2024.\nSection 2: Application of the Act - The provisions of this Act shall apply where: (a) a person commits an offence under this Act in respect of a citizen of Sri Lanka, while being present in Sri Lanka or outside Sri Lanka; (b) a loss, damage or harm is caused within or outside Sri Lanka by the commission of an offence under this Act, to the State or to a person resident in Sri Lanka; or (c) an offence under this Act, wherever committed, is committed by a person who is a citizen of Sri Lanka.\nSection 3: Objectives of the Act - (a) to protect persons against harm caused by communication of prohibited statements, by way of an online account or through an online location; (b) to ensure protection from communication of statements in contempt of court or prejudicial to the maintenance of the authority and impartiality of the judiciary, by way of an online account or through an online location; (c) to introduce measures to detect, prevent and safeguard against the misuses of online accounts and bots to commit offences under this Act; and (d) to prevent the financing, promotion and other support of online locations which repeatedly communicate prohibited statements in Sri Lanka, by way of online account or through an online location.",
+      "toc": [
+        {
+          "heading": "Online Safety Act, No. 9 of 2024",
+          "level": 1,
+          "slug": "online-safety-act-no-9-of-2024",
+          "line_start": 1,
+          "line_end": 50
+        },
+        {
+          "heading": "Short title",
+          "level": 2,
+          "slug": "short-title",
+          "line_start": 51,
+          "line_end": 52
+        },
+        {
+          "heading": "Application of the Act",
+          "level": 2,
+          "slug": "application-of-the-act",
+          "line_start": 53,
+          "line_end": 60
+        },
+        {
+          "heading": "Objectives of the Act",
+          "level": 2,
+          "slug": "objectives-of-the-act",
+          "line_start": 61,
+          "line_end": 75
+        },
+        {
+          "heading": "PART I - ESTABLISHMENT OF THE ONLINE SAFETY COMMISSION",
+          "level": 2,
+          "slug": "part-i-establishment-of-the-online-safety-commission",
+          "line_start": 76,
+          "line_end": 200
+        },
+        {
+          "heading": "PART II - POWERS AND FUNCTIONS OF THE COMMISSION",
+          "level": 2,
+          "slug": "part-ii-powers-and-functions-of-the-commission",
+          "line_start": 201,
+          "line_end": 300
+        },
+        {
+          "heading": "PART III - PROHIBITION OF ONLINE COMMUNICATION OF FALSE STATEMENTS",
+          "level": 2,
+          "slug": "part-iii-prohibition-of-online-communication-of-false-statements",
+          "line_start": 301,
+          "line_end": 500
+        }
+      ],
+      "sections": [
+        {
+          "section_id": "file:09-2024::sec-1-short-title",
+          "heading": "Short title",
+          "level": 2,
+          "slug": "short-title",
+          "line_start": 51,
+          "line_end": 52,
+          "raw_markdown": "**1.** This Act may be cited as the Online Safety Act, No. 9 of 2024.\n\nShort title",
+          "text_plain": "This Act may be cited as the Online Safety Act, No. 9 of 2024.",
+          "assets": {
+            "images": [],
+            "tables": [],
+            "code_blocks": [],
+            "links": []
+          },
+          "legal_annotations": [
+            {
+              "annotation_id": "file:09-2024::clause-001",
+              "type": "definition",
+              "normalized_text": "The short title of this Act is 'Online Safety Act, No. 9 of 2024'",
+              "subjects": ["Act"],
+              "objects": ["citation", "short title"],
+              "conditions": [],
+              "references": [],
+              "confidence": 0.99
+            }
+          ],
+          "suggested_tags": [
+            {
+              "tag": "short-title",
+              "score": 0.95
+            },
+            {
+              "tag": "enacting-clause",
+              "score": 0.90
+            }
+          ]
+        },
+        {
+          "section_id": "file:09-2024::sec-2-application",
+          "heading": "Application of the Act",
+          "level": 2,
+          "slug": "application-of-the-act",
+          "line_start": 53,
+          "line_end": 60,
+          "raw_markdown": "**2.** The provisions of this Act shall apply where –\n\nApplication of the Act\n\n- (*a*) a person commits an offence under this Act in respect of a citizen of Sri Lanka, while being present in Sri Lanka or outside Sri Lanka;\n- (*b*) a loss, damage or harm is caused within or outside Sri Lanka by the commission of an offence under this Act, to the State or to a person resident in Sri Lanka; or\n- (*c*) an offence under this Act, wherever committed, is committed by a person who is a citizen of Sri Lanka.",
+          "text_plain": "The provisions of this Act shall apply where: (a) a person commits an offence under this Act in respect of a citizen of Sri Lanka, while being present in Sri Lanka or outside Sri Lanka; (b) a loss, damage or harm is caused within or outside Sri Lanka by the commission of an offence under this Act, to the State or to a person resident in Sri Lanka; or (c) an offence under this Act, wherever committed, is committed by a person who is a citizen of Sri Lanka.",
+          "assets": {
+            "images": [],
+            "tables": [],
+            "code_blocks": [],
+            "links": []
+          },
+          "legal_annotations": [
+            {
+              "annotation_id": "file:09-2024::clause-002",
+              "type": "clause",
+              "normalized_text": "This Act applies to: (1) offences committed by any person against Sri Lanka citizens, regardless of location; (2) harm caused to the State or residents, regardless of location; (3) offences by Sri Lanka citizens, regardless of location.",
+              "subjects": ["any person", "State", "person resident in Sri Lanka"],
+              "objects": ["offence", "loss", "damage", "harm"],
+              "conditions": ["in respect of a citizen of Sri Lanka", "within or outside Sri Lanka"],
+              "references": [],
+              "confidence": 0.95
+            }
+          ],
+          "suggested_tags": [
+            {
+              "tag": "application-scope",
+              "score": 0.98
+            },
+            {
+              "tag": "territorial-jurisdiction",
+              "score": 0.95
+            },
+            {
+              "tag": "personal-jurisdiction",
+              "score": 0.92
+            }
+          ]
+        },
+        {
+          "section_id": "file:09-2024::sec-3-objectives",
+          "heading": "Objectives of the Act",
+          "level": 2,
+          "slug": "objectives-of-the-act",
+          "line_start": 61,
+          "line_end": 75,
+          "raw_markdown": "**3.** The objectives of this Act shall be-\n\nObjectives of the Act\n\n(*a*) to protect persons against harm caused by communication of prohibited statements, by way of an online account or through an online location;\n\n- (*b*) to ensure protection from communication of statements in contempt of court or prejudicial to the maintenance of the authority and impartiality of the judiciary, by way of an online account or through an online location;\n- (*c*) to introduce measures to detect, prevent and safeguard against the misuses of online accounts and bots to commit offences under this Act; and\n- (*d*) to prevent the financing, promotion and other support of online locations which repeatedly communicate prohibited statements in Sri Lanka, by way of online account or through an online location.",
+          "text_plain": "The objectives of this Act are: (a) to protect persons against harm caused by communication of prohibited statements, by way of an online account or through an online location; (b) to ensure protection from communication of statements in contempt of court or prejudicial to the maintenance of the authority and impartiality of the judiciary, by way of an online account or through an online location; (c) to introduce measures to detect, prevent and safeguard against the misuses of online accounts and bots to commit offences under this Act; and (d) to prevent the financing, promotion and other support of online locations which repeatedly communicate prohibited statements in Sri Lanka, by way of online account or through an online location.",
+          "assets": {
+            "images": [],
+            "tables": [],
+            "code_blocks": [],
+            "links": []
+          },
+          "legal_annotations": [
+            {
+              "annotation_id": "file:09-2024::clause-003",
+              "type": "clause",
+              "normalized_text": "Primary objectives: (1) Protect persons from harm via prohibited online statements; (2) Protect court authority and judicial impartiality; (3) Detect and prevent misuse of accounts and bots; (4) Prevent financing of locations communicating prohibited statements.",
+              "subjects": ["Act"],
+              "objects": ["protection", "detection", "prevention", "regulation"],
+              "conditions": [],
+              "references": [],
+              "confidence": 0.97
+            }
+          ],
+          "suggested_tags": [
+            {
+              "tag": "legislative-objectives",
+              "score": 0.99
+            },
+            {
+              "tag": "public-policy",
+              "score": 0.94
+            },
+            {
+              "tag": "online-harm",
+              "score": 0.92
+            },
+            {
+              "tag": "judicial-protection",
+              "score": 0.90
+            }
+          ]
+        }
+      ],
+      "entities": [
+        {
+          "text": "Online Safety Commission",
+          "type": "organization",
+          "confidence": 0.99
+        },
+        {
+          "text": "President",
+          "type": "role",
+          "confidence": 0.97
+        },
+        {
+          "text": "Constitutional Council",
+          "type": "organization",
+          "confidence": 0.96
+        },
+        {
+          "text": "Minister",
+          "type": "role",
+          "confidence": 0.95
+        },
+        {
+          "text": "prohibited statement",
+          "type": "legal-term",
+          "confidence": 0.98
+        },
+        {
+          "text": "online account",
+          "type": "legal-term",
+          "confidence": 0.97
+        },
+        {
+          "text": "internet intermediary",
+          "type": "legal-term",
+          "confidence": 0.96
+        },
+        {
+          "text": "online location",
+          "type": "legal-term",
+          "confidence": 0.97
+        },
+        {
+          "text": "Sri Lanka",
+          "type": "jurisdiction",
+          "confidence": 0.99
+        }
+      ],
+      "keywords": [
+        {
+          "keyword": "online safety",
+          "score": 0.99
+        },
+        {
+          "keyword": "prohibited statements",
+          "score": 0.98
+        },
+        {
+          "keyword": "false statements",
+          "score": 0.96
+        },
+        {
+          "keyword": "online accounts",
+          "score": 0.95
+        },
+        {
+          "keyword": "internet intermediaries",
+          "score": 0.94
+        },
+        {
+          "keyword": "contempt of court",
+          "score": 0.93
+        },
+        {
+          "keyword": "online commission",
+          "score": 0.92
+        },
+        {
+          "keyword": "digital regulation",
+          "score": 0.91
+        }
+      ],
+      "counts": {
+        "headings": 7,
+        "clauses": 45,
+        "definitions": 12,
+        "images": 1,
+        "tables": 2,
+        "code_blocks": 0
+      }
+    },
+    {
+      "file_id": "file:09-2022",
+      "filename": "09-2022_E.md",
+      "title": "Personal Data Protection Act, No. 9 of 2022",
+      "subtitle": "An Act to provide for the regulation of processing of personal data and to establish the Data Protection Authority",
+      "author": ["Parliament of the Democratic Socialist Republic of Sri Lanka"],
+      "created_at": "2022-03-19T00:00:00Z",
+      "last_modified": "2022-03-25T00:00:00Z",
+      "version": "No. 9 of 2022",
+      "tags": ["data protection", "privacy", "personal data", "data subject rights", "Sri Lanka", "GDPR-inspired"],
+      "jurisdiction": "Sri Lanka",
+      "raw_markdown": "# **PARLIAMENT OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA**\n\n**PERSONAL DATA PROTECTION ACT, No. 9 OF 2022**\n\n**[Certified on 19th of March, 2022]**\n\n*Printed on the Order of Government*\n\nPublished as a Supplement to Part II of the **Gazette of the Democratic Socialist Republic of Sri Lanka** of March 25, 2022\n\nPRINTED AT THE DEPARTMENT OF GOVERNMENT PRINTING, SRI LANKA\n\nTO BE PURCHASED AT THE GOVERNMENT PUBLICATIONS BUREAU, COLOMBO 5\n\n**Price : Rs. 75.00 Postage : Rs. 45.00**\n\n*This Act can be downloaded from* www.documents.gov.lk\n\n### *Personal Data Protection Act, No. 9 of 2022* 1\n\n[Certified on 19th of March, 2022]\n\nL.D.—O. 19/2019.\n\nAN ACT TO PROVIDE FOR THE REGULATION OF PROCESSING OF PERSONAL DATA; TO IDENTIFY AND STRENGTHEN THE RIGHTS OF DATA SUBJECTS IN RELATION TO THE PROTECTION OF PERSONAL DATA; TO PROVIDE FOR THE ESTABLISHMENT OF THE DATA PROTECTION AUTHORITY; ANDTO PROVIDE FOR MATTERSCONNECTED THEREWITH ORINCIDENTALTHERETO\n\nWHEREAS it has become necessary to facilitate the growth and innovation in the digital economy in Sri Lanka whilst ensuring the protection of personal data rights of the data subjects:\n\nPreamble\n\nAND WHEREAS it has become necessary to improve interoperability among personal data protection frameworks as well as to strengthen cross-border co-operation among personal data protection enforcement authorities:\n\nAND WHEREAS it has become necessary for the government of Sri Lanka to provide for a legal framework to provide for mechanisms for the protection of personal data of data subjects ensuring consumer trust and safeguarding privacy whilst respecting domestic written laws and applicable international legal instruments:",
+      "text_plain": "PARLIAMENT OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA\nPERSONAL DATA PROTECTION ACT, No. 9 OF 2022\nCertified on 19th of March, 2022\nAN ACT TO PROVIDE FOR THE REGULATION OF PROCESSING OF PERSONAL DATA; TO IDENTIFY AND STRENGTHEN THE RIGHTS OF DATA SUBJECTS IN RELATION TO THE PROTECTION OF PERSONAL DATA; TO PROVIDE FOR THE ESTABLISHMENT OF THE DATA PROTECTION AUTHORITY; AND TO PROVIDE FOR MATTERS CONNECTED THEREWITH OR INCIDENTAL THERETO\nWHEREAS it has become necessary to facilitate the growth and innovation in the digital economy in Sri Lanka whilst ensuring the protection of personal data rights of the data subjects:\nAND WHEREAS it has become necessary to improve interoperability among personal data protection frameworks as well as to strengthen cross-border co-operation among personal data protection enforcement authorities:\nAND WHEREAS it has become necessary for the government of Sri Lanka to provide for a legal framework to provide for mechanisms for the protection of personal data of data subjects ensuring consumer trust and safeguarding privacy whilst respecting domestic written laws and applicable international legal instruments:",
+      "toc": [
+        {
+          "heading": "Personal Data Protection Act, No. 9 of 2022",
+          "level": 1,
+          "slug": "personal-data-protection-act-no-9-of-2022",
+          "line_start": 1,
+          "line_end": 40
+        },
+        {
+          "heading": "Preamble",
+          "level": 2,
+          "slug": "preamble",
+          "line_start": 41,
+          "line_end": 50
+        },
+        {
+          "heading": "PART I - PROCESSING OF PERSONAL DATA",
+          "level": 2,
+          "slug": "part-i-processing-of-personal-data",
+          "line_start": 51,
+          "line_end": 150
+        },
+        {
+          "heading": "PART II - RIGHTS OF DATA SUBJECTS",
+          "level": 2,
+          "slug": "part-ii-rights-of-data-subjects",
+          "line_start": 151,
+          "line_end": 300
+        },
+        {
+          "heading": "PART X - INTERPRETATION",
+          "level": 2,
+          "slug": "part-x-interpretation",
+          "line_start": 301,
+          "line_end": 400
+        }
+      ],
+      "sections": [
+        {
+          "section_id": "file:09-2022::sec-5-lawful-processing",
+          "heading": "Obligation to process personal data in a lawful manner",
+          "level": 2,
+          "slug": "obligation-to-process-personal-data-in-a-lawful-manner",
+          "line_start": 60,
+          "line_end": 100,
+          "raw_markdown": "**5.** The processing of personal data shall be lawful if a controller is in compliance with—\n\nObligation to process personal data in a lawful manner\n\n- (*a*) any condition specified in Schedule I hereto;\n- (*b*) any condition specified in Schedule II hereto in the case of processing special categories of personal data;\n- (*c*) all the conditions specified in Schedule III hereto in the case of processing personal data based on the consent of the data subject under item (*a*) of Schedule I or under item (*a*) of Schedule II hereto; or\n- (*d*) all the conditions specified in Schedule IV hereto in the case of processing personal data in respect of criminal investigations.",
+          "text_plain": "The processing of personal data shall be lawful if a controller is in compliance with: (a) any condition specified in Schedule I; (b) any condition specified in Schedule II for special categories of personal data; (c) all conditions in Schedule III for consent-based processing; or (d) all conditions in Schedule IV for criminal investigation processing.",
+          "assets": {
+            "images": [],
+            "tables": [],
+            "code_blocks": [],
+            "links": []
+          },
+          "legal_annotations": [
+            {
+              "annotation_id": "file:09-2022::clause-050",
+              "type": "obligation",
+              "normalized_text": "Controllers must ensure personal data processing is lawful and compliant with specified schedules (I, II, III, or IV depending on context).",
+              "subjects": ["controller"],
+              "objects": ["process personal data"],
+              "conditions": ["lawfully", "in compliance with Schedule I, II, III, or IV"],
+              "references": ["Schedule I", "Schedule II", "Schedule III", "Schedule IV"],
+              "confidence": 0.96
+            }
+          ],
+          "suggested_tags": [
+            {
+              "tag": "lawful-processing",
+              "score": 0.99
+            },
+            {
+              "tag": "controller-obligation",
+              "score": 0.98
+            },
+            {
+              "tag": "compliance",
+              "score": 0.97
+            }
+          ]
+        },
+        {
+          "section_id": "file:09-2022::sec-13-right-of-access",
+          "heading": "Right of access to personal data",
+          "level": 2,
+          "slug": "right-of-access-to-personal-data",
+          "line_start": 155,
+          "line_end": 170,
+          "raw_markdown": "**13.** (1) Every data subject shall have the right to access to personal data of such data subject and to be provided with a confirmation as to whether such personal data has been processed and such information referred to in Schedule V, upon a written request made by such data subject to the controller.\n\n- Right of access to personal data\n- (2) The controller shall, upon receipt of a written request made by the data subject under subsection (1), provide the data subject with such information required to be provided under Schedule V, subject to section 17.",
+          "text_plain": "Every data subject has the right to access their personal data and receive confirmation if it has been processed, upon written request. Controllers must provide information from Schedule V upon request, subject to section 17.",
+          "assets": {
+            "images": [],
+            "tables": [],
+            "code_blocks": [],
+            "links": []
+          },
+          "legal_annotations": [
+            {
+              "annotation_id": "file:09-2022::clause-100",
+              "type": "permission",
+              "normalized_text": "Data subjects may request access to their personal data; controllers must comply within 21 days.",
+              "subjects": ["data subject"],
+              "objects": ["access personal data", "confirmation of processing", "information per Schedule V"],
+              "conditions": ["upon written request"],
+              "references": ["Schedule V", "section 17"],
+              "confidence": 0.97
+            }
+          ],
+          "suggested_tags": [
+            {
+              "tag": "data-subject-right",
+              "score": 0.99
+            },
+            {
+              "tag": "right-of-access",
+              "score": 0.99
+            },
+            {
+              "tag": "transparency",
+              "score": 0.95
+            }
+          ]
+        }
+      ],
+      "entities": [
+        {
+          "text": "Data Protection Authority",
+          "type": "organization",
+          "confidence": 0.99
+        },
+        {
+          "text": "controller",
+          "type": "legal-role",
+          "confidence": 0.98
+        },
+        {
+          "text": "processor",
+          "type": "legal-role",
+          "confidence": 0.98
+        },
+        {
+          "text": "data subject",
+          "type": "legal-role",
+          "confidence": 0.99
+        },
+        {
+          "text": "personal data",
+          "type": "legal-term",
+          "confidence": 0.99
+        },
+        {
+          "text": "special categories of personal data",
+          "type": "legal-term",
+          "confidence": 0.97
+        },
+        {
+          "text": "biometric data",
+          "type": "legal-term",
+          "confidence": 0.96
+        },
+        {
+          "text": "genetic data",
+          "type": "legal-term",
+          "confidence": 0.96
+        },
+        {
+          "text": "financial data",
+          "type": "legal-term",
+          "confidence": 0.96
+        },
+        {
+          "text": "consent",
+          "type": "legal-term",
+          "confidence": 0.98
+        },
+        {
+          "text": "encryption",
+          "type": "legal-term",
+          "confidence": 0.97
+        },
+        {
+          "text": "Sri Lanka",
+          "type": "jurisdiction",
+          "confidence": 0.99
+        }
+      ],
+      "keywords": [
+        {
+          "keyword": "personal data protection",
+          "score": 0.99
+        },
+        {
+          "keyword": "data subject rights",
+          "score": 0.98
+        },
+        {
+          "keyword": "privacy",
+          "score": 0.97
+        },
+        {
+          "keyword": "data processing",
+          "score": 0.96
+        },
+        {
+          "keyword": "consent",
+          "score": 0.95
+        },
+        {
+          "keyword": "data controller",
+          "score": 0.94
+        },
+        {
+          "keyword": "data security",
+          "score": 0.93
+        },
+        {
+          "keyword": "data breach",
+          "score": 0.92
+        }
+      ],
+      "counts": {
+        "headings": 5,
+        "clauses": 42,
+        "definitions": 28,
+        "images": 1,
+        "tables": 0,
+        "code_blocks": 0
+      }
+    },
+    {
+      "file_id": "file:24-2007",
+      "filename": "24-2007_E.md",
+      "title": "Computer Crime Act, No. 24 of 2007",
+      "subtitle": "An Act to provide for the identification of computer crime and procedures for investigation and prevention",
+      "author": ["Parliament of the Democratic Socialist Republic of Sri Lanka"],
+      "created_at": "2007-07-09T00:00:00Z",
+      "last_modified": "2007-07-13T00:00:00Z",
+      "version": "No. 24 of 2007",
+      "tags": ["computer crime", "cybercrime", "unauthorized access", "data interception", "Sri Lanka", "investigation"],
+      "jurisdiction": "Sri Lanka",
+      "raw_markdown": "# **PARLIAMENT OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA**\n\n**COMPUTER CRIME ACT, No. 24 OF 2007**\n\n**[Certified on 09th July, 2007]**\n\n*Printed on the Order of Government*\n\nPublished as a Supplement to Part II of the **Gazette of the Democratic Socialist Republic of Sri Lanka** of July 13, 2007\n\nPRINTED AT THE DEPARTMENT OF GOVERNMENT PRINTING, SRI LANKA\n\nTO BE PURCHASED AT THE GOVERNMENT PUBLICATIONS BUREAU, COLOMBO 5\n\n**Price : Rs. 14.00 Postage : Rs. 7.50**\n\n## *Computer Crime Act, No. 24 of 2007* 1\n\n### [Certified on 09th July 2007]\n\n## L. D.—O. 72/2000\n\nAN ACT TO PROVIDE FOR THE IDENTIFICATION OFCOMPUTER CRIME AND TO PROVIDE THE PROCEDURE FOR THE INVESTIGATION AND PREVENTION OF SUCH CRIMES ; AND TO PROVIDE FOR MATTERS CONNECTED THEREWITH ANDINCIDENTALTHERETO.",
+      "text_plain": "PARLIAMENT OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA\nCOMPUTER CRIME ACT, No. 24 OF 2007\nCertified on 09th July, 2007\nAN ACT TO PROVIDE FOR THE IDENTIFICATION OF COMPUTER CRIME AND TO PROVIDE THE PROCEDURE FOR THE INVESTIGATION AND PREVENTION OF SUCH CRIMES; AND TO PROVIDE FOR MATTERS CONNECTED THEREWITH AND INCIDENTAL THERETO.",
+      "toc": [
+        {
+          "heading": "Computer Crime Act, No. 24 of 2007",
+          "level": 1,
+          "slug": "computer-crime-act-no-24-of-2007",
+          "line_start": 1,
+          "line_end": 30
+        },
+        {
+          "heading": "PART I - COMPUTER CRIME",
+          "level": 2,
+          "slug": "part-i-computer-crime",
+          "line_start": 31,
+          "line_end": 200
+        },
+        {
+          "heading": "PART II - INVESTIGATIONS",
+          "level": 2,
+          "slug": "part-ii-investigations",
+          "line_start": 201,
+          "line_end": 400
+        }
+      ],
+      "sections": [
+        {
+          "section_id": "file:24-2007::sec-3-unauthorized-access",
+          "heading": "Securing unauthorised access to a computer an offence",
+          "level": 2,
+          "slug": "securing-unauthorised-access-to-a-computer-an-offence",
+          "line_start": 50,
+          "line_end": 70,
+          "raw_markdown": "**3.** Any person who intentionally does any act, in order to secure for himself or for any other person, access to—\n\nSecuring unauthorised access to a computer an offence.\n\n- (*a*) any computer ; or\n- (*b*) any information held in any computer,\n\nknowing or having reason to believe that he has no lawful authority to secure such access, shall be guilty of an offence and shall on conviction be liable to a fine not exceeding one hundred thousand rupees, or to imprisonment of either description for a term which may extend to five years, or both such fine and imprisonment.",
+          "text_plain": "Any person who intentionally seeks unauthorized access to a computer or information held therein, knowing or having reason to believe they lack lawful authority, commits an offence. Penalty: fine up to 100,000 rupees, imprisonment up to 5 years, or both.",
+          "assets": {
+            "images": [],
+            "tables": [],
+            "code_blocks": [],
+            "links": []
+          },
+          "legal_annotations": [
+            {
+              "annotation_id": "file:24-2007::clause-300",
+              "type": "prohibition",
+              "normalized_text": "No person shall intentionally secure unauthorized access to any computer or information held therein knowing or believing they lack lawful authority.",
+              "subjects": ["any person"],
+              "objects": ["secure access to computer", "secure access to information"],
+              "conditions": ["intentionally", "knowing or having reason to believe no lawful authority exists"],
+              "references": [],
+              "confidence": 0.98
+            },
+            {
+              "annotation_id": "file:24-2007::penalty-300",
+              "type": "penalty",
+              "normalized_text": "Fine not exceeding 100,000 rupees and/or imprisonment up to 5 years.",
+              "subjects": ["offender"],
+              "objects": ["fine", "imprisonment"],
+              "conditions": ["upon conviction"],
+              "references": [],
+              "confidence": 0.99
+            }
+          ],
+          "suggested_tags": [
+            {
+              "tag": "unauthorized-access",
+              "score": 0.99
+            },
+            {
+              "tag": "computer-crime",
+              "score": 0.98
+            },
+            {
+              "tag": "prohibition",
+              "score": 0.97
+            },
+            {
+              "tag": "penalty",
+              "score": 0.96
+            }
+          ]
+        },
+        {
+          "section_id": "file:24-2007::sec-6-national-security",
+          "heading": "Offences committed against national security &c.",
+          "level": 2,
+          "slug": "offences-committed-against-national-security",
+          "line_start": 120,
+          "line_end": 145,
+          "raw_markdown": "**6.** (1) Any person who intentionally causes a computer to perform any function, knowing or having reason to believe that such function will result in danger or imminent danger to—\n\nOffences committed against national security &c.\n\n- (*a*) national security ;\n- (*b*) the national economy ; or\n- (*c*) public order,\n\nshall be guilty of an offence and shall on conviction be punishable with imprisonment of either description for a term not exceeding five years.",
+          "text_plain": "Any person who intentionally causes a computer to perform a function that results in danger to national security, the national economy, or public order commits an offence. Penalty: imprisonment up to 5 years.",
+          "assets": {
+            "images": [],
+            "tables": [],
+            "code_blocks": [],
+            "links": []
+          },
+          "legal_annotations": [
+            {
+              "annotation_id": "file:24-2007::clause-350",
+              "type": "prohibition",
+              "normalized_text": "No person shall intentionally cause a computer to perform a function that results in danger to national security, national economy, or public order.",
+              "subjects": ["any person"],
+              "objects": ["cause computer function"],
+              "conditions": ["intentionally", "resulting in danger to national security, national economy, or public order"],
+              "references": [],
+              "confidence": 0.97
+            }
+          ],
+          "suggested_tags": [
+            {
+              "tag": "national-security",
+              "score": 0.99
+            },
+            {
+              "tag": "critical-infrastructure",
+              "score": 0.95
+            },
+            {
+              "tag": "public-order",
+              "score": 0.94
+            }
+          ]
+        }
+      ],
+      "entities": [
+        {
+          "text": "Inspector General of Police",
+          "type": "role",
+          "confidence": 0.97
+        },
+        {
+          "text": "Magistrate",
+          "type": "role",
+          "confidence": 0.97
+        },
+        {
+          "text": "expert",
+          "type": "legal-role",
+          "confidence": 0.95
+        },
+        {
+          "text": "computer",
+          "type": "legal-term",
+          "confidence": 0.98
+        },
+        {
+          "text": "computer system",
+          "type": "legal-term",
+          "confidence": 0.97
+        },
+        {
+          "text": "unauthorized access",
+          "type": "legal-term",
+          "confidence": 0.98
+        },
+        {
+          "text": "data interception",
+          "type": "legal-term",
+          "confidence": 0.96
+        },
+        {
+          "text": "national security",
+          "type": "legal-concept",
+          "confidence": 0.97
+        },
+        {
+          "text": "Sri Lanka",
+          "type": "jurisdiction",
+          "confidence": 0.99
+        }
+      ],
+      "keywords": [
+        {
+          "keyword": "computer crime",
+          "score": 0.99
+        },
+        {
+          "keyword": "unauthorized access",
+          "score": 0.98
+        },
+        {
+          "keyword": "cybercrime",
+          "score": 0.97
+        },
+        {
+          "keyword": "data interception",
+          "score": 0.95
+        },
+        {
+          "keyword": "national security",
+          "score": 0.94
+        },
+        {
+          "keyword": "investigation",
+          "score": 0.92
+        },
+        {
+          "keyword": "prevention",
+          "score": 0.90
+        }
+      ],
+      "counts": {
+        "headings": 3,
+        "clauses": 28,
+        "definitions": 8,
+        "images": 1,
+        "tables": 0,
+        "code_blocks": 0
+      }
+    },
+    {
+      "file_id": "file:39-2022",
+      "filename": "39-2022_E.md",
+      "title": "Children and Young Persons (Amendment) Act, No. 39 of 2022",
+      "subtitle": "An Act to amend the Children and Young Persons Ordinance (Chapter 23)",
+      "author": ["Parliament of the Democratic Socialist Republic of Sri Lanka"],
+      "created_at": "2022-11-17T00:00:00Z",
+      "last_modified": "2022-11-18T00:00:00Z",
+      "version": "No. 39 of 2022",
+      "tags": ["children protection", "juvenile justice", "amendments", "Sri Lanka", "child offenders", "remand home"],
+      "jurisdiction": "Sri Lanka",
+      "raw_markdown": "# **PARLIAMENT OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA**\n\n**CHILDREN AND YOUNG PERSONS (AMENDMENT) ACT, No. 39 OF 2022**\n\n**[Certified on 17th of November, 2022]**\n\n*Printed on the Order of Government*\n\nPublished as a Supplement to Part II of the **Gazette of the Democratic Socialist Republic of Sri Lanka** of November 18, 2022\n\nPRINTED AT THE DEPARTMENT OF GOVERNMENT PRINTING, SRI LANKA\n\nTO BE PURCHASED AT THE GOVERNMENT PUBLICATIONS BUREAU, COLOMBO 5\n\n**Price : Rs. 25.00 Postage : Rs. 15.00**\n\n*This Act can be downloaded from* www.documents.gov.lk\n\n[Certified on 17th of November, 2022]\n\nL.D.—O. 26/2019\n\nAn Act to amend the Children and Young Persons Ordinance (Chapter 23)",
+      "text_plain": "PARLIAMENT OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA\nCHILDREN AND YOUNG PERSONS (AMENDMENT) ACT, No. 39 OF 2022\nCertified on 17th of November, 2022\nAn Act to amend the Children and Young Persons Ordinance (Chapter 23)",
+      "toc": [
+        {
+          "heading": "Children and Young Persons (Amendment) Act, No. 39 of 2022",
+          "level": 1,
+          "slug": "children-and-young-persons-amendment-act-no-39-of-2022",
+          "line_start": 1,
+          "line_end": 30
+        },
+        {
+          "heading": "Short title and date of operation",
+          "level": 2,
+          "slug": "short-title-and-date-of-operation",
+          "line_start": 31,
+          "line_end": 40
+        },
+        {
+          "heading": "Amendment of Chapter 23 and written law",
+          "level": 2,
+          "slug": "amendment-of-chapter-23-and-written-law",
+          "line_start": 41,
+          "line_end": 100
+        }
+      ],
+      "sections": [
+        {
+          "section_id": "file:39-2022::sec-1-short-title",
+          "heading": "Short title and date of operation",
+          "level": 2,
+          "slug": "short-title-and-date-of-operation",
+          "line_start": 31,
+          "line_end": 40,
+          "raw_markdown": "**1.** (1) This Act may be cited as the Children and Young Persons (Amendment) Act, No. 39 of 2022.\n\nShort title and date of operation\n\n- (2) The provisions of this Act other than this section shall come into operation on such date as the Minister may by Order published in the *Gazette* appoint.\n- (3) Different dates may be appointed for bringing into operation of different provisions of this Act.\n- (4) The provisions of this section shall come into operation on the date on which this Bill becomes an Act of Parliament.",
+          "text_plain": "This Act may be cited as the Children and Young Persons (Amendment) Act, No. 39 of 2022. Provisions come into force on dates appointed by the Minister by Gazette Order. Different dates may apply to different provisions.",
+          "assets": {
+            "images": [],
+            "tables": [],
+            "code_blocks": [],
+            "links": []
+          },
+          "legal_annotations": [
+            {
+              "annotation_id": "file:39-2022::clause-400",
+              "type": "definition",
+              "normalized_text": "Short title: 'Children and Young Persons (Amendment) Act, No. 39 of 2022'. Operative date: As appointed by Minister via Gazette Order.",
+              "subjects": ["Act"],
+              "objects": ["citation", "operative date"],
+              "conditions": [],
+              "references": [],
+              "confidence": 0.98
+            }
+          ],
+          "suggested_tags": [
+            {
+              "tag": "short-title",
+              "score": 0.95
+            },
+            {
+              "tag": "amendment-act",
+              "score": 0.92
+            }
+          ]
+        },
+        {
+          "section_id": "file:39-2022::sec-2-amendment-chapter-23",
+          "heading": "Amendment of Chapter 23 and written law",
+          "level": 2,
+          "slug": "amendment-of-chapter-23-and-written-law",
+          "line_start": 41,
+          "line_end": 100,
+          "raw_markdown": "**2.** (1) In the Children and Young Persons Ordinance (Chapter 23) (hereinafter referred to as the \"principal enactment\") there shall be substituted—\n\nAmendment of Chapter 23 and written law &\n\n- (a) for the words \"Children and Young Persons Ordinance\", the words \"Children's Ordinance\";\n- (b) for the words \"children and young persons\", the word \"children\";\n- (c) for the words \"child or young person\", the word \"child\"; and\n- (d) for the words \"age of sixteen years\", the words \"age of eighteen years\",\n\nwherever such words appear in the principal enactment.",
+          "text_plain": "Amendments to the principal enactment (Chapter 23): (1) 'Children and Young Persons Ordinance' becomes 'Children's Ordinance'; (2) 'children and young persons' becomes 'children'; (3) 'child or young person' becomes 'child'; (4) age threshold changed from 16 to 18 years.",
+          "assets": {
+            "images": [],
+            "tables": [],
+            "code_blocks": [],
+            "links": []
+          },
+          "legal_annotations": [
+            {
+              "annotation_id": "file:39-2022::clause-410",
+              "type": "amendment",
+              "normalized_text": "Terminology updated: Young Person status removed; age threshold elevated from 16 to 18 years; consolidation of terminology to 'child'.",
+              "subjects": ["principal enactment"],
+              "objects": ["terminology", "age threshold"],
+              "conditions": ["wherever such words appear"],
+              "references": ["Chapter 23"],
+              "confidence": 0.96
+            }
+          ],
+          "suggested_tags": [
+            {
+              "tag": "legislative-amendment",
+              "score": 0.98
+            },
+            {
+              "tag": "age-threshold-change",
+              "score": 0.96
+            },
+            {
+              "tag": "child-protection",
+              "score": 0.94
+            }
+          ]
+        }
+      ],
+      "entities": [
+        {
+          "text": "Minister",
+          "type": "role",
+          "confidence": 0.97
+        },
+        {
+          "text": "child",
+          "type": "legal-concept",
+          "confidence": 0.98
+        },
+        {
+          "text": "young person",
+          "type": "legal-concept",
+          "confidence": 0.97
+        },
+        {
+          "text": "remand home",
+          "type": "legal-term",
+          "confidence": 0.96
+        },
+        {
+          "text": "training school",
+          "type": "legal-term",
+          "confidence": 0.95
+        },
+        {
+          "text": "approved school",
+          "type": "legal-term",
+          "confidence": 0.95
+        },
+        {
+          "text": "probation officer",
+          "type": "legal-role",
+          "confidence": 0.96
+        },
+        {
+          "text": "Chapter 23",
+          "type": "legal-reference",
+          "confidence": 0.98
+        },
+        {
+          "text": "Sri Lanka",
+          "type": "jurisdiction",
+          "confidence": 0.99
+        }
+      ],
+      "keywords": [
+        {
+          "keyword": "child protection",
+          "score": 0.98
+        },
+        {
+          "keyword": "juvenile justice",
+          "score": 0.97
+        },
+        {
+          "keyword": "amendment act",
+          "score": 0.96
+        },
+        {
+          "keyword": "age threshold",
+          "score": 0.94
+        },
+        {
+          "keyword": "remand home",
+          "score": 0.92
+        },
+        {
+          "keyword": "child offender",
+          "score": 0.91
+        }
+      ],
+      "counts": {
+        "headings": 3,
+        "clauses": 31,
+        "definitions": 3,
+        "images": 1,
+        "tables": 0,
+        "code_blocks": 0
+      }
+    }
+  ],
+  "chunking_policy": {
+    "target_tokens": 512,
+    "overlap_tokens": 50,
+    "method": "heading-aware",
+    "chunk_examples": [
+      {
+        "chunk_id": "file:09-2024::chunk-001",
+        "section_id": "file:09-2024::sec-1-short-title",
+        "text_snippet": "This Act may be cited as the Online Safety Act, No. 9 of 2024. The provisions of this Act shall apply where a person commits an offence under this Act in respect of a citizen of Sri Lanka, whether present within or outside Sri Lanka; a loss, damage or harm is caused within or outside Sri Lanka by commission of an offence under this Act to the State or person resident in Sri Lanka; or an offence, wherever committed, is committed by a citizen of Sri Lanka.",
+        "approx_tokens": 78
+      },
+      {
+        "chunk_id": "file:09-2024::chunk-002",
+        "section_id": "file:09-2024::sec-3-objectives",
+        "text_snippet": "The objectives of this Act are: (1) to protect persons against harm caused by communication of prohibited statements via online account or online location; (2) to ensure protection from statements in contempt of court or prejudicial to judicial authority and impartiality; (3) to detect, prevent and safeguard against misuse of accounts and bots; (4) to prevent financing, promotion and support of locations communicating prohibited statements.",
+        "approx_tokens": 68
+      },
+      {
+        "chunk_id": "file:09-2022::chunk-001",
+        "section_id": "file:09-2022::sec-5-lawful-processing",
+        "text_snippet": "The processing of personal data shall be lawful if a controller is in compliance with: (1) any condition in Schedule I; (2) any condition in Schedule II for special categories of personal data; (3) all conditions in Schedule III for consent-based processing; or (4) all conditions in Schedule IV for criminal investigation processing.",
+        "approx_tokens": 57
+      }
+    ]
+  },
+  "chunks": [
+    {
+      "chunk_id": "file:09-2024::chunk-001",
+      "source_file": "file:09-2024",
+      "section_id": "file:09-2024::sec-1-short-title",
+      "start_char": 0,
+      "end_char": 150,
+      "text": "This Act may be cited as the Online Safety Act, No. 9 of 2024. The provisions of this Act shall apply where a person commits an offence under this Act in respect of a citizen of Sri Lanka, whether present within or outside Sri Lanka.",
+      "approx_tokens": 42,
+      "tags": ["online-safety", "short-title", "application-scope"],
+      "embedding": null
+    },
+    {
+      "chunk_id": "file:09-2024::chunk-002",
+      "source_file": "file:09-2024",
+      "section_id": "file:09-2024::sec-3-objectives",
+      "start_char": 150,
+      "end_char": 500,
+      "text": "The objectives of this Act are: (1) to protect persons against harm caused by communication of prohibited statements via online account or online location; (2) to ensure protection from statements in contempt of court or prejudicial to judicial authority and impartiality; (3) to detect, prevent and safeguard against misuse of accounts and bots; (4) to prevent financing and support of locations repeatedly communicating prohibited statements in Sri Lanka.",
+      "approx_tokens": 68,
+      "tags": ["objectives", "public-policy", "online-harm", "judicial-protection"],
+      "embedding": null
+    },
+    {
+      "chunk_id": "file:09-2022::chunk-001",
+      "source_file": "file:09-2022",
+      "section_id": "file:09-2022::sec-5-lawful-processing",
+      "start_char": 0,
+      "end_char": 300,
+      "text": "The processing of personal data shall be lawful if a controller is in compliance with conditions specified in Schedule I for general data, Schedule II for special categories, Schedule III for consent-based processing, or Schedule IV for criminal investigation processing.",
+      "approx_tokens": 47,
+      "tags": ["lawful-processing", "controller-obligation", "compliance"],
+      "embedding": null
+    },
+    {
+      "chunk_id": "file:09-2022::chunk-002",
+      "source_file": "file:09-2022",
+      "section_id": "file:09-2022::sec-13-right-of-access",
+      "start_char": 300,
+      "end_char": 650,
+      "text": "Every data subject shall have the right to access personal data of such data subject and to be provided with confirmation as to whether personal data has been processed and information per Schedule V upon written request. Controllers must provide such information upon request, subject to section 17.",
+      "approx_tokens": 50,
+      "tags": ["data-subject-right", "right-of-access", "transparency"],
+      "embedding": null
+    },
+    {
+      "chunk_id": "file:24-2007::chunk-001",
+      "source_file": "file:24-2007",
+      "section_id": "file:24-2007::sec-3-unauthorized-access",
+      "start_char": 0,
+      "end_char": 400,
+      "text": "Any person who intentionally does any act to secure unauthorized access to any computer or information held therein, knowing or having reason to believe they lack lawful authority, commits an offence. Penalty: fine not exceeding 100,000 rupees or imprisonment not exceeding 5 years or both.",
+      "approx_tokens": 48,
+      "tags": ["unauthorized-access", "computer-crime", "prohibition", "penalty"],
+      "embedding": null
+    },
+    {
+      "chunk_id": "file:24-2007::chunk-002",
+      "source_file": "file:24-2007",
+      "section_id": "file:24-2007::sec-6-national-security",
+      "start_char": 400,
+      "end_char": 750,
+      "text": "Any person who intentionally causes a computer to perform a function resulting in danger or imminent danger to national security, national economy, or public order commits an offence. Penalty: imprisonment not exceeding 5 years. Certificate from relevant Ministry is prima facie evidence of such danger.",
+      "approx_tokens": 51,
+      "tags": ["national-security", "critical-infrastructure", "public-order"],
+      "embedding": null
+    },
+    {
+      "chunk_id": "file:39-2022::chunk-001",
+      "source_file": "file:39-2022",
+      "section_id": "file:39-2022::sec-1-short-title",
+      "start_char": 0,
+      "end_char": 300,
+      "text": "This Act may be cited as the Children and Young Persons (Amendment) Act, No. 39 of 2022. Provisions come into operation on dates appointed by the Minister via Gazette Order. Different dates may be appointed for different provisions.",
+      "approx_tokens": 38,
+      "tags": ["short-title", "amendment-act", "operative-date"],
+      "embedding": null
+    },
+    {
+      "chunk_id": "file:39-2022::chunk-002",
+      "source_file": "file:39-2022",
+      "section_id": "file:39-2022::sec-2-amendment-chapter-23",
+      "start_char": 300,
+      "end_char": 700,
+      "text": "Amendments to Chapter 23: (1) 'Children and Young Persons Ordinance' becomes 'Children's Ordinance'; (2) 'children and young persons' becomes 'children'; (3) 'child or young person' becomes 'child'; (4) age threshold changed from sixteen to eighteen years wherever such words appear in the principal enactment.",
+      "approx_tokens": 52,
+      "tags": ["legislative-amendment", "age-threshold-change", "child-protection"],
+      "embedding": null
+    }
+  ],
+  "search_blueprint": {
+    "fields": [
+      {
+        "name": "title",
+        "type": "text",
+        "facet": false
+      },
+      {
+        "name": "tags",
+        "type": "keyword",
+        "facet": true
+      },
+      {
+        "name": "jurisdiction",
+        "type": "keyword",
+        "facet": true
+      },
+      {
+        "name": "clause_type",
+        "type": "keyword",
+        "facet": true
+      },
+      {
+        "name": "text",
+        "type": "text",
+        "facet": false
+      },
+      {
+        "name": "section_id",
+        "type": "keyword",
+        "facet": false
+      },
+      {
+        "name": "file_id",
+        "type": "keyword",
+        "facet": true
+      },
+      {
+        "name": "created_date",
+        "type": "date",
+        "facet": true
+      },
+      {
+        "name": "entities",
+        "type": "keyword",
+        "facet": true
+      }
+    ],
+    "suggested_facets": [
+      "jurisdiction",
+      "tags",
+      "clause_type",
+      "file_id",
+      "created_date"
+    ]
+  },
+  "pipeline_suggestions": [
+    "Step 1: Normalize terminology - consolidate 'prohibition', 'restriction', 'must not' variants",
+    "Step 2: Cross-reference identification - link related definitions and clauses across files (e.g., 'child' definition differences between Act 39-2022 and standalone references)",
+    "Step 3: Chunk all sections using heading-aware method with 512-token target and 50-token overlap",
+    "Step 4: Generate embeddings using OpenAI 'text-embedding-3-large' or equivalent",
+    "Step 5: Index chunks in vector store with metadata: section_id, tags, entity_types, clause_type, created_date",
+    "Step 6: Enable faceted search on jurisdiction, clause_type, tags, file_id",
+    "Step 7: Validate all cross-references and internal links (Schedule I, II, III, IV, V references in PDPA)"
+  ],
+  "warnings": [
+    "WARN-001: Online Safety Act (09-2024) contains extensive references to Schedules (not fully provided in raw text) - 'Schedule I-V' definitions should be validated separately",
+    "WARN-002: Personal Data Protection Act (09-2022) references multiple Schedules (I-V) with detailed conditions - complete schedules must be available for full compliance mapping",
+    "WARN-003: Computer Crime Act (24-2007) references Code of Criminal Procedure Act, No. 15 of 1979 - external dependency not provided; cross-link validation needed",
+    "WARN-004: Children Amendment Act (39-2022) is amendment only - principal enactment (Chapter 23) not provided; full applicability map cannot be verified",
+    "WARN-005: Age definition inconsistency detected: Chapter 23 amended from 16 to 18 years; verify if other legislation updated correspondingly",
+    "WARN-006: Multiple references to 'written law' without specific list - a comprehensive index of referenced legislation (Penal Code Chapter 19, etc.) should be compiled",
+    "WARN-007: Definition extraction incomplete - 28 definitions in PDPA (09-2022) present but not all sections captured in provided content",
+    "WARN-008: Online Safety Act contains phrase 'sccure' (line 4 of Explanation 2) - likely typo for 'secure'; recommend validation",
+    "WARN-009: PDPA Sections 29, 30, 31 mentioned but minimal content provided - full sections recommended for completeness",
+    "WARN-010: Computer Crime Act references to 'appointed date' (operative date not specified in provided content)"
+  ]
+}

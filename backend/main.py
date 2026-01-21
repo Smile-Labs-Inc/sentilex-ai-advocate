@@ -6,9 +6,15 @@ import os
 from dotenv import load_dotenv
 from typing import Optional, Union, Dict, Any
 import traceback
+from contextlib import asynccontextmanager
+from database.config import check_db_connection, Base, engine
+
 
 from schemas.messages import UserQuery, SynthesizerOutput, RefusalOutput
 from chains import invoke_chain
+
+from routers import lawyers
+
 
 # Import OpenAI exceptions for better error handling
 try:
@@ -21,11 +27,30 @@ except ImportError:
 
 load_dotenv()
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # --- Startup Logic ---
+    print("Checking database connection...")
+    if check_db_connection():
+        # Create tables if they don't exist
+        Base.metadata.create_all(bind=engine)
+        print("Database is online and tables verified.")
+    else:
+        print("CRITICAL: Database connection failed.")
+    yield  # The app runs while this is held
+
+    # --- Shutdown Logic (Optional) ---
+    print("Shutting down...")
+
+# Pass the lifespan to the FastAPI constructor
 app = FastAPI(
     title="Sentilex AI Advocate Backend",
     description="Backend for the legally-compliant, forensically-secure AI system.",
-    version="0.1.0"
+    version="0.1.0",
+    lifespan=lifespan
 )
+
+app.include_router(lawyers.router)
 
 # CORS Configuration
 origins = [

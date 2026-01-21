@@ -17,7 +17,7 @@ from typing import Dict, Any
 from datetime import datetime
 from langchain_core.runnables import Runnable, RunnableLambda
 
-from mcp_client import get_mcp_client, MCPClientError
+from mcp_server.mcp_client import get_mcp_client, MCPClientError
 from schemas.messages import PlannerOutput, ResearchOutput
 
 
