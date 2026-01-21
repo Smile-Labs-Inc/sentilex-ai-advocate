@@ -1,10 +1,17 @@
 backend/.env
-backend/mcp/__pycache__/server.cpython-313.pyc
 backend/venv/
 .venv/
+<<<<<<< HEAD
+__pycache__/
+*.py[co]
+*$py.class
+*.so
+.Python
+=======
 /backend/agents/__pycache__
 /backend/agents/__pycache__
 /backend/agents/__pycache__
 /backend/mcp_server/__pycache__
 /backend/chains/__pycache__
 backend/project_idea.md
+>>>>>>> origin/main
