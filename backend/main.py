@@ -40,7 +40,7 @@ async def lifespan(app: FastAPI):
     yield  # The app runs while this is held
 
     # --- Shutdown Logic (Optional) ---
-    print("Shutting down...")
+    # print("Shutting down...")
 
 # Pass the lifespan to the FastAPI constructor
 app = FastAPI(
