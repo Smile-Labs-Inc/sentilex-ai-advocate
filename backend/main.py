@@ -14,6 +14,10 @@ from schemas.messages import UserQuery, SynthesizerOutput, RefusalOutput
 from chains import invoke_chain
 
 from routers import lawyers
+from routers import google_oauth
+from routers import auth
+
+
 
 
 # Import OpenAI exceptions for better error handling
@@ -51,6 +55,9 @@ app = FastAPI(
 )
 
 app.include_router(lawyers.router)
+app.include_router(auth.router)
+app.include_router(google_oauth.router)
+
 
 # CORS Configuration
 origins = [
