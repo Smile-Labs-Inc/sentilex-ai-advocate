@@ -1,11 +1,5 @@
-from sqlalchemy import Column, Integer, String, Enum, DECIMAL, TIMESTAMP
+from sqlalchemy import Column, Integer, String, DECIMAL, TIMESTAMP
 from database.config import Base
-import enum
-
-class AvailabilityEnum(enum.Enum):
-    Available = "Available"
-    InConsultation = "In Consultation"
-    Offline = "Offline"
 
 class Lawyer(Base):
     __tablename__ = "lawyers"
@@ -17,7 +11,7 @@ class Lawyer(Base):
     email = Column(String(100), unique=True, nullable=False)
     phone = Column(String(20), nullable=False)
     district = Column(String(50), nullable=False)
-    availability = Column(Enum(AvailabilityEnum), default=AvailabilityEnum.Available)
+    availability = Column(String(50), default="Available")
     rating = Column(DECIMAL(2,1), default=0.0)
     reviews_count = Column(Integer, default=0)
     created_at = Column(TIMESTAMP)
