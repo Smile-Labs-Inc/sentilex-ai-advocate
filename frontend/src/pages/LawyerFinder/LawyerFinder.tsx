@@ -11,28 +11,13 @@ import { Icon } from "../../components/atoms/Icon/Icon";
 import { Input } from "../../components/atoms/Input/Input";
 import { Badge } from "../../components/atoms/Badge/Badge";
 import type { User, NavItem } from "../../types";
+import { fetchLawyers, type Lawyer } from "../../services/lawyers";
 
 export interface LawyerFinderPageProps {
   user: User;
   onNavigate: (item: NavItem) => void;
   onBack: () => void;
 }
-
-interface Lawyer {
-  id: number;
-  name: string;
-  specialties: string;
-  rating: number;
-  reviews_count: number;
-  availability: string;
-  experience_years: number;
-  email: string;
-  phone: string;
-  district: string;
-}
-
-// API endpoint
-const API_BASE_URL = "http://127.0.0.1:8001";
 
 const availabilityConfig: Record<
   string,
@@ -70,23 +55,12 @@ export function LawyerFinderPage({
 
   // Fetch lawyers from the backend
   useEffect(() => {
-    const fetchLawyers = async () => {
+    const loadLawyers = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const url = new URL(`${API_BASE_URL}/lawyers/`);
-        if (selectedSpecialization && selectedSpecialization !== "All") {
-          url.searchParams.append("specialty", selectedSpecialization);
-        }
-
-        const response = await fetch(url.toString());
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch lawyers: ${response.statusText}`);
-        }
-
-        const data = await response.json();
+        const data = await fetchLawyers(selectedSpecialization || undefined);
         setLawyers(data);
       } catch (err) {
         setError(
@@ -98,7 +72,7 @@ export function LawyerFinderPage({
       }
     };
 
-    fetchLawyers();
+    loadLawyers();
   }, [selectedSpecialization]);
 
   // Get unique specializations from all lawyers
