@@ -5,13 +5,14 @@ import os
 from dotenv import load_dotenv
 from urllib.parse import quote_plus
 
+# Load environment variables from .env file
 load_dotenv()
 
 DB_USER = os.getenv("DB_USER", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "3306")
-DB_NAME = os.getenv("DB_NAME", "sentilex_db")
+DB_NAME = os.getenv("DB_NAME", "sentilex")
 DB_DRIVER = os.getenv("DB_DRIVER", "mysql+pymysql")
 
 DATABASE_URL = f"{DB_DRIVER}://{DB_USER}:{quote_plus(DB_PASSWORD)}@{DB_HOST}:{DB_PORT}/{DB_NAME}"

@@ -1,20 +1,25 @@
 import { useEffect } from 'preact/hooks';
+import ReactMarkdown from 'react-markdown';
 import { cn } from '../../../lib/utils';
-import { Button } from '../../atoms/Button/Button';
 import { Icon } from '../../atoms/Icon/Icon';
-import type { LawbookChapter, Bookmark } from '../../../types';
-import type { IconName } from '../../atoms/Icon/Icon';
+import type { Bookmark } from '../../../types';
 
 export interface LawbookViewerProps {
-    chapter: LawbookChapter;
+    lawId: string;
+    lawTitle: string;
+    markdownContent: string;
+    isLoading: boolean;
     activeSectionId?: string;
     bookmarks: Bookmark[];
-    onToggleBookmark: (chapterId: string, sectionId: string, title: string) => void;
+    onToggleBookmark: (lawId: string, sectionId: string, title: string) => void;
     className?: string;
 }
 
 export function LawbookViewer({
-    chapter,
+    lawId,
+    lawTitle,
+    markdownContent,
+    isLoading,
     activeSectionId,
     bookmarks,
     onToggleBookmark,
@@ -31,97 +36,56 @@ export function LawbookViewer({
         }
     }, [activeSectionId]);
 
-    const isBookmarked = (sectionId: string) => {
-        return bookmarks.some(b => b.chapterId === chapter.id && b.sectionId === sectionId);
-    };
-
     return (
         <div className={cn('flex flex-col h-full overflow-y-auto px-8 py-6', className)}>
-            {/* Chapter Header */}
+            {/* Law Header */}
             <div className="mb-8 border-b border-border pb-6">
                 <div className="flex items-center gap-3 mb-2">
                     <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                        <Icon name={(chapter.icon as IconName) || 'BookOpen'} size="md" />
+                        <Icon name="BookOpen" size="md" />
                     </div>
                     <span className="text-xs font-semibold text-primary uppercase tracking-widest">
-                        Chapter
+                        Law Document
                     </span>
                 </div>
                 <h1 className="text-3xl font-bold text-foreground font-['Space_Grotesk']">
-                    {chapter.title}
+                    {lawTitle}
                 </h1>
             </div>
 
-            {/* Sections */}
-            <div className="space-y-12 pb-20">
-                {chapter.sections.map((section) => (
-                    <div
-                        key={section.id}
-                        id={section.id}
-                        className="group relative scroll-mt-24" // scroll margin for sticky headers
-                    >
-                        {/* Section Actions (Bookmark) */}
-                        <div className="absolute -left-12 top-0 opacity-0 group-hover:opacity-100 transition-opacity hidden lg:block">
-                            <Button
-                                size="icon"
-                                variant="ghost"
-                                className={cn(
-                                    "hover:bg-accent",
-                                    isBookmarked(section.id) ? "text-yellow-500" : "text-muted-foreground"
-                                )}
-                                onClick={() => onToggleBookmark(chapter.id, section.id, section.title)}
-                                title={isBookmarked(section.id) ? "Remove Bookmark" : "Bookmark this section"}
-                            >
-                                <Icon name="Bookmark" size="sm" className={isBookmarked(section.id) ? "fill-current" : ""} />
-                            </Button>
-                        </div>
-
-                        {/* Mobile bookmark button (visible always or simplistic) */}
-                        <div className="lg:hidden flex justify-end mb-2">
-                            <Button
-                                size="sm"
-                                variant="ghost"
-                                className={cn("gap-2", isBookmarked(section.id) ? "text-yellow-500" : "text-muted-foreground")}
-                                onClick={() => onToggleBookmark(chapter.id, section.id, section.title)}
-                            >
-                                <Icon name="Bookmark" size="xs" className={isBookmarked(section.id) ? "fill-current" : ""} />
-                                {isBookmarked(section.id) ? "Bookmarked" : "Bookmark"}
-                            </Button>
-                        </div>
-
-                        {/* Content Rendering */}
-                        <div className="prose prose-zinc dark:prose-invert max-w-none">
-                            {/* 
-                                Since we don't have a markdown parser installed yet, 
-                                we'll use a simple strategy to render the text content 
-                                preserving whitespace and basic structure.
-                            */}
-                            <div className="whitespace-pre-wrap font-sans text-base leading-relaxed text-muted-foreground">
-                                {section.content.split('\n').map((line, i) => {
-                                    // Ultra-simple "markdown" styling
-                                    if (line.trim().startsWith('# ')) {
-                                        return <h2 key={i} className="text-2xl font-bold text-foreground mt-6 mb-4">{line.replace('# ', '')}</h2>;
-                                    }
-                                    if (line.trim().startsWith('## ')) {
-                                        return <h3 key={i} className="text-xl font-bold text-foreground mt-5 mb-3">{line.replace('## ', '')}</h3>;
-                                    }
-                                    if (line.trim().startsWith('### ')) {
-                                        return <h4 key={i} className="text-lg font-semibold text-foreground mt-4 mb-2">{line.replace('### ', '')}</h4>;
-                                    }
-                                    if (line.trim().startsWith('- ')) {
-                                        return <li key={i} className="ml-4 list-disc marker:text-primary">{line.replace('- ', '')}</li>;
-                                    }
-                                    if (line.trim().startsWith('**') && line.trim().endsWith('**')) {
-                                        // Very rough bold handling for full lines
-                                        return <p key={i} className="font-bold text-foreground my-2">{line.replace(/\*\*/g, '')}</p>;
-                                    }
-
-                                    return <p key={i} className="mb-2">{line}</p>;
-                                })}
-                            </div>
-                        </div>
+            {/* Content */}
+            <div className="space-y-6 pb-20">
+                {isLoading ? (
+                    <div className="text-center text-muted-foreground py-8">
+                        Loading content...
                     </div>
-                ))}
+                ) : (
+                    <div className="prose prose-zinc dark:prose-invert max-w-none text-foreground">
+                        <ReactMarkdown
+                            components={{
+                                h1: ({ node, ...props }) => <h1 className="text-3xl font-bold text-foreground mt-8 mb-4" {...props} />,
+                                h2: ({ node, ...props }) => <h2 className="text-2xl font-bold text-foreground mt-6 mb-3" {...props} />,
+                                h3: ({ node, ...props }) => <h3 className="text-xl font-semibold text-foreground mt-5 mb-2" {...props} />,
+                                h4: ({ node, ...props }) => <h4 className="text-lg font-semibold text-foreground mt-4 mb-2" {...props} />,
+                                p: ({ node, ...props }) => <p className="text-muted-foreground mb-3 leading-relaxed" {...props} />,
+                                ul: ({ node, ...props }) => <ul className="list-disc ml-6 mb-3 text-muted-foreground" {...props} />,
+                                ol: ({ node, ...props }) => <ol className="list-decimal ml-6 mb-3 text-muted-foreground" {...props} />,
+                                li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                                strong: ({ node, ...props }) => <strong className="font-bold text-foreground" {...props} />,
+                                em: ({ node, ...props }) => <em className="italic" {...props} />,
+                                code: ({ node, ...props }) => <code className="bg-accent px-1.5 py-0.5 rounded text-sm font-mono" {...props} />,
+                                pre: ({ node, ...props }) => <pre className="bg-accent p-4 rounded-lg overflow-x-auto mb-4" {...props} />,
+                                blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-primary pl-4 italic my-4" {...props} />,
+                                a: ({ node, ...props }) => <a className="text-primary hover:underline" {...props} />,
+                                table: ({ node, ...props }) => <table className="border-collapse border border-border w-full my-4" {...props} />,
+                                th: ({ node, ...props }) => <th className="border border-border px-4 py-2 bg-accent font-semibold text-left" {...props} />,
+                                td: ({ node, ...props }) => <td className="border border-border px-4 py-2" {...props} />,
+                            }}
+                        >
+                            {markdownContent}
+                        </ReactMarkdown>
+                    </div>
+                )}
             </div>
         </div>
     );

@@ -14,6 +14,11 @@ from schemas.messages import UserQuery, SynthesizerOutput, RefusalOutput
 from chains import invoke_chain
 
 from routers import lawyers
+from routers import google_oauth
+from routers import auth
+from routers import lawbook
+
+
 
 
 # Import OpenAI exceptions for better error handling
@@ -40,7 +45,7 @@ async def lifespan(app: FastAPI):
     yield  # The app runs while this is held
 
     # --- Shutdown Logic (Optional) ---
-    print("Shutting down...")
+    # print("Shutting down...")
 
 # Pass the lifespan to the FastAPI constructor
 app = FastAPI(
@@ -51,6 +56,10 @@ app = FastAPI(
 )
 
 app.include_router(lawyers.router)
+app.include_router(auth.router)
+app.include_router(google_oauth.router)
+app.include_router(lawbook.router)
+
 
 # CORS Configuration
 origins = [
@@ -76,109 +85,6 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
-
-
-class QueryRequest(BaseModel):
-    question: str
-    case_context: Optional[str] = None
-
-
-@app.post("/query")
-async def submit_query(request: QueryRequest):
-    """
-    Submit a legal query to the multi-agent system.
-
-    This endpoint processes the query through:
-    1. Planner - Determines execution flow
-    2. Research - Retrieves legal sources
-    3. Reasoning - Applies legal reasoning
-    4. Validation - Checks for errors
-    5. Synthesizer - Formats final output
-    """
-    try:
-        # Create UserQuery
-        user_query = UserQuery(
-            question=request.question,
-            case_context=request.case_context or ""
-        )
-
-        # Invoke the multi-agent chain
-        result = invoke_chain(user_query)
-
-        # Format response based on result type
-        if isinstance(result, SynthesizerOutput):
-            return {
-                "status": "success",
-                "response": result.response,
-                "confidence_note": result.confidence_note,
-                "disclaimer": result.disclaimer,
-                "citations": [
-                    {
-                        "law_name": source.law_name,
-                        "section": source.section,
-                        "text": source.text
-                    }
-                    for source in result.citations
-                ]
-            }
-        elif isinstance(result, RefusalOutput):
-            return {
-                "status": "refused",
-                "reason": result.reason,
-                "issues": [
-                    {
-                        "severity": issue.severity,
-                        "type": issue.type,
-                        "message": issue.message
-                    }
-                    for issue in result.issues
-                ]
-            }
-    except RateLimitError as e:
-        error_detail = str(e)
-        print(f"OpenAI Rate Limit Error: {error_detail}")
-        raise HTTPException(
-            status_code=429,
-            detail={
-                "error": "OpenAI API quota exceeded",
-                "message": "The OpenAI API key has exceeded its quota. Please check your billing details at https://platform.openai.com/account/billing",
-                "type": "rate_limit_error"
-            }
-        )
-    except AuthenticationError as e:
-        error_detail = str(e)
-        print(f"OpenAI Authentication Error: {error_detail}")
-        raise HTTPException(
-            status_code=401,
-            detail={
-                "error": "OpenAI authentication failed",
-                "message": "Invalid OpenAI API key. Please check your .env file.",
-                "type": "authentication_error"
-            }
-        )
-    except APIError as e:
-        error_detail = str(e)
-        print(f"OpenAI API Error: {error_detail}")
-        raise HTTPException(
-            status_code=502,
-            detail={
-                "error": "OpenAI API error",
-                "message": f"The OpenAI API returned an error: {str(e)}",
-                "type": "api_error"
-            }
-        )
-    except Exception as e:
-        error_detail = traceback.format_exc()
-        print(f"Error in /query endpoint: {error_detail}")
-        raise HTTPException(
-            status_code=500,
-            detail={
-                "error": "Internal server error",
-                "message": str(e),
-                "type": "unknown_error"
-            }
-        )
-
 
 def main():
     uvicorn.run("main:app", host="127.0.0.1", port=8001, reload=True)
