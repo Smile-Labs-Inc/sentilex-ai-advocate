@@ -1,5 +1,12 @@
-from sqlalchemy import Column, Integer, String, DECIMAL, TIMESTAMP
+from sqlalchemy import Column, Integer, String, DECIMAL, TIMESTAMP, Boolean, Text, Enum, func
 from database.config import Base
+import enum
+
+class VerificationStatusEnum(enum.Enum):
+    not_started = "not_started"
+    pending = "pending"
+    approved = "approved"
+    rejected = "rejected"
 
 class Lawyer(Base):
     __tablename__ = "lawyers"

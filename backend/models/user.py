@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, Enum, TIMESTAMP
+from sqlalchemy.orm import relationship
 from database import Base
 
 class User(Base):
@@ -17,7 +18,7 @@ class User(Base):
     oauth_id = Column(String(255), nullable=True)        # Google sub ID
 
     # Role & Status
-    role = Column(Enum("user", "lawyer", "admin"), default="user")
+    role = Column(Enum("user", "lawyer", "admin", name="user_role"), default="user")
     is_active = Column(Boolean, default=True)
     email_verified = Column(Boolean, default=False)
 
@@ -29,3 +30,6 @@ class User(Base):
     # Preferences
     preferred_language = Column(Enum("si", "ta", "en"), default="en")
     district = Column(String(50))
+
+    # Relationships
+    lawyer_profile = relationship("Lawyer", back_populates="user", uselist=False)

@@ -4,6 +4,7 @@ from database import get_db
 from models.user import User
 from utils.auth import create_access_token
 from utils.google_oauth import oauth
+from fastapi.exceptions import HTTPException
 
 router = APIRouter(prefix="/auth/google", tags=["Google Auth"])
 

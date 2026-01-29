@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-from routers import lawyers, lawyer_verification, legal_queries
+from routers import lawyers, lawyer_verification, legal_queries, auth
 from mcp_server.mcp_client import get_mcp_client
 
 
@@ -38,6 +38,7 @@ app.add_middleware(
 app.include_router(lawyers.router)
 app.include_router(lawyer_verification.router)
 app.include_router(legal_queries.router)
+app.include_router(auth.router)
 
 
 # Response models
