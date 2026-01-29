@@ -1,18 +1,29 @@
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import { DashboardLayout } from '../../components/templates/DashboardLayout/DashboardLayout';
 import { LawbookViewer } from '../../components/organisms/LawbookViewer/LawbookViewer';
 import { LawbookChat } from '../../components/organisms/LawbookChat/LawbookChat';
-import { LawbookSidebarItem } from '../../components/molecules/LawbookSidebarItem/LawbookSidebarItem';
-import { mockLawbookData } from '../../data/mockLawbook';
 import { mockUser } from '../../data/mockData';
 import type { NavItem, Bookmark, ChatMessage } from '../../types';
+
+// Backend API URL
+const API_BASE_URL = 'http://localhost:8001';
+
+interface Law {
+    id: string;
+    title: string;
+    filename: string;
+}
 
 export interface LawbookPageProps {
     onNavigate?: (item: NavItem) => void;
 }
 
 export function LawbookPage({ onNavigate }: LawbookPageProps) {
-    const [activeChapterId, setActiveChapterId] = useState(mockLawbookData[0].id);
+    const [laws, setLaws] = useState<Law[]>([]);
+    const [activeLawId, setActiveLawId] = useState<string | null>(null);
+    const [lawContent, setLawContent] = useState<string>('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [isContentLoading, setIsContentLoading] = useState(false);
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
         {
@@ -24,17 +35,59 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
     ]);
     const [isChatLoading, setIsChatLoading] = useState(false);
 
-    const activeChapter = mockLawbookData.find(c => c.id === activeChapterId) || mockLawbookData[0];
+    // Fetch list of laws on mount
+    useEffect(() => {
+        const fetchLaws = async () => {
+            try {
+                setIsLoading(true);
+                const response = await fetch(`${API_BASE_URL}/lawbook/`);
+                const data = await response.json();
+                setLaws(data.laws);
 
-    const handleToggleBookmark = (chapterId: string, sectionId: string, title: string) => {
+                // Set first law as active by default
+                if (data.laws.length > 0) {
+                    setActiveLawId(data.laws[0].id);
+                }
+            } catch (error) {
+                console.error('Error fetching laws:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchLaws();
+    }, []);
+
+    // Fetch content when active law changes
+    useEffect(() => {
+        if (!activeLawId) return;
+
+        const fetchLawContent = async () => {
+            try {
+                setIsContentLoading(true);
+                const response = await fetch(`${API_BASE_URL}/lawbook/${activeLawId}`);
+                const data = await response.json();
+                setLawContent(data.content);
+            } catch (error) {
+                console.error('Error fetching law content:', error);
+                setLawContent('Error loading content. Please try again.');
+            } finally {
+                setIsContentLoading(false);
+            }
+        };
+
+        fetchLawContent();
+    }, [activeLawId]);
+
+    const handleToggleBookmark = (lawId: string, sectionId: string, title: string) => {
         setBookmarks(prev => {
-            const exists = prev.find(b => b.chapterId === chapterId && b.sectionId === sectionId);
+            const exists = prev.find(b => b.chapterId === lawId && b.sectionId === sectionId);
             if (exists) {
                 return prev.filter(b => b.id !== exists.id);
             } else {
                 return [...prev, {
                     id: `bm_${Math.random().toString(36).substr(2, 9)}`,
-                    chapterId,
+                    chapterId: lawId,
                     sectionId,
                     title,
                     createdAt: new Date()
@@ -82,14 +135,22 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
                             Table of Contents
                         </h2>
                         <div className="space-y-1 flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                            {mockLawbookData.map(chapter => (
-                                <LawbookSidebarItem
-                                    key={chapter.id}
-                                    chapter={chapter}
-                                    isActive={chapter.id === activeChapterId}
-                                    onClick={() => setActiveChapterId(chapter.id)}
-                                />
-                            ))}
+                            {isLoading ? (
+                                <div className="text-center text-muted-foreground py-4">Loading laws...</div>
+                            ) : (
+                                laws.map(law => (
+                                    <button
+                                        key={law.id}
+                                        onClick={() => setActiveLawId(law.id)}
+                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${law.id === activeLawId
+                                            ? 'bg-primary/20 text-primary font-semibold'
+                                            : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                                            }`}
+                                    >
+                                        {law.title}
+                                    </button>
+                                ))
+                            )}
                         </div>
 
                         {/* Bookmarks Section */}
@@ -103,7 +164,7 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
                                         <button
                                             key={bm.id}
                                             onClick={() => {
-                                                setActiveChapterId(bm.chapterId);
+                                                setActiveLawId(bm.chapterId);
                                                 // Ideally scroll to section
                                             }}
                                             className="w-full text-left px-3 py-2 rounded-lg text-xs bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 transition-colors truncate"
@@ -120,7 +181,10 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
                 {/* Center: Content Viewer (50%) */}
                 <div className="flex-1 lg:w-2/4 bg-card border border-border rounded-xl shadow-lg relative overflow-hidden flex flex-col">
                     <LawbookViewer
-                        chapter={activeChapter}
+                        lawId={activeLawId || ''}
+                        lawTitle={laws.find(l => l.id === activeLawId)?.title || ''}
+                        markdownContent={lawContent}
+                        isLoading={isContentLoading}
                         bookmarks={bookmarks}
                         onToggleBookmark={handleToggleBookmark}
                     />

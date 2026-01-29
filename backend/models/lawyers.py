@@ -1,5 +1,18 @@
-from sqlalchemy import Column, Integer, String, DECIMAL, TIMESTAMP
+from sqlalchemy import Column, Integer, String, DECIMAL, TIMESTAMP, Boolean, Text, Enum, func
+import enum
 from database.config import Base
+
+class AvailabilityEnum(str, enum.Enum):
+    AVAILABLE = "Available"
+    BUSY = "Busy"
+    OFFLINE = "Offline"
+
+class VerificationStatusEnum(str, enum.Enum):
+    not_started = "not_started"
+    submitted = "submitted"
+    in_progress = "in_progress"
+    approved = "approved"
+    rejected = "rejected"
 
 class Lawyer(Base):
     __tablename__ = "lawyers"

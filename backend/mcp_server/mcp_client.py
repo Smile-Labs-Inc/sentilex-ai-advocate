@@ -24,6 +24,7 @@ except ImportError:
         sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
         from mcp_server.server import indexer
 
+
 logger = logging.getLogger(__name__)
 
 class MCPClientError(Exception):
