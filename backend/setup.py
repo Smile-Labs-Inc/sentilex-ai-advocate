@@ -100,6 +100,8 @@ def create_directories():
     directories = [
         "logs",
         "data",
+        "data/index",
+        "alembic/versions",
     ]
 
     for directory in directories:
@@ -117,12 +119,22 @@ def verify_structure():
 
     required_files = [
         "app.py",
+        "config.py",
         "requirements.txt",
+        "alembic.ini",
         "agents/__init__.py",
         "chains/__init__.py",
         "schemas/__init__.py",
-        "mcp_client/__init__.py",
+        "models/lawyers.py",
+        "models/lawyerverificationaudit.py",
+        "routers/lawyers.py",
+        "routers/lawyer_verification.py",
+        "routers/legal_queries.py",
+        "mcp_server/mcp_client.py",
         "audit_logging/__init__.py",
+        "auth/dependencies.py",
+        "database/config.py",
+        "alembic/env.py",
     ]
 
     all_good = True
@@ -141,24 +153,32 @@ def print_next_steps():
     print_header("Setup Complete!")
 
     print("""
-Next Steps:
+Next Steps:environment (.env):
+   ✓ OpenAI API key (required for LLM agents)
+   ✓ Database credentials (MySQL/MariaDB)
+   ✓ S3/MinIO configuration (for document storage)
 
-1. Configure your OpenAI API key:
-   - Open .env file
-   - Replace 'your_openai_api_key_here' with your actual key
-   - Get a key from: https://platform.openai.com/api-keys
+2. Setup database:
+   - Create database: CREATE DATABASE sentilex;
+   - Run migrations: alembic upgrade head
+   - See: DATABASE_SETUP.md for detailed instructions
 
-2. (Optional) Configure MCP service:
-   - Set MCP_HOST and MCP_PORT in .env if not using localhost:3000
-   - Ensure MCP service is running
+3. (Optional) Configure MinIO (local development):
+   - Download MinIO from https://min.io/download
+   - Start: minio server ~/minio-data
+   - Access console: http://localhost:9001
+   - Create bucket: lawyer-verification
 
-3. Run the system:
+4. Run the system:
    - Start server: python app.py
-   - Run tests: python test_system.py
    - API docs: http://localhost:8000/docs
+   - ReDoc: http://localhost:8000/redoc
 
-4. Read the documentation:
-   - Architecture: ARCHITECTURE.md
+5. Read the documentation:
+   - Database Setup: DATABASE_SETUP.md
+   - Migration Guide: MIGRATION_GUIDE.md
+   - Architecture: docs/ARCHITECTURE.md
+   - Quick Start: docs/QUICKSTART
    - README: README.md
    - System diagram: SYSTEM_DIAGRAM.md
 
