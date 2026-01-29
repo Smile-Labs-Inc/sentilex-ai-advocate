@@ -9,13 +9,19 @@ from alembic import context
 from database.config import Base, DATABASE_URL
 from models.lawyers import Lawyer
 from models.lawyerverificationaudit import LawyerVerificationAudit
+from models.admin import Admin
+from models.token_blacklist import TokenBlacklist
+from models.login_attempt import LoginAttempt
+from models.active_session import ActiveSession
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
 # Set the SQLAlchemy URL from your database config
-config.set_main_option('sqlalchemy.url', DATABASE_URL)
+# Escape % characters for Alembic's interpolation by doubling them
+database_url = DATABASE_URL.replace('%', '%%')
+config.set_main_option('sqlalchemy.url', database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

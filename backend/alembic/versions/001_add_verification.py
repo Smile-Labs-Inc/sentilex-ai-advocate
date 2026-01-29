@@ -11,20 +11,21 @@ from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
 revision = '001_add_verification'
-down_revision = None
+down_revision = '000_initial'
 branch_labels = None
 depends_on = None
 
 
 def upgrade() -> None:
-    # Create verification status enum (MySQL uses VARCHAR with CHECK constraint or ENUM type)
-    # For MySQL, we'll use ENUM type directly in the column definition
+    # Create ENUM types for PostgreSQL
+    verification_status_enum = sa.Enum('not_started', 'in_progress', 'submitted', 'approved', 'rejected', 
+                                       name='verificationstatusenum', create_type=True)
+    verification_status_enum.create(op.get_bind(), checkfirst=True)
     
     # Add verification columns to lawyers table
     op.add_column('lawyers', sa.Column('verification_step', sa.Integer(), nullable=False, server_default='1'))
     op.add_column('lawyers', sa.Column('verification_status', 
-                                       sa.Enum('not_started', 'in_progress', 'submitted', 'approved', 'rejected', 
-                                               name='verificationstatusenum'),
+                                       verification_status_enum,
                                        nullable=False, server_default='not_started'))
     op.add_column('lawyers', sa.Column('verification_submitted_at', sa.TIMESTAMP(), nullable=True))
     op.add_column('lawyers', sa.Column('verification_updated_at', sa.TIMESTAMP(), nullable=True))

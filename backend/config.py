@@ -48,6 +48,47 @@ class Settings:
     LANGCHAIN_TRACING_V2: bool = os.getenv("LANGCHAIN_TRACING_V2", "false").lower() in ("1", "true", "yes")
     LANGCHAIN_API_KEY: str = os.getenv("LANGCHAIN_API_KEY", "")
     LANGCHAIN_PROJECT: str = os.getenv("LANGCHAIN_PROJECT", "sentilex-ai-advocate")
+    
+    # JWT Authentication
+    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "dev-secret-key-change-in-production")
+    JWT_ALGORITHM: str = os.getenv("JWT_ALGORITHM", "HS256")
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+    JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("JWT_REFRESH_TOKEN_EXPIRE_DAYS", "30"))
+    
+    # Password Security
+    PASSWORD_MIN_LENGTH: int = int(os.getenv("PASSWORD_MIN_LENGTH", "12"))
+    PASSWORD_REQUIRE_SPECIAL: bool = os.getenv("PASSWORD_REQUIRE_SPECIAL", "true").lower() in ("1", "true", "yes")
+    PASSWORD_REQUIRE_UPPERCASE: bool = os.getenv("PASSWORD_REQUIRE_UPPERCASE", "true").lower() in ("1", "true", "yes")
+    PASSWORD_REQUIRE_NUMBER: bool = os.getenv("PASSWORD_REQUIRE_NUMBER", "true").lower() in ("1", "true", "yes")
+    PASSWORD_HISTORY_COUNT: int = int(os.getenv("PASSWORD_HISTORY_COUNT", "5"))
+    
+    # Account Security
+    MAX_LOGIN_ATTEMPTS: int = int(os.getenv("MAX_LOGIN_ATTEMPTS", "5"))
+    ACCOUNT_LOCKOUT_DURATION_MINUTES: int = int(os.getenv("ACCOUNT_LOCKOUT_DURATION_MINUTES", "30"))
+    SESSION_TIMEOUT_MINUTES: int = int(os.getenv("SESSION_TIMEOUT_MINUTES", "60"))
+    MAX_CONCURRENT_SESSIONS: int = int(os.getenv("MAX_CONCURRENT_SESSIONS", "3"))
+    MAX_CONCURRENT_SESSIONS_LAWYER: int = int(os.getenv("MAX_CONCURRENT_SESSIONS_LAWYER", "5"))
+    
+    # Email Configuration
+    SMTP_HOST: str = os.getenv("SMTP_HOST", "smtp.gmail.com")
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
+    SMTP_USER: str = os.getenv("SMTP_USER", "")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
+    SMTP_USE_TLS: bool = os.getenv("SMTP_USE_TLS", "true").lower() in ("1", "true", "yes")
+    EMAIL_FROM: str = os.getenv("EMAIL_FROM", "noreply@sentilex.lk")
+    EMAIL_FROM_NAME: str = os.getenv("EMAIL_FROM_NAME", "SentiLex AI Advocate")
+    
+    # Multi-Factor Authentication
+    MFA_ISSUER_NAME: str = os.getenv("MFA_ISSUER_NAME", "SentiLex")
+    MFA_BACKUP_CODES_COUNT: int = int(os.getenv("MFA_BACKUP_CODES_COUNT", "10"))
+    MFA_MANDATORY_FOR_ADMINS: bool = os.getenv("MFA_MANDATORY_FOR_ADMINS", "true").lower() in ("1", "true", "yes")
+    
+    # Security Settings
+    ALLOWED_HOSTS: list = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    ENABLE_HTTPS_REDIRECT: bool = os.getenv("ENABLE_HTTPS_REDIRECT", "false").lower() in ("1", "true", "yes")
+    CORS_ORIGINS: list = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",")
+    ENABLE_RATE_LIMITING: bool = os.getenv("ENABLE_RATE_LIMITING", "true").lower() in ("1", "true", "yes")
+    RATE_LIMIT_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "60"))
 
 
 # Singleton instance

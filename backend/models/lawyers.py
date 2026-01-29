@@ -18,17 +18,48 @@ class VerificationStatusEnum(enum.Enum):
 class Lawyer(Base):
     __tablename__ = "lawyers"
 
+    # Primary Information
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     specialties = Column(String(255), nullable=False)
     experience_years = Column(Integer, nullable=False)
-    email = Column(String(100), unique=True, nullable=False)
+    email = Column(String(100), unique=True, nullable=False, index=True)
     phone = Column(String(20), nullable=False)
     district = Column(String(50), nullable=False)
     availability = Column(Enum(AvailabilityEnum), default=AvailabilityEnum.Available)
     rating = Column(DECIMAL(2,1), default=0.0)
     reviews_count = Column(Integer, default=0)
-    created_at = Column(TIMESTAMP)
+    created_at = Column(TIMESTAMP, default=func.now())
+    
+    # Authentication & Security
+    password_hash = Column(String(255), nullable=True)  # Nullable for migration, make required later
+    is_active = Column(Boolean, default=True, nullable=False)
+    is_email_verified = Column(Boolean, default=False, nullable=False)
+    email_verification_token = Column(String(255), nullable=True)
+    email_verification_sent_at = Column(TIMESTAMP, nullable=True)
+    
+    # Password Security
+    password_reset_token = Column(String(255), nullable=True)
+    password_reset_expires = Column(TIMESTAMP, nullable=True)
+    password_changed_at = Column(TIMESTAMP, nullable=True)
+    password_history = Column(Text, nullable=True)  # JSON array of last 5 password hashes
+    
+    # Login Security
+    last_login = Column(TIMESTAMP, nullable=True)
+    last_login_ip = Column(String(45), nullable=True)  # IPv6 support
+    last_login_user_agent = Column(Text, nullable=True)
+    failed_login_attempts = Column(Integer, default=0, nullable=False)
+    locked_until = Column(TIMESTAMP, nullable=True)
+    
+    # Multi-Factor Authentication (Optional for lawyers)
+    mfa_enabled = Column(Boolean, default=False, nullable=False)
+    mfa_secret = Column(String(32), nullable=True)  # TOTP secret
+    mfa_backup_codes = Column(Text, nullable=True)  # Encrypted JSON array of backup codes
+    mfa_enabled_at = Column(TIMESTAMP, nullable=True)
+    
+    # Session Management
+    active_sessions = Column(Integer, default=0, nullable=False)
+    max_concurrent_sessions = Column(Integer, default=5, nullable=False)  # Lawyers can have more devices
 
     verification_step = Column(Integer, default=1, nullable=False)
     verification_status = Column(
@@ -70,3 +101,29 @@ class Lawyer(Base):
     verified_at = Column(TIMESTAMP, nullable=True)
     rejection_reason = Column(Text, nullable=True)
     admin_notes = Column(Text, nullable=True)
+    
+    def __repr__(self):
+        return f"<Lawyer(id={self.id}, name='{self.name}', email='{self.email}')>"
+    
+    @property
+    def is_locked(self) -> bool:
+        """Check if account is currently locked"""
+        if not self.locked_until:
+            return False
+        from datetime import datetime
+        return datetime.utcnow() < self.locked_until
+    
+    @property
+    def is_verified(self) -> bool:
+        """Check if lawyer has completed verification"""
+        return self.verification_status == VerificationStatusEnum.approved
+    
+    @property
+    def can_login(self) -> bool:
+        """Check if lawyer can log in (active, verified email, not locked)"""
+        return (
+            self.is_active and 
+            self.is_email_verified and 
+            not self.is_locked and
+            self.password_hash is not None
+        )
