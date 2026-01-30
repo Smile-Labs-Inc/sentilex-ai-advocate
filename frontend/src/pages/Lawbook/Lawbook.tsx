@@ -5,14 +5,7 @@ import { LawbookChat } from '../../components/organisms/LawbookChat/LawbookChat'
 import { mockUser } from '../../data/mockData';
 import type { NavItem, Bookmark, ChatMessage } from '../../types';
 
-// Backend API URL
-const API_BASE_URL = 'http://localhost:8001';
-
-interface Law {
-    id: string;
-    title: string;
-    filename: string;
-}
+import { fetchLaws, fetchLawContent, type Law } from '../../services/lawbook';
 
 export interface LawbookPageProps {
     onNavigate?: (item: NavItem) => void;
@@ -37,16 +30,15 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
 
     // Fetch list of laws on mount
     useEffect(() => {
-        const fetchLaws = async () => {
+        const loadLaws = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch(`${API_BASE_URL}/lawbook/`);
-                const data = await response.json();
-                setLaws(data.laws);
+                const lawsData = await fetchLaws();
+                setLaws(lawsData);
 
                 // Set first law as active by default
-                if (data.laws.length > 0) {
-                    setActiveLawId(data.laws[0].id);
+                if (lawsData.length > 0) {
+                    setActiveLawId(lawsData[0].id);
                 }
             } catch (error) {
                 console.error('Error fetching laws:', error);
@@ -55,19 +47,18 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
             }
         };
 
-        fetchLaws();
+        loadLaws();
     }, []);
 
     // Fetch content when active law changes
     useEffect(() => {
         if (!activeLawId) return;
 
-        const fetchLawContent = async () => {
+        const loadLawContent = async () => {
             try {
                 setIsContentLoading(true);
-                const response = await fetch(`${API_BASE_URL}/lawbook/${activeLawId}`);
-                const data = await response.json();
-                setLawContent(data.content);
+                const content = await fetchLawContent(activeLawId);
+                setLawContent(content);
             } catch (error) {
                 console.error('Error fetching law content:', error);
                 setLawContent('Error loading content. Please try again.');
@@ -76,7 +67,7 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
             }
         };
 
-        fetchLawContent();
+        loadLawContent();
     }, [activeLawId]);
 
     const handleToggleBookmark = (lawId: string, sectionId: string, title: string) => {
