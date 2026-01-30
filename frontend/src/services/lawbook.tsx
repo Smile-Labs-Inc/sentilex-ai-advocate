@@ -13,6 +13,41 @@ export interface LawContentResponse {
     content: string;
 }
 
+export interface QueryRequest {
+    question: string;
+    case_context?: string;
+}
+
+export interface Citation {
+    law_name: string;
+    section: string;
+    text: string;
+}
+
+export interface QueryMetadata {
+    retrieval_timestamp: string;
+    sources_count: number;
+    citations_count: number;
+    validation_status: string;
+    reasoning_confidence: number;
+    validation_confidence: number;
+}
+
+export interface LegalAnalysis {
+    response: string;
+    confidence_note: string;
+    disclaimer: string;
+    metadata: QueryMetadata;
+    citations: Citation[];
+}
+
+export interface QueryResponse {
+    status: 'success' | 'refused';
+    data: LegalAnalysis;
+    session_id: string;
+    timestamp: string;
+}
+
 import { API_BASE_URL } from '../config';
 
 /**
@@ -57,5 +92,34 @@ export async function fetchLawContent(lawId: string): Promise<string> {
             throw new Error(`Failed to fetch law content: ${error.message}`);
         }
         throw new Error('Failed to fetch law content: Unknown error');
+    }
+}
+
+/**
+ * Submits a legal query to the backend
+ * @param request - The query request containing question and optional context
+ * @returns Promise resolving to the query response
+ */
+export async function submitQuery(request: QueryRequest): Promise<QueryResponse> {
+    try {
+        const response = await fetch(`${API_BASE_URL}/lawbook/query`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(request),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || `Failed to submit query: ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(error.message);
+        }
+        throw new Error('Failed to submit query: Unknown error');
     }
 }

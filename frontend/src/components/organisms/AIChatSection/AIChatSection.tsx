@@ -4,6 +4,7 @@
 // =============================================================================
 
 import { useState } from 'preact/hooks';
+import ReactMarkdown from 'react-markdown';
 import { cn } from '../../../lib/utils';
 import { Card, CardHeader, CardTitle } from '../../atoms/Card/Card';
 import { Button } from '../../atoms/Button/Button';
@@ -100,7 +101,29 @@ export function AIChatSection({
                                     ? 'bg-secondary text-foreground'
                                     : 'bg-primary text-primary-foreground'
                             )}>
-                                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                                {message.role === 'assistant' ? (
+                                    <div className="prose prose-sm prose-zinc dark:prose-invert max-w-none">
+                                        <ReactMarkdown
+                                            components={{
+                                                h1: ({ node, ...props }) => <h1 className="text-lg font-bold text-foreground mt-2 mb-1" {...props} />,
+                                                h2: ({ node, ...props }) => <h2 className="text-base font-bold text-foreground mt-2 mb-1" {...props} />,
+                                                h3: ({ node, ...props }) => <h3 className="text-sm font-semibold text-foreground mt-1 mb-1" {...props} />,
+                                                p: ({ node, ...props }) => <p className="text-sm text-foreground mb-2 leading-relaxed" {...props} />,
+                                                ul: ({ node, ...props }) => <ul className="list-disc ml-4 mb-2 text-sm" {...props} />,
+                                                ol: ({ node, ...props }) => <ol className="list-decimal ml-4 mb-2 text-sm" {...props} />,
+                                                li: ({ node, ...props }) => <li className="mb-0.5" {...props} />,
+                                                strong: ({ node, ...props }) => <strong className="font-bold" {...props} />,
+                                                code: ({ node, ...props }) => <code className="bg-accent px-1 py-0.5 rounded text-xs font-mono" {...props} />,
+                                                blockquote: ({ node, ...props }) => <blockquote className="border-l-2 border-primary pl-2 italic my-2" {...props} />,
+                                                hr: ({ node, ...props }) => <hr className="my-2 border-border" {...props} />,
+                                            }}
+                                        >
+                                            {message.content}
+                                        </ReactMarkdown>
+                                    </div>
+                                ) : (
+                                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                                )}
                             </div>
                         </div>
                     ))

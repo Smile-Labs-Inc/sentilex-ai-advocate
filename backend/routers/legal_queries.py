@@ -41,83 +41,85 @@ audit_logger = configure_audit_logger(
 )
 
 
-@router.post("/query", response_model=QueryResponse)
-async def submit_query(request: QueryRequest):
-    """
-    Submit a legal query to the multi-agent system.
-
-    This endpoint:
-    1. Validates the query
-    2. Routes it through the agent pipeline
-    3. Returns either a legal analysis or refusal
-    4. Logs everything for audit trail
-
-    Args:
-        request: Query request with question and optional context
-
-    Returns:
-        Query response with analysis or refusal
-    """
-    try:
-        # Create UserQuery from request
-        user_query = UserQuery(
-            question=request.question,
-            case_context=request.case_context
-        )
-
-        # Invoke the main chain
-        result = invoke_chain(user_query)
-
-        # Determine response status
-        if isinstance(result, SynthesizerOutput):
-            status = "success"
-            data = {
-                "response": result.response,
-                "confidence_note": result.confidence_note,
-                "disclaimer": result.disclaimer,
-                "metadata": result.metadata,
-                "citations": [
-                    {
-                        "law_name": source.law_name,
-                        "section": source.section,
-                        "text": source.text
-                    }
-                    for source in result.citations
-                ]
-            }
-        elif isinstance(result, RefusalOutput):
-            status = "refused"
-            data = {
-                "reason": result.reason,
-                "issues": [
-                    {
-                        "severity": issue.severity,
-                        "type": issue.type,
-                        "description": issue.description
-                    }
-                    for issue in result.issues
-                ],
-                "suggestions": result.suggestions
-            }
-        else:
-            raise ValueError(f"Unexpected result type: {type(result)}")
-
-        return QueryResponse(
-            status=status,
-            data=data,
-            session_id=audit_logger.session_id,
-            timestamp=datetime.utcnow().isoformat()
-        )
-
-    except Exception as e:
-        # Log the error
-        audit_logger.logger.error(f"Query processing failed: {str(e)}")
-
-        # Return error response
-        raise HTTPException(
-            status_code=500,
-            detail=f"Query processing failed: {str(e)}"
-        )
+# @router.post("/query", response_model=QueryResponse)
+# async def submit_query(request: QueryRequest):
+#     """
+#     MOVED TO backend/routers/lawbook.py
+#     
+#     Submit a legal query to the multi-agent system.
+# 
+#     This endpoint:
+#     1. Validates the query
+#     2. Routes it through the agent pipeline
+#     3. Returns either a legal analysis or refusal
+#     4. Logs everything for audit trail
+# 
+#     Args:
+#         request: Query request with question and optional context
+# 
+#     Returns:
+#         Query response with analysis or refusal
+#     """
+#     try:
+#         # Create UserQuery from request
+#         user_query = UserQuery(
+#             question=request.question,
+#             case_context=request.case_context
+#         )
+# 
+#         # Invoke the main chain
+#         result = invoke_chain(user_query)
+# 
+#         # Determine response status
+#         if isinstance(result, SynthesizerOutput):
+#             status = "success"
+#             data = {
+#                 "response": result.response,
+#                 "confidence_note": result.confidence_note,
+#                 "disclaimer": result.disclaimer,
+#                 "metadata": result.metadata,
+#                 "citations": [
+#                     {
+#                         "law_name": source.law_name,
+#                         "section": source.section,
+#                         "text": source.text
+#                     }
+#                     for source in result.citations
+#                 ]
+#             }
+#         elif isinstance(result, RefusalOutput):
+#             status = "refused"
+#             data = {
+#                 "reason": result.reason,
+#                 "issues": [
+#                     {
+#                         "severity": issue.severity,
+#                         "type": issue.type,
+#                         "description": issue.description
+#                     }
+#                     for issue in result.issues
+#                 ],
+#                 "suggestions": result.suggestions
+#             }
+#         else:
+#             raise ValueError(f"Unexpected result type: {type(result)}")
+# 
+#         return QueryResponse(
+#             status=status,
+#             data=data,
+#             session_id=audit_logger.session_id,
+#             timestamp=datetime.utcnow().isoformat()
+#         )
+# 
+#     except Exception as e:
+#         # Log the error
+#         audit_logger.logger.error(f"Query processing failed: {str(e)}")
+# 
+#         # Return error response
+#         raise HTTPException(
+#             status_code=500,
+#             detail=f"Query processing failed: {str(e)}"
+#         )
 
 
 @router.get("/audit/{session_id}")
