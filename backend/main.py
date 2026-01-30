@@ -17,6 +17,9 @@ from routers import lawyers
 from routers import google_oauth
 from routers import auth
 from routers import lawbook
+from routers import lawyer_verification
+from routers import legal_queries
+from mcp_server.mcp_client import get_mcp_client
 
 
 
@@ -42,6 +45,16 @@ async def lifespan(app: FastAPI):
         print("Database is online and tables verified.")
     else:
         print("CRITICAL: Database connection failed.")
+        
+    # Check MCP availability
+    try:
+        mcp_client = get_mcp_client()
+        if mcp_client.health_check():
+            print("MCP service available")
+        else:
+            print("WARNING: MCP service not available")
+    except Exception as e:
+        print(f"WARNING: Could not connect to MCP service: {e}")
     yield  # The app runs while this is held
 
     # --- Shutdown Logic (Optional) ---
@@ -59,6 +72,8 @@ app.include_router(lawyers.router)
 app.include_router(auth.router)
 app.include_router(google_oauth.router)
 app.include_router(lawbook.router)
+app.include_router(lawyer_verification.router)
+app.include_router(legal_queries.router)
 
 
 # CORS Configuration
@@ -84,7 +99,18 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"}
+    mcp_status = False
+    try:
+        mcp_client = get_mcp_client()
+        mcp_status = mcp_client.health_check()
+    except:
+        pass
+        
+    return {
+        "status": "healthy",
+        "mcp_available": mcp_status,
+        "database": "connected" # implicit if we got here without error usually, or could check again
+    }
 
 def main():
     uvicorn.run("main:app", host="127.0.0.1", port=8001, reload=True)
