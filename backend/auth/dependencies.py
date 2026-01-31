@@ -78,13 +78,36 @@ def log_login_attempt(email, success, ip_address, user_agent, failure_reason, db
     db.add(attempt)
     db.commit()
 
-async def get_current_lawyer(current_user: User = Depends(get_current_user)):
+async def get_current_lawyer(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     """
-    Verify the current user is a lawyer.
+    Get the current authenticated lawyer from the JWT token.
     """
-    if current_user.role != "lawyer":
+    from models.lawyers import Lawyer
+    
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    payload = decode_token(token)
+    if payload is None:
+        raise credentials_exception
+    
+    # Check if this is a lawyer token
+    role = payload.get("role")
+    if role != "lawyer":
         raise HTTPException(status_code=403, detail="Not authorized as a lawyer")
-    return current_user
+        
+    lawyer_id: str = payload.get("sub")
+    if lawyer_id is None:
+        raise credentials_exception
+        
+    lawyer = db.query(Lawyer).filter(Lawyer.id == int(lawyer_id)).first()
+    if lawyer is None:
+        raise credentials_exception
+        
+    return lawyer
 
 async def get_current_admin(current_user: User = Depends(get_current_user)):
     """

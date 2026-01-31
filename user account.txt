@@ -1,0 +1,64 @@
+{
+  "name": "Nimal Silva",
+  "email": "nimal.silva@lawfirm.lk",
+  "password": "LawyerPass@2024",
+  "phone": "+94 77 123 4567",
+  "district": "Colombo",
+  "specialties": "Criminal Law, Family Law, Civil Litigation",
+  "experience_years": 12
+}
+{
+  "name": "Chaminda Fernando",
+  "email": "chaminda.fernando@legalaid.lk",
+  "password": "SecureLaw#2024",
+  "phone": "+94 71 987 6543",
+  "district": "Galle",
+  "specialties": "Property Law, Business Law",
+  "experience_years": 8
+}
+
+{
+  "name": "Amara Wijesinghe",
+  "email": "amara.w@judiciary.lk",
+  "password": "Legal@Pass123",
+  "phone": "011-2345678",
+  "district": "Kandy",
+  "specialties": "Corporate Law, Tax Law, Intellectual Property",
+  "experience_years": 25
+}
+
+{
+  "first_name": "string",
+  "last_name": "string",
+  "email": "user@example.com",
+  "password": "stringst",
+  "preferred_language": "en",
+  "district": "string"
+}
+
+{
+  "first_name": "Shalini",
+  "last_name": "Fernando",
+  "email": "shalini.fernando@gmail.com",
+  "password": "Secure#Pass123",
+  "preferred_language": "si",
+  "district": "Kandy"
+}
+
+{
+  "first_name": "Rajesh",
+  "last_name": "Kumar",
+  "email": "rajesh.kumar@outlook.com",
+  "password": "MyPassword!456",
+  "preferred_language": "ta",
+  "district": "Jaffna"
+}
+
+{
+  "first_name": "Dilani",
+  "last_name": "Wijesinghe",
+  "email": "dilani.w@yahoo.com",
+  "password": "Welcome@2024",
+  "preferred_language": "en",
+  "district": "Galle"
+}

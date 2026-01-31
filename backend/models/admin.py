@@ -8,6 +8,9 @@ from sqlalchemy import Column, Integer, String, Boolean, TIMESTAMP, Text, Enum
 from sqlalchemy.sql import func
 from database.config import Base
 import enum
+from typing import Optional
+from pydantic import BaseModel, EmailStr
+from datetime import datetime
 
 
 class AdminRole(enum.Enum):
@@ -95,3 +98,19 @@ class Admin(Base):
     def is_superadmin(self) -> bool:
         """Check if user has superadmin privileges"""
         return self.role == AdminRole.SUPERADMIN
+
+class AdminLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+class AdminProfile(BaseModel):
+    id: int
+    email: str
+    role: str
+    is_active: bool
+    mfa_enabled: bool
+    created_at: datetime
+    last_login_at: Optional[datetime]
+    
+    class Config:
+        from_attributes = True

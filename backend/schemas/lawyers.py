@@ -11,10 +11,6 @@ class LawyerBase(BaseModel):
     district: str
     availability: Optional[str] = "Available"
 
-class LawyerCreate(LawyerBase):
-    """Schema for lawyer registration (without password initially)"""
-    pass
-
 class LawyerRegister(BaseModel):
     """Schema for lawyer registration with authentication"""
     name: str = Field(..., min_length=2, max_length=100)

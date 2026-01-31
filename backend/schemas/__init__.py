@@ -16,7 +16,6 @@ from .messages import (
 # Authentication schemas
 from .lawyers import (
     LawyerBase,
-    LawyerCreate,
     LawyerRegister,
     LawyerLogin,
     LawyerResponse,
@@ -42,12 +41,14 @@ from .admin import (
     AdminMFAEnable,
     AdminSessionResponse,
     AdminListResponse,
+    AdminProfile,
 )
 
 from .auth import (
     Token,
     TokenRefresh,
     TokenRefreshResponse,
+    TokenResponse,
     LoginResponse,
     MFARequiredResponse,
     LogoutResponse,
@@ -56,6 +57,20 @@ from .auth import (
     PasswordResetEmailSentResponse,
     EmailVerificationSentResponse,
     RegistrationResponse,
+    UserProfile,
+    UserRegister,
+    UserLogin,
+    PasswordChange,
+    PasswordReset,
+    PasswordResetConfirm,
+    EmailVerification,
+    SessionInfo,
+    ActiveSessionsResponse,
+    MFASetupResponse,
+    MFAEnable,
+    MFAVerify,
+    MFADisable,
+    MFAStatus,
 )
 
 __all__ = [
@@ -73,7 +88,6 @@ __all__ = [
     
     # Lawyer schemas
     "LawyerBase",
-    "LawyerCreate",
     "LawyerRegister",
     "LawyerLogin",
     "LawyerResponse",
@@ -98,11 +112,13 @@ __all__ = [
     "AdminMFAEnable",
     "AdminSessionResponse",
     "AdminListResponse",
+    "AdminProfile",
     
     # Auth schemas
     "Token",
     "TokenRefresh",
     "TokenRefreshResponse",
+    "TokenResponse",
     "LoginResponse",
     "MFARequiredResponse",
     "LogoutResponse",
@@ -111,4 +127,18 @@ __all__ = [
     "PasswordResetEmailSentResponse",
     "EmailVerificationSentResponse",
     "RegistrationResponse",
+    "UserProfile",
+    "UserRegister",
+    "UserLogin",
+    "PasswordChange",
+    "PasswordReset",
+    "PasswordResetConfirm",
+    "EmailVerification",
+    "SessionInfo",
+    "ActiveSessionsResponse",
+    "MFASetupResponse",
+    "MFAEnable",
+    "MFAVerify",
+    "MFADisable",
+    "MFAStatus",
 ]
