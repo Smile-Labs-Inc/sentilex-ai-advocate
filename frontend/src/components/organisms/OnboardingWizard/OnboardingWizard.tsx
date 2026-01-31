@@ -19,6 +19,7 @@ export interface WizardData {
     title: string;
     description: string;
     dateOccurred: string;
+    location: string;
     platformsInvolved: string;
     perpetratorInfo: string;
     evidenceNotes: string;
@@ -89,6 +90,7 @@ export function OnboardingWizard({ onComplete, onCancel, className }: Onboarding
         title: '',
         description: '',
         dateOccurred: '',
+        location: '',
         platformsInvolved: '',
         perpetratorInfo: '',
         evidenceNotes: '',
@@ -218,6 +220,12 @@ export function OnboardingWizard({ onComplete, onCancel, className }: Onboarding
                             type="date"
                             value={data.dateOccurred}
                             onInput={(e) => updateData('dateOccurred', (e.target as HTMLInputElement).value)}
+                        />
+                        <Input
+                            label="Location / Jurisdiction"
+                            placeholder="e.g., Colombo, Kandy District, Sri Lanka"
+                            value={data.location}
+                            onInput={(e) => updateData('location', (e.target as HTMLInputElement).value)}
                         />
                         <Input
                             label="Platforms involved"
