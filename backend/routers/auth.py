@@ -4,7 +4,7 @@ from database.config import get_db
 from models.user import User
 from models.token_blacklist import TokenBlacklist 
 from models.active_session import ActiveSession
-from schemas.auth import SignupRequest, LoginRequest, AuthResponse
+
 from utils.auth import hash_password, verify_password, create_access_token
 from datetime import datetime,timedelta
 from typing import Optional

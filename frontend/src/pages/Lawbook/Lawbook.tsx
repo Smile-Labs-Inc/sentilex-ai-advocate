@@ -4,15 +4,8 @@ import { LawbookViewer } from '../../components/organisms/LawbookViewer/LawbookV
 import { LawbookChat } from '../../components/organisms/LawbookChat/LawbookChat';
 import { mockUser } from '../../data/mockData';
 import type { NavItem, Bookmark, ChatMessage } from '../../types';
-
-// Backend API URL
-const API_BASE_URL = 'http://localhost:8001';
-
-interface Law {
-    id: string;
-    title: string;
-    filename: string;
-}
+import { formatLegalResponse } from '../../lib/formatters';
+import { fetchLaws, fetchLawContent, submitQuery, type Law } from '../../services/lawbook.tsx';
 
 export interface LawbookPageProps {
     onNavigate?: (item: NavItem) => void;
@@ -37,16 +30,15 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
 
     // Fetch list of laws on mount
     useEffect(() => {
-        const fetchLaws = async () => {
+        const loadLaws = async () => {
             try {
                 setIsLoading(true);
-                const response = await fetch(`${API_BASE_URL}/lawbook/`);
-                const data = await response.json();
-                setLaws(data.laws);
+                const lawsData = await fetchLaws();
+                setLaws(lawsData);
 
                 // Set first law as active by default
-                if (data.laws.length > 0) {
-                    setActiveLawId(data.laws[0].id);
+                if (lawsData.length > 0) {
+                    setActiveLawId(lawsData[0].id);
                 }
             } catch (error) {
                 console.error('Error fetching laws:', error);
@@ -55,19 +47,18 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
             }
         };
 
-        fetchLaws();
+        loadLaws();
     }, []);
 
     // Fetch content when active law changes
     useEffect(() => {
         if (!activeLawId) return;
 
-        const fetchLawContent = async () => {
+        const loadLawContent = async () => {
             try {
                 setIsContentLoading(true);
-                const response = await fetch(`${API_BASE_URL}/lawbook/${activeLawId}`);
-                const data = await response.json();
-                setLawContent(data.content);
+                const content = await fetchLawContent(activeLawId);
+                setLawContent(content);
             } catch (error) {
                 console.error('Error fetching law content:', error);
                 setLawContent('Error loading content. Please try again.');
@@ -76,7 +67,7 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
             }
         };
 
-        fetchLawContent();
+        loadLawContent();
     }, [activeLawId]);
 
     const handleToggleBookmark = (lawId: string, sectionId: string, title: string) => {
@@ -96,7 +87,7 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
         });
     };
 
-    const handleChatSend = (text: string) => {
+    const handleChatSend = async (text: string) => {
         // Add user message
         const userMsg: ChatMessage = {
             id: Date.now().toString(),
@@ -107,17 +98,34 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
         setChatMessages(prev => [...prev, userMsg]);
         setIsChatLoading(true);
 
-        // Simulate AI response
-        setTimeout(() => {
-            const aiMsg: ChatMessage = {
+        try {
+            const response = await submitQuery({ question: text });
+
+            if (response.status === 'success' && response.data) {
+                const formattedContent = formatLegalResponse(response.data);
+
+                const aiMsg: ChatMessage = {
+                    id: (Date.now() + 1).toString(),
+                    role: 'assistant',
+                    content: formattedContent,
+                    timestamp: new Date()
+                };
+                setChatMessages(prev => [...prev, aiMsg]);
+            } else {
+                throw new Error('Query refused or failed');
+            }
+        } catch (error) {
+            console.error('Chat error:', error);
+            const errorMsg: ChatMessage = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
-                content: `Here is some information regarding "${text}". \n\nBased on Indian Law, specifically IT Act 2000, specialized provisions exist for handling such cases. You might want to check the "Cyberbullying & Harassment" chapter.\n\nDisclaimer: This is AI generated information and not professional legal advice.`,
+                content: "I'm sorry, I encountered an error while connecting to the legal assistant.",
                 timestamp: new Date()
             };
-            setChatMessages(prev => [...prev, aiMsg]);
+            setChatMessages(prev => [...prev, errorMsg]);
+        } finally {
             setIsChatLoading(false);
-        }, 1500);
+        }
     };
 
     return (

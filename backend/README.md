@@ -20,7 +20,7 @@ A court-admissible, multi-agent legal AI system built with LangChain for Sri Lan
 ### 1. Install Dependencies
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ### 2. Configure Environment

@@ -17,10 +17,9 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Create ENUM types for PostgreSQL
+    # Create ENUM types
     verification_status_enum = sa.Enum('not_started', 'in_progress', 'submitted', 'approved', 'rejected', 
-                                       name='verificationstatusenum', create_type=True)
-    verification_status_enum.create(op.get_bind(), checkfirst=True)
+                                       name='verificationstatusenum')
     
     # Add verification columns to lawyers table
     op.add_column('lawyers', sa.Column('verification_step', sa.Integer(), nullable=False, server_default='1'))

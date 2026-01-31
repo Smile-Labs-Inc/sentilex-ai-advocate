@@ -26,10 +26,8 @@ def upgrade() -> None:
     Add authentication and security tables and columns.
     """
     
-    # Create admin role enum (checkfirst to avoid duplicate)
-    from sqlalchemy.dialects.postgresql import ENUM
-    admin_role_enum = ENUM('admin', 'superadmin', name='adminrole', create_type=False)
-    admin_role_enum.create(op.get_bind(), checkfirst=True)
+    # Create admin role enum
+    admin_role_enum = sa.Enum('admin', 'superadmin', name='adminrole')
     
     # ==========================================
     # 1. CREATE ADMINS TABLE
@@ -292,6 +290,4 @@ def downgrade() -> None:
     op.drop_index('idx_admin_email', 'admins')
     op.drop_table('admins')
     
-    # Drop admin role enum
-    admin_role_enum = sa.Enum('admin', 'superadmin', name='adminrole')
-    admin_role_enum.drop(op.get_bind(), checkfirst=True)
+
