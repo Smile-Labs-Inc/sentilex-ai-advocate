@@ -51,8 +51,7 @@ class AdminRegister(AdminBase):
 class AdminLogin(BaseModel):
     """Schema for admin login"""
     email: EmailStr
-    password: SecretStr
-    mfa_code: str = Field(..., pattern=r'^\d{6}$')  # MFA is mandatory for admins
+    password: str = Field(..., min_length=8)
 
 
 class AdminResponse(AdminBase):
@@ -150,3 +149,30 @@ class AdminListResponse(BaseModel):
     
     class Config:
         from_attributes = True
+
+
+class AdminProfile(BaseModel):
+    """Admin user profile"""
+    id: int
+    email: str
+    role: str
+    is_active: bool
+    mfa_enabled: bool
+    mfa_enabled_at: Optional[datetime] = None
+    created_at: datetime
+    last_login_at: Optional[datetime] = None
+    
+    class Config:
+        from_attributes = True
+        json_schema_extra = {
+            "example": {
+                "id": 1,
+                "email": "admin@sentilex.ai",
+                "role": "super_admin",
+                "is_active": True,
+                "mfa_enabled": True,
+                "mfa_enabled_at": "2024-01-10T08:00:00",
+                "created_at": "2024-01-01T00:00:00",
+                "last_login_at": "2024-01-15T14:30:00"
+            }
+        }

@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 from pydantic import BaseModel
 import uvicorn
 import os
@@ -16,6 +17,7 @@ from chains import invoke_chain
 from routers import lawyers
 from routers import google_oauth
 from routers import auth
+from routers import admin_auth
 from routers import lawbook
 from routers import lawyer_verification
 from routers import legal_queries
@@ -70,11 +72,16 @@ app = FastAPI(
 
 app.include_router(lawyers.router)
 app.include_router(auth.router)
+app.include_router(admin_auth.router)
 app.include_router(google_oauth.router)
 app.include_router(lawbook.router)
 app.include_router(lawyer_verification.router)
 app.include_router(legal_queries.router)
 
+
+# Session Middleware for OAuth (must be added before CORS)
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production-min-32-chars")
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 # CORS Configuration
 origins = [

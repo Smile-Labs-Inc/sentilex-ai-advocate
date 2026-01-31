@@ -21,20 +21,11 @@ sys.path.insert(0, str(backend_dir))
 from sqlalchemy.orm import Session
 from database.config import get_db, check_db_connection
 from models.admin import Admin, AdminRole
+from utils.auth import hash_password
 from datetime import datetime
-
-# Note: Install argon2-cffi first: pip install argon2-cffi
-try:
-    from argon2 import PasswordHasher
-    ph = PasswordHasher()
-except ImportError:
-    print("⚠️  argon2-cffi not installed. Using basic hashing (NOT FOR PRODUCTION!)")
-    import hashlib
-    class PasswordHasher:
-        @staticmethod
-        def hash(password: str) -> str:
-            return hashlib.sha256(password.encode()).hexdigest()
-    ph = PasswordHasher()
+import pyotp
+import qrcode
+from io import BytesIO
 
 
 def create_admin_account():
@@ -105,8 +96,38 @@ def create_admin_account():
             print(f"❌ Admin with email {email} already exists!")
             sys.exit(1)
         
-        # Hash password
-        password_hash = ph.hash(password)
+        # Hash password using the same method as the rest of the system
+        password_hash = hash_password(password)
+        
+        # Generate MFA secret and backup codes
+        print()
+        print("=" * 60)
+        print("   Setting up Multi-Factor Authentication (MFA)")
+        print("=" * 60)
+        
+        mfa_secret = pyotp.random_base32()
+        backup_codes = [pyotp.random_base32()[:8] for _ in range(10)]
+        
+        # Generate QR code for easy setup
+        totp_uri = pyotp.totp.TOTP(mfa_secret).provisioning_uri(
+            name=email,
+            issuer_name="SentiLex AI Advocate"
+        )
+        
+        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+        qr.add_data(totp_uri)
+        qr.make(fit=True)
+        
+        # Print QR code to terminal
+        qr.print_ascii()
+        
+        print()
+        print(f"📱 MFA Secret: {mfa_secret}")
+        print()
+        print("🔑 Backup Codes (save these securely!):")
+        for i, code in enumerate(backup_codes, 1):
+            print(f"   {i:2d}. {code}")
+        print()
         
         # Create admin
         admin = Admin(
@@ -116,6 +137,10 @@ def create_admin_account():
             role=role,
             is_active=True,
             is_email_verified=True,  # First admin is pre-verified
+            mfa_enabled=True,  # MFA is mandatory for admins
+            mfa_secret=mfa_secret,
+            mfa_backup_codes=",".join(backup_codes),
+            mfa_enabled_at=datetime.utcnow(),
             created_at=datetime.utcnow()
         )
         
@@ -131,11 +156,24 @@ def create_admin_account():
         print(f"   Name: {admin.full_name}")
         print(f"   Email: {admin.email}")
         print(f"   Role: {admin.role.value}")
+        print(f"   MFA Enabled: Yes")
         print()
-        print("⚠️  IMPORTANT NEXT STEPS:")
-        print("   1. The admin MUST set up MFA (2FA) on first login")
-        print("   2. MFA is mandatory for all admin accounts")
-        print("   3. Keep login credentials secure")
+        print("=" * 60)
+        print("⚠️  IMPORTANT - SAVE THIS INFORMATION SECURELY")
+        print("=" * 60)
+        print()
+        print("📱 To complete MFA setup:")
+        print("   1. Open your authenticator app (Google Authenticator, Authy, etc.)")
+        print("   2. Scan the QR code above OR manually enter the secret:")
+        print(f"      Secret: {mfa_secret}")
+        print("   3. Save the backup codes in a secure location")
+        print("   4. You'll need a 6-digit code from the app to login")
+        print()
+        print("🔐 Security Notes:")
+        print("   - MFA is MANDATORY for all admin accounts")
+        print("   - Backup codes are single-use")
+        print("   - Each backup code can only be used once")
+        print("   - Keep login credentials and backup codes secure")
         print()
         
     except Exception as e:

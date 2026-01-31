@@ -8,19 +8,24 @@ from models.active_session import ActiveSession
 from utils.auth import hash_password, verify_password, create_access_token
 from datetime import datetime,timedelta
 from typing import Optional
-
+import pyotp
+import qrcode
+from io import BytesIO
+import base64
 
 from schemas.auth import (
     UserRegister, UserLogin, TokenResponse, TokenRefresh,
     PasswordReset, PasswordResetConfirm, PasswordChange,
     EmailVerification, UserProfile, LoginResponse,
     RegistrationResponse, LogoutResponse, MessageResponse,
-    ActiveSessionsResponse, SessionInfo
+    ActiveSessionsResponse, SessionInfo,
+    MFASetupResponse, MFAEnable, MFAVerify, MFADisable, MFAStatus
 )
 from utils.auth import (
     hash_password, verify_password,
     create_access_token, create_refresh_token, decode_token,
-    generate_verification_token, generate_password_reset_token
+    generate_verification_token, generate_password_reset_token,
+    check_password_history, update_password_history
 )
 
 from utils.email import (
@@ -130,7 +135,34 @@ async def login(
             detail="Account is inactive"
         )
     
-    # Create tokens
+    # Check if MFA is enabled for this user
+    if user.mfa_enabled:
+        # Return temporary token for MFA verification
+        temp_token = create_access_token(
+            data={"sub": str(user.id), "type": "mfa_required", "role": user.role},
+            expires_delta=timedelta(minutes=5)
+        )
+        
+        # Update last login attempt
+        user.last_login_at = datetime.utcnow()
+        db.commit()
+        
+        log_login_attempt(credentials.email, True, ip_address, user_agent, "mfa_required", db)
+        
+        return LoginResponse(
+            access_token=temp_token,
+            refresh_token="",
+            token_type="bearer",
+            expires_in=300,
+            user_type="user",
+            user_id=user.id,
+            email=user.email,
+            name=f"{user.first_name} {user.last_name}",
+            requires_mfa=True,
+            mfa_enabled=True
+        )
+    
+    # Create tokens (only if MFA is not enabled)
     access_token = create_access_token(data={"sub": str(user.id), "role": user.role})
     refresh_token = create_refresh_token(data={"sub": str(user.id)})
     
@@ -140,7 +172,8 @@ async def login(
     # Store active session
     session = ActiveSession(
         user_id=user.id,
-        refresh_token_jti=refresh_payload["jti"],
+        user_type="user",
+        jti=refresh_payload["jti"],
         ip_address=ip_address,
         user_agent=user_agent,
         expires_at=datetime.utcfromtimestamp(refresh_payload["exp"])
@@ -160,8 +193,11 @@ async def login(
         access_token=access_token,
         refresh_token=refresh_token,
         token_type="bearer",
-        expires_in=config.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        user=UserProfile.from_orm(user),
+        expires_in=config.settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        user_type="user",
+        user_id=user.id,
+        email=user.email,
+        name=f"{user.first_name} {user.last_name}",
         requires_mfa=user.mfa_enabled,
         mfa_enabled=user.mfa_enabled
     )
@@ -195,7 +231,7 @@ async def refresh_token(
     
     # Verify session exists
     session = db.query(ActiveSession).filter(
-        ActiveSession.refresh_token_jti == jti
+        ActiveSession.jti == jti
     ).first()
     
     if not session:
@@ -225,7 +261,7 @@ async def refresh_token(
         access_token=access_token,
         refresh_token=token_data.refresh_token,
         token_type="bearer",
-        expires_in=config.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        expires_in=config.settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
 
 
@@ -238,16 +274,19 @@ async def logout(
     
     # Get all active sessions for user
     sessions = db.query(ActiveSession).filter(
-        ActiveSession.user_id == current_user.id
+        ActiveSession.user_id == current_user.id,
+        ActiveSession.user_type == "user"
     ).all()
     
     # Blacklist all refresh tokens
     for session in sessions:
         blacklist_entry = TokenBlacklist(
-            jti=session.refresh_token_jti,
+            jti=session.jti,
             token_type="refresh",
             user_id=current_user.id,
-            expires_at=session.expires_at
+            user_type="user",
+            expires_at=session.expires_at,
+            reason="logout"
         )
         db.add(blacklist_entry)
         db.delete(session)
@@ -298,10 +337,12 @@ async def revoke_session(
     
     # Blacklist refresh token
     blacklist_entry = TokenBlacklist(
-        jti=session.refresh_token_jti,
+        jti=session.jti,
         token_type="refresh",
         user_id=current_user.id,
-        expires_at=session.expires_at
+        user_type="user",
+        expires_at=session.expires_at,
+        reason="session_revoked"
     )
     db.add(blacklist_entry)
     db.delete(session)
@@ -356,8 +397,26 @@ async def change_password(
             detail="Current password is incorrect"
         )
     
+    # Check if new password is same as current
+    if verify_password(password_data.new_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from current password"
+        )
+    
+    # Check password history (prevent reuse of last 5 passwords)
+    if not check_password_history(current_user, password_data.new_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot reuse any of your last 5 passwords"
+        )
+    
+    # Update password history before changing password
+    update_password_history(current_user, current_user.password_hash)
+    
     # Update password
     current_user.password_hash = hash_password(password_data.new_password)
+    current_user.password_changed_at = datetime.utcnow()
     db.commit()
     
     #Send password change notification email
@@ -413,9 +472,29 @@ async def reset_password(
             detail="User not found"
         )
     
+    # Check if new password is same as current
+    if user.password_hash and verify_password(reset_data.new_password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from current password"
+        )
+    
+    # Check password history
+    if not check_password_history(user, reset_data.new_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot reuse any of your last 5 passwords"
+        )
+    
+    # Update password history before changing password
+    if user.password_hash:
+        update_password_history(user, user.password_hash)
+    
     # Update password
     user.password_hash = hash_password(reset_data.new_password)
     user.failed_login_attempts = 0
+    user.password_changed_at = datetime.utcnow()
+    user.locked_until = None  # Unlock account if locked
     db.commit()
     
     #Send password reset confirmation email
@@ -424,3 +503,236 @@ async def reset_password(
     send_password_changed_email(user.email, user_name, "Password Reset", timestamp)
     
     return MessageResponse(message="Password reset successfully")
+
+
+# ============================================================================
+# MFA ENDPOINTS
+# ============================================================================
+
+@router.post("/mfa/setup", response_model=MFASetupResponse)
+async def setup_mfa(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Initialize MFA setup (generate secret and QR code)"""
+    
+    # Generate TOTP secret
+    secret = pyotp.random_base32()
+    
+    # Generate provisioning URI
+    totp_uri = pyotp.totp.TOTP(secret).provisioning_uri(
+        name=current_user.email,
+        issuer_name="SentiLex AI Advocate"
+    )
+    
+    # Generate QR code
+    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    qr.add_data(totp_uri)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    # Convert to base64
+    buffer = BytesIO()
+    img.save(buffer, format='PNG')
+    qr_code_base64 = base64.b64encode(buffer.getvalue()).decode()
+    
+    # Generate backup codes
+    backup_codes = [pyotp.random_base32()[:8] for _ in range(10)]
+    
+    # Store secret temporarily (don't enable until verified)
+    current_user.mfa_secret = secret
+    current_user.mfa_backup_codes = ",".join(backup_codes)
+    db.commit()
+    
+    return MFASetupResponse(
+        secret=secret,
+        qr_code_url=f"data:image/png;base64,{qr_code_base64}",
+        backup_codes=backup_codes
+    )
+
+
+@router.post("/mfa/enable", response_model=MessageResponse)
+async def enable_mfa(
+    mfa_data: MFAEnable,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Enable MFA after verification"""
+    
+    if not current_user.mfa_secret:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="MFA not initialized. Call /mfa/setup first"
+        )
+    
+    # Verify code
+    totp = pyotp.TOTP(current_user.mfa_secret)
+    if not totp.verify(mfa_data.verification_code):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid verification code"
+        )
+    
+    # Enable MFA
+    current_user.mfa_enabled = True
+    current_user.mfa_enabled_at = datetime.utcnow()
+    db.commit()
+    db.refresh(current_user)
+    
+    return MessageResponse(message="MFA enabled successfully")
+
+
+@router.post("/mfa/verify", response_model=LoginResponse)
+async def verify_mfa(
+    mfa_data: MFAVerify,
+    db: Session = Depends(get_db)
+):
+    """Verify MFA code during login"""
+    
+    # Decode temporary token
+    payload = decode_token(mfa_data.temp_token)
+    if not payload or payload.get("type") != "mfa_required":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid temporary token"
+        )
+    
+    user_id = payload.get("sub")
+    role = payload.get("role", "user")
+    
+    # Get user
+    user = db.query(User).filter(User.id == int(user_id)).first()
+    
+    if not user or not user.mfa_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="MFA not enabled"
+        )
+    
+    # Verify TOTP code or backup code
+    totp = pyotp.TOTP(user.mfa_secret)
+    is_valid = totp.verify(mfa_data.code)
+    
+    # If TOTP fails, check backup codes
+    if not is_valid and user.mfa_backup_codes:
+        backup_codes = user.mfa_backup_codes.split(",")
+        if mfa_data.code in backup_codes:
+            is_valid = True
+            # Remove used backup code
+            backup_codes.remove(mfa_data.code)
+            user.mfa_backup_codes = ",".join(backup_codes)
+            db.commit()
+    
+    if not is_valid:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid MFA code"
+        )
+    
+    # Create full session tokens
+    access_token = create_access_token({"sub": str(user.id), "role": role})
+    refresh_token = create_refresh_token({"sub": str(user.id)})
+    
+    # Decode to get JTI
+    refresh_payload = decode_token(refresh_token)
+    
+    # Store active session
+    session = ActiveSession(
+        user_id=user.id,
+        user_type="user",
+        jti=refresh_payload["jti"],
+        ip_address=mfa_data.ip_address or "unknown",
+        user_agent=mfa_data.user_agent or "unknown",
+        expires_at=datetime.utcfromtimestamp(refresh_payload["exp"])
+    )
+    db.add(session)
+    
+    # Update last login
+    user.last_login_at = datetime.utcnow()
+    user.failed_login_attempts = 0
+    db.commit()
+    
+    return LoginResponse(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
+        expires_in=config.settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        user_type="user",
+        user_id=user.id,
+        email=user.email,
+        name=f"{user.first_name} {user.last_name}",
+        role=user.role,
+        requires_mfa=False,
+        mfa_enabled=True
+    )
+
+
+@router.post("/mfa/disable", response_model=MessageResponse)
+async def disable_mfa(
+    mfa_data: MFADisable,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Disable MFA (requires password confirmation)"""
+    
+    if not verify_password(mfa_data.password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid password"
+        )
+    
+    if not current_user.mfa_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="MFA is not enabled"
+        )
+    
+    current_user.mfa_enabled = False
+    current_user.mfa_secret = None
+    current_user.mfa_backup_codes = None
+    current_user.mfa_enabled_at = None
+    db.commit()
+    
+    return MessageResponse(message="MFA disabled successfully")
+
+
+@router.post("/mfa/regenerate-backup-codes", response_model=MFASetupResponse)
+async def regenerate_backup_codes(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Regenerate MFA backup codes"""
+    
+    if not current_user.mfa_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="MFA not enabled"
+        )
+    
+    # Generate new backup codes
+    backup_codes = [pyotp.random_base32()[:8] for _ in range(10)]
+    current_user.mfa_backup_codes = ",".join(backup_codes)
+    db.commit()
+    
+    return MFASetupResponse(
+        secret=current_user.mfa_secret,
+        qr_code_url="",
+        backup_codes=backup_codes
+    )
+
+
+@router.get("/mfa/status", response_model=MFAStatus)
+async def get_mfa_status(
+    current_user: User = Depends(get_current_active_user)
+):
+    """Get MFA status for current user"""
+    
+    backup_codes_count = 0
+    if current_user.mfa_backup_codes:
+        backup_codes_count = len(current_user.mfa_backup_codes.split(","))
+    
+    return MFAStatus(
+        mfa_enabled=current_user.mfa_enabled,
+        mfa_enabled_at=current_user.mfa_enabled_at,
+        backup_codes_remaining=backup_codes_count
+    )

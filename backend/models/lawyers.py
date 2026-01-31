@@ -26,18 +26,23 @@ class Lawyer(Base):
     # Primary Information
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
-    specialties = Column(String(255), nullable=False)
-    experience_years = Column(Integer, nullable=False)
+    specialties = Column(String(255), nullable=True)  # Nullable for OAuth users
+    experience_years = Column(Integer, nullable=True)  # Nullable for OAuth users
     email = Column(String(100), unique=True, nullable=False, index=True)
-    phone = Column(String(20), nullable=False)
-    district = Column(String(50), nullable=False)
+    phone = Column(String(20), nullable=True)  # Nullable for OAuth users
+    district = Column(String(50), nullable=True)  # Nullable for OAuth users
     availability = Column(String(50), default="Available")
     rating = Column(DECIMAL(2,1), default=0.0)
     reviews_count = Column(Integer, default=0)
     created_at = Column(TIMESTAMP, default=func.now())
     
+    # Profile Completion (for OAuth users)
+    profile_completed = Column(Boolean, default=False)  # True if all required fields filled
+    
     # Authentication & Security
-    password_hash = Column(String(255), nullable=True)  # Nullable for migration, make required later
+    password_hash = Column(String(255), nullable=True)  # Nullable for OAuth users
+    oauth_provider = Column(String(20), nullable=True)  # e.g. "google"
+    oauth_id = Column(String(255), nullable=True)  # Google sub ID
     is_active = Column(Boolean, default=True, nullable=False)
     is_email_verified = Column(Boolean, default=False, nullable=False)
     email_verification_token = Column(String(255), nullable=True)
