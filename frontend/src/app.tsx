@@ -3,6 +3,7 @@
 // =============================================================================
 
 import { useState } from 'preact/hooks';
+import Router, { route } from 'preact-router';
 import { Dashboard } from './pages/Dashboard/Dashboard';
 import { NewIncidentPage } from './pages/NewIncident/NewIncident';
 import { IncidentDetailPage } from './pages/IncidentDetail/IncidentDetail';
@@ -10,138 +11,130 @@ import { IncidentWorkspacePage } from './pages/IncidentWorkspace/IncidentWorkspa
 import { LawyerFinderPage } from './pages/LawyerFinder/LawyerFinder';
 import { EvidenceVaultPage } from './pages/EvidenceVault/EvidenceVault';
 import { LawbookPage } from './pages/Lawbook/Lawbook';
+import { AuthPage } from './pages/Auth/Auth';
+import { Settings } from './pages/Settings/Settings';
 import { mockUser } from './data/mockData';
 import { ThemeProvider } from './hooks/useTheme';
+import { AuthProvider, useAuth } from './hooks/useAuth';
 import type { Incident, NavItem } from './types';
 import type { WizardData } from './components/organisms/OnboardingWizard/OnboardingWizard';
 import './index.css';
 
-type Page = 'dashboard' | 'new-incident' | 'incident-detail' | 'incident-workspace' | 'lawyer-finder' | 'evidence-vault' | 'lawbook';
-
 function AppContent() {
-  const [currentPage, setCurrentPage] = useState<Page>('dashboard');
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const [wizardData, setWizardData] = useState<WizardData | null>(null);
 
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show auth page if not authenticated
+  if (!isAuthenticated) {
+    return <AuthPage onSuccess={() => route('/dashboard')} />;
+  }
+
+  // Use actual user data if available, fallback to mockUser for compatibility
+  const currentUser = user || mockUser;
+
   const handleNavigate = (item: NavItem) => {
     console.log('Navigate to:', item.href);
-    // Map navigation items to pages
-    if (item.href === '/') {
-      setCurrentPage('dashboard');
-    } else if (item.href === '/lawyers') {
-      setCurrentPage('lawyer-finder');
-    } else if (item.href === '/evidence') {
-      setCurrentPage('evidence-vault');
-    } else if (item.href === '/lawbook') {
-      setCurrentPage('lawbook');
-    }
+    route(item.href);
   };
 
   const handleNewIncident = () => {
-    setCurrentPage('new-incident');
+    route('/new-incident');
   };
 
   const handleViewIncident = (incident: Incident) => {
     setSelectedIncident(incident);
-    setCurrentPage('incident-detail');
+    route('/incident-detail');
   };
 
   const handleWizardComplete = (data: WizardData) => {
     console.log('Wizard completed with data:', data);
-    // Store wizard data and navigate to workspace
     setWizardData(data);
-    setCurrentPage('incident-workspace');
+    route('/incident-workspace');
   };
 
   const handleWizardCancel = () => {
-    setCurrentPage('dashboard');
+    route('/dashboard');
   };
 
   const handleBackToDashboard = () => {
     setSelectedIncident(null);
     setWizardData(null);
-    setCurrentPage('dashboard');
+    route('/dashboard');
   };
 
   const handleFindLawyers = () => {
-    setCurrentPage('lawyer-finder');
+    route('/lawyers');
   };
 
-  // Render current page
-  switch (currentPage) {
-    case 'new-incident':
-      return (
-        <NewIncidentPage
-          user={mockUser}
-          onNavigate={handleNavigate}
-          onComplete={handleWizardComplete}
-          onCancel={handleWizardCancel}
-        />
-      );
-
-    case 'incident-workspace':
-      return (
-        <IncidentWorkspacePage
-          user={mockUser}
-          wizardData={wizardData || undefined}
-          onNavigate={handleNavigate}
-          onBack={handleBackToDashboard}
-          onFindLawyers={handleFindLawyers}
-        />
-      );
-
-    case 'incident-detail':
-      if (!selectedIncident) {
-        setCurrentPage('dashboard');
-        return null;
-      }
-      return (
-        <IncidentDetailPage
-          user={mockUser}
-          incident={selectedIncident}
-          onNavigate={handleNavigate}
-          onBack={handleBackToDashboard}
-        />
-      );
-
-    case 'lawyer-finder':
-      return (
-        <LawyerFinderPage
-          user={mockUser}
-          onNavigate={handleNavigate}
-          onBack={handleBackToDashboard}
-        />
-      );
-
-    case 'evidence-vault':
-      return (
-        <EvidenceVaultPage
-          onNavigate={handleNavigate}
-        />
-      );
-
-    case 'lawbook':
-      return (
-        <LawbookPage
-          onNavigate={handleNavigate}
-        />
-      );
-
-    default:
-      return (
-        <Dashboard
-          onNavigate={handleNavigate}
-          onNewIncident={handleNewIncident}
-          onViewIncident={handleViewIncident}
-        />
-      );
-  }
+  return (
+    <Router>
+      <Dashboard
+        path="/dashboard"
+        default
+        onNavigate={handleNavigate}
+        onNewIncident={handleNewIncident}
+        onViewIncident={handleViewIncident}
+      />
+      <NewIncidentPage
+        path="/new-incident"
+        user={currentUser}
+        onNavigate={handleNavigate}
+        onComplete={handleWizardComplete}
+        onCancel={handleWizardCancel}
+      />
+      <IncidentWorkspacePage
+        path="/incident-workspace"
+        user={currentUser}
+        wizardData={wizardData || undefined}
+        onNavigate={handleNavigate}
+        onBack={handleBackToDashboard}
+        onFindLawyers={handleFindLawyers}
+      />
+      <IncidentDetailPage
+        path="/incident-detail"
+        user={currentUser}
+        incident={selectedIncident || undefined}
+        onNavigate={handleNavigate}
+        onBack={handleBackToDashboard}
+      />
+      <LawyerFinderPage
+        path="/lawyers"
+        user={currentUser}
+        onNavigate={handleNavigate}
+        onBack={handleBackToDashboard}
+      />
+      <EvidenceVaultPage
+        path="/evidence"
+        onNavigate={handleNavigate}
+      />
+      <LawbookPage
+        path="/lawbook"
+        onNavigate={handleNavigate}
+      />
+      <Settings path="/settings" />
+    </Router>
+  );
 }
 
 export function App() {
   return (
     <ThemeProvider>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

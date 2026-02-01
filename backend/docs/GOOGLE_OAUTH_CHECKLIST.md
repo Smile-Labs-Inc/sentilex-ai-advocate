@@ -78,12 +78,60 @@ Open `frontend/google-oauth-demo.html` in browser
 </a>
 ```
 
-**Create OAuth callback route:**
+**⚠️ SECURITY WARNING: Current Implementation**
+
+The current OAuth flow passes JWT tokens in URL query parameters and suggests storing them in localStorage. This has serious security implications:
+
+- **URL Token Leakage**: Tokens in URLs can leak via:
+  - Browser history
+  - Server logs
+  - Referrer headers
+  - Shared URLs
+- **localStorage XSS Risk**: Any XSS vulnerability can steal tokens from localStorage
+- **Token Replay**: Stolen tokens can impersonate users until expiration
+
+**🔒 RECOMMENDED: Secure OAuth Callback Pattern**
+
+Instead of the insecure pattern, implement this secure approach:
+
 ```javascript
 // Route: /oauth-callback
-const token = new URLSearchParams(window.location.search).get('token');
-localStorage.setItem('access_token', token);
+// DON'T DO THIS (insecure):
+// const token = new URLSearchParams(window.location.search).get('token');
+// localStorage.setItem('access_token', token);
+
+// DO THIS (secure):
+async function handleOAuthCallback() {
+  const code = new URLSearchParams(window.location.search).get('code');
+  const state = new URLSearchParams(window.location.search).get('state');
+  
+  // Verify state to prevent CSRF
+  const savedState = sessionStorage.getItem('oauth_state');
+  if (state !== savedState) {
+    throw new Error('Invalid OAuth state');
+  }
+  
+  // Exchange code for token server-side (not exposed to browser)
+  const response = await fetch('http://localhost:8000/auth/google/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, state }),
+    credentials: 'include' // Send/receive HTTP-only cookies
+  });
+  
+  if (response.ok) {
+    // Token stored in HTTP-only cookie by backend
+    // Redirect to dashboard
+    window.location.href = '/dashboard';
+  }
+}
 ```
+
+**Backend changes needed:**
+1. Return authorization code instead of token in redirect
+2. Create `/auth/google/token` endpoint to exchange code for token
+3. Set token in HTTP-only cookie (not accessible to JavaScript)
+4. Include CSRF protection with state parameter
 
 ## 🧪 Testing Checklist
 
@@ -165,12 +213,69 @@ After successful setup:
 
 ## 🔐 Security Notes
 
+### Critical Security Issues in Current Implementation
+
+**⚠️ URGENT: The current OAuth flow has serious security vulnerabilities**
+
+Current issues:
+- ❌ JWT tokens passed in URL query parameters (leak risk)
+- ❌ Tokens stored in localStorage (XSS vulnerability)
+- ❌ No CSRF protection with state parameter
+- ❌ No authorization code exchange flow
+
+**Required Security Improvements:**
+
+1. **Implement Authorization Code Flow**
+   - Backend should return authorization code (not token) in redirect
+   - Frontend exchanges code for token via secure endpoint
+   - Token never exposed in URL or browser
+
+2. **Use HTTP-Only Cookies**
+   - Store JWT in HTTP-only cookie (not accessible to JavaScript)
+   - Prevents XSS attacks from stealing tokens
+   - Set SameSite=Strict for CSRF protection
+
+3. **Add CSRF Protection**
+   - Generate random state parameter before OAuth flow
+   - Verify state matches after callback
+   - Prevents cross-site request forgery
+
+4. **Backend Code Required:**
+   ```python
+   # New endpoint needed: /auth/google/token
+   @router.post("/google/token")
+   async def exchange_code_for_token(
+       code: str,
+       state: str,
+       response: Response
+   ):
+       # 1. Verify state parameter
+       # 2. Exchange code with Google
+       # 3. Create/login user
+       # 4. Generate JWT
+       # 5. Set HTTP-only cookie
+       response.set_cookie(
+           key="access_token",
+           value=jwt_token,
+           httponly=True,
+           secure=True,  # HTTPS only in production
+           samesite="strict",
+           max_age=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60
+       )
+       return {"success": True}
+   ```
+
+### Additional Security Best Practices
+
 - OAuth users have NULL password_hash
 - Email is automatically verified
 - JWT tokens expire per JWT_ACCESS_TOKEN_EXPIRE_MINUTES
-- Use HTTPS in production
+- **ALWAYS use HTTPS in production** (required for secure cookies)
 - Store Client Secret securely (never commit to git)
 - Consider account linking for existing email users
+- Implement token refresh mechanism
+- Add rate limiting on OAuth endpoints
+- Log all OAuth authentication attempts
 
 ---
 
