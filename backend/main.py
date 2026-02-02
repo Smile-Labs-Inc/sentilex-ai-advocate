@@ -21,6 +21,7 @@ from routers import admin_auth
 from routers import lawbook
 from routers import lawyer_verification
 from routers import legal_queries
+from routers import incidents
 from mcp_server.mcp_client import get_mcp_client
 
 
@@ -77,6 +78,7 @@ app.include_router(google_oauth.router)
 app.include_router(lawbook.router)
 app.include_router(lawyer_verification.router)
 app.include_router(legal_queries.router)
+app.include_router(incidents.router)
 
 
 # Session Middleware for OAuth (must be added before CORS)
