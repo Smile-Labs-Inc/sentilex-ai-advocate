@@ -23,7 +23,7 @@ export const API_CONFIG = {
             RESET_PASSWORD: '/auth/reset-password',
             CHANGE_PASSWORD: '/auth/change-password',
             ME: '/auth/me',
-            UPDATE_PROFILE: '/auth/profile',
+            UPDATE_PROFILE: '/auth/me',
             SESSIONS: '/auth/sessions',
             REVOKE_SESSION: (id: number) => `/auth/sessions/${id}`,
             MFA: {
