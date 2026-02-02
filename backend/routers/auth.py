@@ -381,6 +381,27 @@ async def verify_email(
     
     return MessageResponse(message="Email verified successfully")
 
+@router.post("/resend-verification", response_model=MessageResponse)
+async def resend_verification_email(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Resend email verification link"""
+    
+    # Check if already verified
+    if current_user.email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email is already verified"
+        )
+    
+    # Generate new verification token and send email
+    verification_token = generate_verification_token(current_user.email)
+    user_name = f"{current_user.first_name} {current_user.last_name}"
+    send_verification_email(current_user.email, verification_token, user_name)
+    
+    return MessageResponse(message="Verification email sent successfully")
+
 @router.post("/change-password", response_model=MessageResponse)
 async def change_password(
     password_data: PasswordChange,

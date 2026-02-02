@@ -7,6 +7,7 @@ Create Date: 2026-01-31 11:13:47.460568
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.exc import OperationalError, ProgrammingError
 
 
 # revision identifiers, used by Alembic.
@@ -34,16 +35,16 @@ def upgrade() -> None:
     # Make some fields nullable for OAuth users (only if needed)
     try:
         op.alter_column('users', 'district', nullable=True)
-    except:
-        pass  # Already nullable
+    except (OperationalError, ProgrammingError):
+        pass  # Already nullable or column doesn't exist
     
     try:
         op.alter_column('lawyers', 'phone', nullable=True)
         op.alter_column('lawyers', 'specialties', nullable=True)
         op.alter_column('lawyers', 'experience_years', nullable=True)
         op.alter_column('lawyers', 'district', nullable=True)
-    except:
-        pass  # Already nullable
+    except (OperationalError, ProgrammingError):
+        pass  # Already nullable or column doesn't exist
 
 
 def downgrade() -> None:

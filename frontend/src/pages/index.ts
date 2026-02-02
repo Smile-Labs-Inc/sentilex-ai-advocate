@@ -16,3 +16,7 @@ export type { IncidentWorkspacePageProps } from './IncidentWorkspace/IncidentWor
 
 export { LawyerFinderPage } from './LawyerFinder/LawyerFinder';
 export type { LawyerFinderPageProps } from './LawyerFinder/LawyerFinder';
+
+export { AuthPage } from './Auth/Auth';
+
+export { Settings } from './Settings/Settings';

@@ -2,6 +2,9 @@
 // Veritas Protocol - Type Definitions
 // =============================================================================
 
+// Re-export auth types
+export * from './auth';
+
 export type IncidentType =
   | 'cyberbullying'
   | 'harassment'
