@@ -241,7 +241,7 @@ class AuthService {
     // Update user profile
     async updateProfile(data: Partial<UserProfile>): Promise<UserProfile> {
         const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.AUTH.UPDATE_PROFILE}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: this.getAuthHeaders(),
             body: JSON.stringify(data),
         });
