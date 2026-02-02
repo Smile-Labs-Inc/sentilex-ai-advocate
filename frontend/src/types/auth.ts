@@ -77,10 +77,11 @@ export interface PasswordChangeRequest {
 }
 
 export interface SessionInfo {
-    session_id: string;
+    id: string;
     ip_address: string;
     user_agent: string;
+    device_info: string;
     created_at: string;
-    last_activity: string;
+    last_activity_at: string;
     is_current: boolean;
 }
