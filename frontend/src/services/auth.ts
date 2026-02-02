@@ -33,21 +33,21 @@ class AuthService {
 
     // Token management
     getToken(): string | null {
-        return localStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
+        return sessionStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
     }
 
     getRefreshToken(): string | null {
-        return localStorage.getItem(APP_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
+        return sessionStorage.getItem(APP_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
     }
 
     setTokens(accessToken: string, refreshToken: string): void {
-        localStorage.setItem(APP_CONFIG.TOKEN_STORAGE_KEY, accessToken);
-        localStorage.setItem(APP_CONFIG.REFRESH_TOKEN_STORAGE_KEY, refreshToken);
+        sessionStorage.setItem(APP_CONFIG.TOKEN_STORAGE_KEY, accessToken);
+        sessionStorage.setItem(APP_CONFIG.REFRESH_TOKEN_STORAGE_KEY, refreshToken);
     }
 
     clearTokens(): void {
-        localStorage.removeItem(APP_CONFIG.TOKEN_STORAGE_KEY);
-        localStorage.removeItem(APP_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
+        sessionStorage.removeItem(APP_CONFIG.TOKEN_STORAGE_KEY);
+        sessionStorage.removeItem(APP_CONFIG.REFRESH_TOKEN_STORAGE_KEY);
         localStorage.removeItem(APP_CONFIG.USER_STORAGE_KEY);
         localStorage.removeItem(APP_CONFIG.USER_TYPE_STORAGE_KEY);
     }
