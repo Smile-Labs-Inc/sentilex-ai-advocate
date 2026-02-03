@@ -13,6 +13,7 @@ import { QuickLinksPanel } from '../../components/organisms/QuickLinksPanel/Quic
 import { QuickActionsGrid } from '../../components/organisms/QuickActionsGrid/QuickActionsGrid';
 import { ActivityFeed } from '../../components/organisms/ActivityFeed/ActivityFeed';
 import { DonutChart } from '../../components/organisms/Charts/DonutChart';
+import { useAuth } from '../../hooks/useAuth';
 import type { Incident, NavItem } from '../../types';
 
 export interface DashboardProps {
@@ -22,11 +23,12 @@ export interface DashboardProps {
 }
 
 export function Dashboard({ onNavigate, onNewIncident, onViewIncident }: DashboardProps) {
+    const { user } = useAuth();
+
     // Toggle this to see new user view
     const showNewUserView = false;
 
     const {
-        user,
         isNewUser,
         userStats,
         globalStats,
@@ -35,6 +37,10 @@ export function Dashboard({ onNavigate, onNewIncident, onViewIncident }: Dashboa
         caseDistribution,
         quickLinks
     } = useDashboardData(showNewUserView);
+
+    if (!user) {
+        return null; // Should never happen due to auth guard in app.tsx
+    }
 
     const handleNewIncident = () => {
         onNewIncident?.();
@@ -50,6 +56,8 @@ export function Dashboard({ onNavigate, onNewIncident, onViewIncident }: Dashboa
         console.log('Quick action:', actionId);
         if (actionId === 'new-incident') {
             handleNewIncident();
+        } else if (actionId === 'ai-chat') {
+            onNavigate?.({ id: 'ai-chat', label: 'AI Chat', icon: 'Sparkles', href: '/ai-chat' });
         }
     };
 

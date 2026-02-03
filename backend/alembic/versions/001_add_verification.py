@@ -21,6 +21,9 @@ def upgrade() -> None:
     verification_status_enum = sa.Enum('not_started', 'in_progress', 'submitted', 'approved', 'rejected', 
                                        name='verificationstatusenum')
     
+    # Explicitly create the ENUM type in the database
+    verification_status_enum.create(op.get_bind(), checkfirst=True)
+    
     # Add verification columns to lawyers table
     op.add_column('lawyers', sa.Column('verification_step', sa.Integer(), nullable=False, server_default='1'))
     op.add_column('lawyers', sa.Column('verification_status', 
@@ -114,3 +117,6 @@ def downgrade() -> None:
     
     for column in columns_to_drop:
         op.drop_column('lawyers', column)
+    
+    # Drop the ENUM type
+    sa.Enum(name='verificationstatusenum').drop(op.get_bind(), checkfirst=True)

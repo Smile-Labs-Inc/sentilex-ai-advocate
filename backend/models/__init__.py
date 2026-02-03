@@ -11,12 +11,16 @@ from .login_attempt import LoginAttempt
 from .active_session import ActiveSession
 from .lawyerverificationaudit import LawyerVerificationAudit
 from .incident import Incident, IncidentStatusEnum, IncidentTypeEnum
+from .chat_message import ChatMessage, ChatMessageRoleEnum
+from .evidence import Evidence
 
 __all__ = [
     # User Models
     "Lawyer",
     "Admin",
     "Incident",
+    "ChatMessage",
+    "Evidence",
     
     # Enums
     "AvailabilityEnum",
@@ -24,6 +28,7 @@ __all__ = [
     "AdminRole",
     "IncidentStatusEnum",
     "IncidentTypeEnum",
+    "ChatMessageRoleEnum",
     
     # Security Models
     "TokenBlacklist",

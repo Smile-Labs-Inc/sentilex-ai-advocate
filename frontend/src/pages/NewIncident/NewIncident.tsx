@@ -5,10 +5,11 @@
 
 import { DashboardLayout } from '../../components/templates/DashboardLayout/DashboardLayout';
 import { OnboardingWizard, type WizardData } from '../../components/organisms/OnboardingWizard/OnboardingWizard';
-import type { User, NavItem } from '../../types';
+import type { NavItem } from '../../types';
+import type { UserProfile } from '../../types/auth';
 
 export interface NewIncidentPageProps {
-    user: User;
+    user: UserProfile;
     onNavigate: (item: NavItem) => void;
     onComplete: (data: WizardData) => void;
     onCancel: () => void;

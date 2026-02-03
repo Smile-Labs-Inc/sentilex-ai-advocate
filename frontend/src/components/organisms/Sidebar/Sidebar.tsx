@@ -13,10 +13,11 @@ import { NavItem } from '../../molecules/NavItem/NavItem';
 import { UserProfile } from '../../molecules/UserProfile/UserProfile';
 import { mainNavigation } from '../../../data/navigation';
 import { useTheme } from '../../../hooks/useTheme';
-import type { User, NavItem as NavItemType } from '../../../types';
+import type { NavItem as NavItemType } from '../../../types';
+import type { UserProfile as AuthUserProfile } from '../../../types/auth';
 
 export interface SidebarProps {
-    user: User;
+    user: AuthUserProfile;
     currentPath?: string;
     onNavigate?: (item: NavItemType) => void;
     className?: string;
