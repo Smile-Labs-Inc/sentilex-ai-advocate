@@ -60,11 +60,11 @@ USER CONTEXT QUERY: {input}
 USER ID: {user_id}
 
 Format response as JSON:
-{{
+{{{{
     "user_profile": "name, email, preferences",
     "relevant_cases": ["case summaries"],
     "preferences": "language, district"
-}}
+}}}}
 
 SQL Query:""")
 
@@ -90,7 +90,7 @@ def create_db_query_agent(user_id: int):
         toolkit=toolkit,
         verbose=True,
         agent_type="tool-calling",
-        prefix=DB_QUERY_PROMPT.format(user_id=user_id, input="{input}"),
+        prefix=DB_QUERY_PROMPT.format(user_id=user_id, input="{{input}}"),
         max_iterations=3,
     )
     

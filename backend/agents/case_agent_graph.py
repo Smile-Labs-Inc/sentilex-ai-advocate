@@ -12,6 +12,7 @@ from langchain_core.messages import AnyMessage, HumanMessage, AIMessage
 from database import get_db
 from agents.memory import IncidentChatHistory, UserGlobalChatHistory
 from agents.db_query_agent import get_user_context
+from models.chat_message import ChatMessage
 
 
 class CaseAgentState(TypedDict):
@@ -49,6 +50,7 @@ def db_user_context_node(state: CaseAgentState) -> dict:
 def legal_reasoning_node(state: CaseAgentState) -> dict:
     """Run the main legal chain with full context injected."""
     from chains.main_chain import create_main_chain
+    from schemas.messages import UserQuery
     chain = create_main_chain()
     
     # Build context summary from histories
@@ -65,10 +67,10 @@ def legal_reasoning_node(state: CaseAgentState) -> dict:
     user_question = state["messages"][-1].content if state["messages"] else ""
     
     # Create enriched query with all context
-    enriched_query = {
-        "question": user_question,
-        "jurisdiction": "Sri Lanka",  # Default, could be from user profile
-        "context": f"""
+    enriched_query = UserQuery(
+        question=user_question,
+        case_context=f"""
+JURISDICTION: Sri Lanka
 USER PROFILE:
 {state.get('user_context', 'No profile available')}
 
@@ -78,7 +80,7 @@ INCIDENT HISTORY:
 USER PATTERNS:
 {global_context or 'No global history available'}
 """
-    }
+    )
     
     try:
         result = chain.invoke(enriched_query)
@@ -90,20 +92,25 @@ USER PATTERNS:
 
 
 def save_memories_node(state: CaseAgentState) -> dict:
-    """Save new messages to both incident + global history."""
+    """Save new messages to incident history (which includes user_id for global queries)."""
     db = next(get_db())
     try:
         # Get the last user message and AI response
         messages_to_save = state["messages"][-2:] if len(state["messages"]) >= 2 else state["messages"]
         
-        incident_history = IncidentChatHistory(state["incident_id"], db)
-        global_history = UserGlobalChatHistory(state["user_id"], db)
-        
+        # Save to incident history with user_id
+        # This automatically enables global user queries via user_id filter
         for msg in messages_to_save:
-            # Add to incident history
-            incident_history.add_message(msg)
-            # Add to global history (for user patterns)
-            global_history.add_message(msg)
+            role = "user" if isinstance(msg, HumanMessage) else "assistant"
+            chat_msg = ChatMessage(
+                incident_id=state["incident_id"],
+                user_id=state["user_id"],
+                role=role,
+                content=msg.content
+            )
+            db.add(chat_msg)
+        
+        db.commit()
     finally:
         db.close()
     
