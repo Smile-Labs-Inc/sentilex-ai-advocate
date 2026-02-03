@@ -4,10 +4,10 @@
  * Handles communication with the backend incidents API.
  */
 
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, APP_CONFIG } from '../config';
 
 // Types matching backend schemas
-export type IncidentType = 
+export type IncidentType =
     | 'cyberbullying'
     | 'harassment'
     | 'stalking'
@@ -56,7 +56,7 @@ export interface IncidentListResponse {
  * Get the auth token from localStorage.
  */
 function getAuthToken(): string | null {
-    return localStorage.getItem('access_token');
+    return localStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
 }
 
 /**
@@ -64,11 +64,11 @@ function getAuthToken(): string | null {
  */
 export async function createIncident(data: IncidentCreate): Promise<IncidentResponse> {
     const token = getAuthToken();
-    
+
     if (!token) {
         throw new Error('User is not authenticated');
     }
-    
+
     const response = await fetch(`${API_BASE_URL}/incidents/`, {
         method: 'POST',
         headers: {
@@ -77,12 +77,12 @@ export async function createIncident(data: IncidentCreate): Promise<IncidentResp
         },
         body: JSON.stringify(data),
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.detail || `Failed to create incident: ${response.status}`);
     }
-    
+
     return response.json();
 }
 
@@ -91,28 +91,28 @@ export async function createIncident(data: IncidentCreate): Promise<IncidentResp
  */
 export async function getIncidents(statusFilter?: IncidentStatus): Promise<IncidentListResponse> {
     const token = getAuthToken();
-    
+
     if (!token) {
         throw new Error('User is not authenticated');
     }
-    
+
     const url = new URL(`${API_BASE_URL}/incidents/`);
     if (statusFilter) {
         url.searchParams.append('status_filter', statusFilter);
     }
-    
+
     const response = await fetch(url.toString(), {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
         },
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.detail || `Failed to fetch incidents: ${response.status}`);
     }
-    
+
     return response.json();
 }
 
@@ -121,22 +121,22 @@ export async function getIncidents(statusFilter?: IncidentStatus): Promise<Incid
  */
 export async function getIncident(incidentId: number): Promise<IncidentResponse> {
     const token = getAuthToken();
-    
+
     if (!token) {
         throw new Error('User is not authenticated');
     }
-    
+
     const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
         },
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.detail || `Failed to fetch incident: ${response.status}`);
     }
-    
+
     return response.json();
 }

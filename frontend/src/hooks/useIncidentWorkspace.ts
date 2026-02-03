@@ -13,6 +13,7 @@ import type {
     IncidentType
 } from '../types';
 import type { WizardData } from '../components/organisms/OnboardingWizard/OnboardingWizard';
+import { createIncident, type IncidentCreate } from '../services/incident';
 
 // Helper to generate unique IDs
 const generateId = () => Math.random().toString(36).substring(2, 11);
@@ -86,6 +87,7 @@ export interface UseIncidentWorkspaceReturn {
     // Submission
     canSubmit: boolean;
     submitToPolice: () => Promise<void>;
+    saveDraft: () => Promise<void>;
 
     // Chat
     sendMessage: (message: string) => void;
@@ -321,23 +323,95 @@ export function useIncidentWorkspace(wizardData?: WizardData): UseIncidentWorksp
         incident.evidence.length > 0 &&
         incident.identifiedLaws.some(l => l.includedInReport);
 
+    // Save draft to backend
+    const saveDraft = useCallback(async () => {
+        try {
+            // Convert date to YYYY-MM-DD format (date only, not datetime)
+            const dateOccurred = incident.timeline[0]?.timestamp
+                ? incident.timeline[0].timestamp.toISOString().split('T')[0]
+                : null;
+
+            const incidentData: IncidentCreate = {
+                incident_type: incident.type,
+                title: incident.title,
+                description: incident.description,
+                date_occurred: dateOccurred,
+                location: null,
+                jurisdiction: 'Sri Lanka',
+                platforms_involved: incident.evidence
+                    .filter(e => e.source)
+                    .map(e => e.source)
+                    .join(', ') || null,
+                perpetrator_info: null,
+                evidence_notes: incident.evidence
+                    .map(e => `${e.name}: ${e.description || 'No description'}`)
+                    .join('\n') || null,
+            };
+
+            const response = await createIncident(incidentData);
+
+            setIncident(prev => ({
+                ...prev,
+                id: `inc_${response.id}`,
+                status: 'draft',
+                updatedAt: new Date(),
+            }));
+
+            alert('Draft saved successfully!');
+        } catch (error) {
+            console.error('Failed to save draft:', error);
+            alert('Failed to save draft. Please try again.');
+        }
+    }, [incident]);
+
+    // Submit to police (creates or updates incident with submitted status)
     const submitToPolice = useCallback(async () => {
-        setIncident(prev => ({
-            ...prev,
-            status: 'submitted',
-            updatedAt: new Date(),
-            timeline: [
-                ...prev.timeline,
-                {
-                    id: generateId(),
-                    type: 'report',
-                    title: 'Submitted to Police',
-                    description: 'Your case has been submitted to the Sri Lanka Computer Crimes Division for review.',
-                    timestamp: new Date(),
-                },
-            ],
-        }));
-    }, []);
+        try {
+            const incidentData: IncidentCreate = {
+                incident_type: incident.type,
+                title: incident.title,
+                description: `${incident.description}\n\n## Identified Laws:\n${incident.identifiedLaws
+                    .filter(l => l.includedInReport)
+                    .map(l => `- ${l.name}, ${l.section}: ${l.description}`)
+                    .join('\n')}`,
+                date_occurred: incident.timeline[0]?.timestamp.toISOString() || null,
+                location: null,
+                jurisdiction: 'Sri Lanka',
+                platforms_involved: incident.evidence
+                    .filter(e => e.source)
+                    .map(e => e.source)
+                    .join(', ') || null,
+                perpetrator_info: null,
+                evidence_notes: incident.evidence
+                    .map(e => `${e.name}: ${e.description || 'No description'}`)
+                    .join('\n') || null,
+            };
+
+            const response = await createIncident(incidentData);
+
+            setIncident(prev => ({
+                ...prev,
+                id: `inc_${response.id}`,
+                status: 'submitted',
+                updatedAt: new Date(),
+                timeline: [
+                    ...prev.timeline,
+                    {
+                        id: generateId(),
+                        type: 'report',
+                        title: 'Submitted to Police',
+                        description: 'Your case has been submitted to the Sri Lanka Computer Crimes Division for review.',
+                        timestamp: new Date(),
+                    },
+                ],
+            }));
+
+            alert('Successfully submitted to police!');
+        } catch (error) {
+            console.error('Failed to submit to police:', error);
+            alert('Failed to submit. Please try again.');
+        }
+    }, [incident]);
 
     return {
         incident,
@@ -352,6 +426,7 @@ export function useIncidentWorkspace(wizardData?: WizardData): UseIncidentWorksp
         toggleLawIncluded,
         canSubmit,
         submitToPolice,
+        saveDraft,
         sendMessage,
         chatMessages,
         isChatLoading,

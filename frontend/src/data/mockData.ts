@@ -4,35 +4,42 @@
 // =============================================================================
 
 import type {
-    User,
     Incident,
     UserStats,
     GlobalStats,
     ActivityItem,
     CaseTypeDistribution
 } from '../types';
+import type { UserProfile } from '../types/auth';
 
 // =============================================================================
 // Mock User
 // Toggle isNewUser to test different dashboard views
 // =============================================================================
 
-export const mockUser: User = {
-    id: 'usr_001',
-    name: 'Alex Chen',
+export const mockUser: UserProfile = {
+    id: 1,
+    first_name: 'Alex',
+    last_name: 'Chen',
     email: 'alex.chen@email.com',
-    avatar: undefined, // Will use initials fallback
-    isNewUser: false, // Set to true to see new user view
-    createdAt: new Date('2025-11-15'),
+    role: 'user',
+    is_active: true,
+    email_verified: true,
+    mfa_enabled: false,
+    preferred_language: 'en',
+    district: 'Colombo',
 };
 
-export const mockNewUser: User = {
-    id: 'usr_new',
-    name: 'New User',
+export const mockNewUser: UserProfile = {
+    id: 2,
+    first_name: 'New',
+    last_name: 'User',
     email: 'newuser@email.com',
-    avatar: undefined,
-    isNewUser: true,
-    createdAt: new Date(),
+    role: 'user',
+    is_active: true,
+    email_verified: false,
+    mfa_enabled: false,
+    preferred_language: 'en',
 };
 
 // =============================================================================

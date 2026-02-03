@@ -19,7 +19,7 @@ export const mainNavigation: NavSection[] = [
         title: 'Support',
         items: [
             { id: 'lawbook', label: 'Lawbook', icon: 'BookOpen', href: '/lawbook' },
-            { id: 'ai-assist', label: 'AI Assistant', icon: 'Sparkles', href: '/assistant' },
+            { id: 'ai-assist', label: 'AI Assistant', icon: 'Sparkles', href: '/ai-chat' },
             { id: 'settings', label: 'Settings', icon: 'Settings', href: '/settings' },
         ],
     },

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'preact/hooks';
 import { DashboardLayout } from '../../components/templates/DashboardLayout/DashboardLayout';
 import { LawbookViewer } from '../../components/organisms/LawbookViewer/LawbookViewer';
 import { LawbookChat } from '../../components/organisms/LawbookChat/LawbookChat';
-import { mockUser } from '../../data/mockData';
+import { useAuth } from '../../hooks/useAuth';
 import type { NavItem, Bookmark, ChatMessage } from '../../types';
 import { formatLegalResponse } from '../../lib/formatters';
 import { fetchLaws, fetchLawContent, submitQuery, type Law } from '../../services/lawbook.tsx';
@@ -12,6 +12,7 @@ export interface LawbookPageProps {
 }
 
 export function LawbookPage({ onNavigate }: LawbookPageProps) {
+    const { user } = useAuth();
     const [laws, setLaws] = useState<Law[]>([]);
     const [activeLawId, setActiveLawId] = useState<string | null>(null);
     const [lawContent, setLawContent] = useState<string>('');
@@ -27,6 +28,10 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
         }
     ]);
     const [isChatLoading, setIsChatLoading] = useState(false);
+
+    if (!user) {
+        return null;
+    }
 
     // Fetch list of laws on mount
     useEffect(() => {
@@ -130,7 +135,7 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
 
     return (
         <DashboardLayout
-            user={mockUser}
+            user={user}
             currentPath="/lawbook"
             onNavigate={onNavigate}
         >

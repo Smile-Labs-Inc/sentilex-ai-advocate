@@ -3,9 +3,8 @@
 // Centralizes data fetching logic for easy API replacement later
 // =============================================================================
 
-import { useState, useMemo } from 'preact/hooks';
+import { useState, useMemo, useEffect } from 'preact/hooks';
 import type {
-    User,
     Incident,
     UserStats,
     GlobalStats,
@@ -13,18 +12,15 @@ import type {
     CaseTypeDistribution
 } from '../types';
 import {
-    mockUser,
-    mockNewUser,
-    mockIncidents,
     mockUserStats,
     mockGlobalStats,
     mockActivityFeed,
     mockCaseTypeDistribution,
 } from '../data/mockData';
 import { primaryQuickLinks } from '../data/quickLinks';
+import { getIncidents, type IncidentResponse } from '../services/incident';
 
 interface DashboardData {
-    user: User;
     isNewUser: boolean;
     userStats: UserStats | null;
     globalStats: GlobalStats | null;
@@ -35,30 +31,74 @@ interface DashboardData {
     isLoading: boolean;
 }
 
+// Helper to convert backend incident to frontend format
+function convertIncident(backendIncident: IncidentResponse): Incident {
+    const statusMap: Record<string, Incident['status']> = {
+        'draft': 'pending',
+        'submitted': 'submitted-to-police',
+        'under_review': 'in-progress',
+        'resolved': 'resolved'
+    };
+
+    return {
+        id: `inc_${backendIncident.id}`,
+        title: backendIncident.title,
+        type: backendIncident.incident_type,
+        status: statusMap[backendIncident.status] || 'pending',
+        createdAt: new Date(backendIncident.created_at),
+        updatedAt: new Date(backendIncident.updated_at),
+        lawsIdentified: 0, // TODO: Add this to backend if needed
+        description: backendIncident.description,
+    };
+}
+
 /**
  * Custom hook for dashboard data
  * Toggle useNewUser to test different dashboard states
  */
 export function useDashboardData(useNewUser = false): DashboardData {
-    // Simulate loading state (for future API integration)
-    const [isLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [incidents, setIncidents] = useState<Incident[]>([]);
 
-    // Select user based on flag (will be replaced with auth state later)
-    const user = useNewUser ? mockNewUser : mockUser;
-    const isNewUser = user.isNewUser;
+    // Determine new user based on parameter
+    const isNewUser = useNewUser;
+
+    // Fetch real incidents from API
+    useEffect(() => {
+        const fetchIncidents = async () => {
+            if (isNewUser) {
+                setIncidents([]);
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                setIsLoading(true);
+                const response = await getIncidents();
+                const convertedIncidents = response.incidents.map(convertIncident);
+                setIncidents(convertedIncidents);
+            } catch (error) {
+                console.error('Failed to fetch incidents:', error);
+                setIncidents([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchIncidents();
+    }, [isNewUser]);
 
     // Memoize computed data
     const data = useMemo(() => ({
-        user,
         isNewUser,
         userStats: isNewUser ? null : mockUserStats,
-        globalStats: mockGlobalStats, // Always available, shown prominently for new users
-        incidents: isNewUser ? [] : mockIncidents,
+        globalStats: mockGlobalStats,
+        incidents,
         activity: isNewUser ? [] : mockActivityFeed,
         caseDistribution: mockCaseTypeDistribution,
         quickLinks: primaryQuickLinks,
         isLoading,
-    }), [user, isNewUser, isLoading]);
+    }), [isNewUser, incidents, isLoading]);
 
     return data;
 }
@@ -68,17 +108,66 @@ export function useDashboardData(useNewUser = false): DashboardData {
  * (For future incident detail page)
  */
 export function useIncident(id: string): Incident | null {
-    return useMemo(() => {
-        return mockIncidents.find(inc => inc.id === id) || null;
+    const [incident, setIncident] = useState<Incident | null>(null);
+
+    useEffect(() => {
+        const fetchIncident = async () => {
+            try {
+                const numericId = parseInt(id.replace('inc_', ''));
+                const { getIncident } = await import('../services/incident');
+                const backendIncident = await getIncident(numericId);
+                setIncident(convertIncident(backendIncident));
+            } catch (error) {
+                console.error('Failed to fetch incident:', error);
+                setIncident(null);
+            }
+        };
+
+        if (id) {
+            fetchIncident();
+        }
     }, [id]);
+
+    return incident;
 }
 
 /**
  * Hook for filtered incidents
  */
 export function useFilteredIncidents(status?: string): Incident[] {
-    return useMemo(() => {
-        if (!status || status === 'all') return mockIncidents;
-        return mockIncidents.filter(inc => inc.status === status);
+    const [incidents, setIncidents] = useState<Incident[]>([]);
+
+    useEffect(() => {
+        const fetchFilteredIncidents = async () => {
+            try {
+                const response = await getIncidents();
+                let filtered = response.incidents.map(convertIncident);
+
+                if (status && status !== 'all') {
+                    const statusMap: Record<string, string> = {
+                        'pending': 'draft',
+                        'submitted-to-police': 'submitted',
+                        'in-progress': 'under_review',
+                        'resolved': 'resolved'
+                    };
+                    const backendStatus = statusMap[status];
+                    if (backendStatus) {
+                        filtered = filtered.filter(inc => {
+                            const backendStatusValue = statusMap[inc.status];
+                            return backendStatusValue === backendStatus;
+                        });
+                    }
+                }
+
+                setIncidents(filtered);
+            } catch (error) {
+                console.error('Failed to fetch incidents:', error);
+                setIncidents([]);
+            }
+        };
+
+        fetchFilteredIncidents();
     }, [status]);
+
+    return incidents;
 }

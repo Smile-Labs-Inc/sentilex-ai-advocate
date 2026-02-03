@@ -17,11 +17,12 @@ import { Button } from '../../components/atoms/Button/Button';
 import { Icon } from '../../components/atoms/Icon/Icon';
 import { Badge, getStatusVariant, getStatusLabel } from '../../components/atoms/Badge/Badge';
 import { useIncidentWorkspace } from '../../hooks/useIncidentWorkspace';
-import type { User, NavItem } from '../../types';
+import type { NavItem } from '../../types';
+import type { UserProfile } from '../../types/auth';
 import type { WizardData } from '../../components/organisms/OnboardingWizard/OnboardingWizard';
 
 export interface IncidentWorkspacePageProps {
-    user: User;
+    user: UserProfile;
     wizardData?: WizardData;
     onNavigate: (item: NavItem) => void;
     onBack: () => void;
@@ -47,6 +48,7 @@ export function IncidentWorkspacePage({
         toggleLawIncluded,
         canSubmit,
         submitToPolice,
+        saveDraft,
         sendMessage,
         chatMessages,
         isChatLoading,
@@ -54,6 +56,7 @@ export function IncidentWorkspacePage({
 
     const [showSubmitModal, setShowSubmitModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const violatedLaws = incident.identifiedLaws.filter(l => l.isViolated);
 
@@ -62,6 +65,12 @@ export function IncidentWorkspacePage({
         await submitToPolice();
         setIsSubmitting(false);
         setShowSubmitModal(false);
+    };
+
+    const handleSaveDraft = async () => {
+        setIsSaving(true);
+        await saveDraft();
+        setIsSaving(false);
     };
 
     const handleViewEvidence = (evidence: any) => {
@@ -124,9 +133,14 @@ export function IncidentWorkspacePage({
                             <Icon name="Download" size="xs" />
                             Export
                         </Button>
-                        <Button variant="secondary" size="sm">
+                        <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={handleSaveDraft}
+                            disabled={isSaving}
+                        >
                             <Icon name="Save" size="xs" />
-                            Save Draft
+                            {isSaving ? 'Saving...' : 'Save Draft'}
                         </Button>
                     </div>
                 </div>

@@ -7,16 +7,15 @@ import { cn } from '../../../lib/utils';
 import { Button } from '../../atoms/Button/Button';
 import { Avatar } from '../../atoms/Avatar/Avatar';
 import { Icon } from '../../atoms/Icon/Icon';
-import type { User } from '../../../types';
+import type { UserProfile } from '../../../types/auth';
 
 export interface DashboardHeaderProps {
-    user: User;
+    user: UserProfile;
     onNewIncident?: () => void;
     className?: string;
 }
 
 export function DashboardHeader({ user, onNewIncident, className }: DashboardHeaderProps) {
-    const isNewUser = user.isNewUser;
     const greeting = getGreeting();
 
     return (
@@ -27,42 +26,34 @@ export function DashboardHeader({ user, onNewIncident, className }: DashboardHea
                     Dashboard
                 </div>
                 <h1 className="text-2xl text-foreground font-medium mb-1">
-                    {isNewUser
-                        ? `Welcome to Veritas Protocol 👋`
-                        : `${greeting}, ${user.name.split(' ')[0]} 👋`
-                    }
+                    {`${greeting}, ${user.first_name} 👋`}
                 </h1>
                 <p className="text-muted-foreground text-sm">
-                    {isNewUser
-                        ? 'Your AI-powered ally for cybercrime legal support'
-                        : "Let's protect your digital rights today."
-                    }
+                    Let's protect your digital rights today.
                 </p>
             </div>
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-4 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                {/* Avatar stack (returning users only) */}
-                {!isNewUser && (
-                    <div className="flex -space-x-2">
-                        {['User1', 'User2', 'User3'].map((name, i) => (
-                            <div
-                                key={i}
-                                className="relative"
-                                style={{ zIndex: 3 - i }}
-                            >
-                                <Avatar
-                                    name={name}
-                                    size="sm"
-                                    className="border-2 border-background"
-                                />
-                            </div>
-                        ))}
-                        <div className="w-8 h-8 rounded-full border-2 border-background bg-secondary text-xs flex items-center justify-center text-foreground font-medium">
-                            5+
+                {/* Avatar stack */}
+                <div className="flex -space-x-2">
+                    {['User1', 'User2', 'User3'].map((name, i) => (
+                        <div
+                            key={i}
+                            className="relative"
+                            style={{ zIndex: 3 - i }}
+                        >
+                            <Avatar
+                                name={name}
+                                size="sm"
+                                className="border-2 border-background"
+                            />
                         </div>
+                    ))}
+                    <div className="w-8 h-8 rounded-full border-2 border-background bg-secondary text-xs flex items-center justify-center text-foreground font-medium">
+                        5+
                     </div>
-                )}
+                </div>
 
                 {/* Notifications */}
                 <button className="relative w-9 h-9 flex items-center justify-center rounded-lg bg-secondary hover:bg-accent transition-colors">
@@ -73,7 +64,7 @@ export function DashboardHeader({ user, onNewIncident, className }: DashboardHea
                 {/* Primary action */}
                 <Button onClick={onNewIncident} className="gap-2">
                     <Icon name="Plus" size="sm" />
-                    {isNewUser ? 'START NEW INCIDENT' : 'NEW INCIDENT'}
+                    NEW INCIDENT
                 </Button>
             </div>
         </header>

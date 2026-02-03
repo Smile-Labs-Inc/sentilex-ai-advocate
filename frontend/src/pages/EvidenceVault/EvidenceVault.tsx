@@ -4,7 +4,7 @@ import { EvidenceVaultGrid } from '../../components/organisms/EvidenceVaultGrid/
 import { Button } from '../../components/atoms/Button/Button';
 import { Icon } from '../../components/atoms/Icon/Icon';
 import { mockEvidenceVaultItems } from '../../data/mockEvidenceVault';
-import { mockUser } from '../../data/mockData';
+import { useAuth } from '../../hooks/useAuth';
 import type { NavItem } from '../../types';
 
 export interface EvidenceVaultPageProps {
@@ -12,7 +12,12 @@ export interface EvidenceVaultPageProps {
 }
 
 export function EvidenceVaultPage({ onNavigate }: EvidenceVaultPageProps) {
+    const { user } = useAuth();
     const [items, setItems] = useState(mockEvidenceVaultItems);
+
+    if (!user) {
+        return null;
+    }
 
     const handleDelete = (id: string) => {
         // In a real app, this would delete via API
@@ -23,7 +28,7 @@ export function EvidenceVaultPage({ onNavigate }: EvidenceVaultPageProps) {
 
     return (
         <DashboardLayout
-            user={mockUser}
+            user={user}
             currentPath="/evidence"
             onNavigate={onNavigate}
         >

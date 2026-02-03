@@ -10,11 +10,12 @@ import { Button } from "../../components/atoms/Button/Button";
 import { Icon } from "../../components/atoms/Icon/Icon";
 import { Input } from "../../components/atoms/Input/Input";
 import { Badge } from "../../components/atoms/Badge/Badge";
-import type { User, NavItem } from "../../types";
+import type { NavItem } from "../../types";
+import type { UserProfile } from "../../types/auth";
 import { fetchLawyers, type Lawyer } from "../../services/lawyers";
 
 export interface LawyerFinderPageProps {
-  user: User;
+  user: UserProfile;
   onNavigate: (item: NavItem) => void;
   onBack: () => void;
 }
@@ -138,12 +139,11 @@ export function LawyerFinderPage({
                 onClick={() =>
                   setSelectedSpecialization(spec === "All" ? null : spec)
                 }
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  (spec === "All" && !selectedSpecialization) ||
-                  selectedSpecialization === spec
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${(spec === "All" && !selectedSpecialization) ||
+                    selectedSpecialization === spec
                     ? "bg-foreground text-background"
                     : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
+                  }`}
               >
                 {spec}
               </button>
