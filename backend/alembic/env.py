@@ -7,14 +7,16 @@ from alembic import context
 
 # Import your Base and all models
 from database.config import Base, DATABASE_URL
+from models.user import User
 from models.lawyers import Lawyer
 from models.lawyerverificationaudit import LawyerVerificationAudit
 from models.admin import Admin
 from models.token_blacklist import TokenBlacklist
 from models.login_attempt import LoginAttempt
 from models.active_session import ActiveSession
-from models.chat import ChatMessage, ChatSession
-from models.user import User
+from models.incident import Incident
+from models.chat_message import ChatMessage
+from models.evidence import Evidence
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
