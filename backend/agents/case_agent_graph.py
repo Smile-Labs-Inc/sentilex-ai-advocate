@@ -12,7 +12,6 @@ from langchain_core.messages import AnyMessage, HumanMessage, AIMessage
 from database import get_db
 from agents.memory import IncidentChatHistory, UserGlobalChatHistory
 from agents.db_query_agent import get_user_context
-from chains.main_chain import create_main_chain
 
 
 class CaseAgentState(TypedDict):
@@ -49,16 +48,17 @@ def db_user_context_node(state: CaseAgentState) -> dict:
 
 def legal_reasoning_node(state: CaseAgentState) -> dict:
     """Run the main legal chain with full context injected."""
+    from chains.main_chain import create_main_chain
     chain = create_main_chain()
     
     # Build context summary from histories
     incident_context = "\n".join([
         f"{'User' if isinstance(m, HumanMessage) else 'Assistant'}: {m.content}"
-        for m in state.get("incident_history", [])[-10:]  # Last 10 messages
+        for m in state.get("incident_history", [])[-20:]  # Last 20 messages
     ])
     
     global_context = "\n".join([
-        m.content for m in state.get("global_user_history", [])[-5:]
+        m.content for m in state.get("global_user_history", [])[-20:]
     ])
     
     # Get the user's question from messages

@@ -7,8 +7,9 @@ Provides secure, RLS-protected database access for retrieving user context.
 import os
 from langchain_community.utilities import SQLDatabase
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.agents import create_sql_agent
-from langchain.agents.agent_toolkits import SQLDatabaseToolkit
+from langchain_community.agent_toolkits.sql.base import create_sql_agent
+from langchain_community.agent_toolkits.sql.toolkit import SQLDatabaseToolkit
+
 from langchain_core.prompts import PromptTemplate
 from urllib.parse import quote_plus
 

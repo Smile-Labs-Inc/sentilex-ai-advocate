@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from datetime import datetime
 from typing import Optional
@@ -10,12 +10,13 @@ from models.login_attempt import LoginAttempt
 from utils.auth import decode_token
 from config import settings
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+security = HTTPBearer()
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)) -> User:
     """
     Get the current authenticated user from the JWT token.
     """
+    token = credentials.credentials
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -78,11 +79,12 @@ def log_login_attempt(email, success, ip_address, user_agent, failure_reason, db
     db.add(attempt)
     db.commit()
 
-async def get_current_lawyer(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+async def get_current_lawyer(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
     """
     Get the current authenticated lawyer from the JWT token.
     """
     from models.lawyers import Lawyer
+    token = credentials.credentials
     
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
