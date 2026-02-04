@@ -11,10 +11,11 @@ import { LawsSection, type IdentifiedLaw } from '../../components/organisms/Laws
 import { TimelineSection, type TimelineEvent } from '../../components/organisms/TimelineSection/TimelineSection';
 import { Card, CardHeader, CardTitle } from '../../components/atoms/Card/Card';
 import { Icon } from '../../components/atoms/Icon/Icon';
-import type { User, NavItem, Incident } from '../../types';
+import type { NavItem, Incident } from '../../types';
+import type { UserProfile } from '../../types/auth';
 
 export interface IncidentDetailPageProps {
-    user: User;
+    user: UserProfile;
     incident: Incident;
     onNavigate: (item: NavItem) => void;
     onBack: () => void;

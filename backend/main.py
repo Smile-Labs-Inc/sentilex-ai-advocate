@@ -10,6 +10,14 @@ import traceback
 from contextlib import asynccontextmanager
 from database.config import check_db_connection, Base, engine
 
+# Import all models to ensure they're registered with SQLAlchemy
+from models.user import User
+from models.lawyers import Lawyer
+from models.admin import Admin
+from models.chat import ChatMessage, ChatSession
+from models.token_blacklist import TokenBlacklist
+from models.login_attempt import LoginAttempt
+from models.active_session import ActiveSession
 
 from schemas.messages import UserQuery, SynthesizerOutput, RefusalOutput
 from chains import invoke_chain
@@ -23,6 +31,7 @@ from routers import lawyer_verification
 from routers import legal_queries
 from routers import incidents
 from routers import case_agent
+from routers import chat
 from mcp_server.mcp_client import get_mcp_client
 
 
@@ -81,6 +90,7 @@ app.include_router(lawyer_verification.router)
 app.include_router(legal_queries.router)
 app.include_router(incidents.router)
 app.include_router(case_agent.router)
+app.include_router(chat.router)
 
 
 # Session Middleware for OAuth (must be added before CORS)

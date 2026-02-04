@@ -1,7 +1,7 @@
 
 // Environment variables (can be overridden by .env file)
 const ENV = {
-    API_URL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8001',
+    API_URL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000',
     FRONTEND_URL: import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173',
     ENABLE_GOOGLE_AUTH: import.meta.env.VITE_ENABLE_GOOGLE_AUTH === 'true' || false,
 };
@@ -43,6 +43,16 @@ export const API_CONFIG = {
         LAWBOOK: {
             CHAT: '/lawbook/chat',
             LAWS: '/lawbook/laws',
+        },
+
+        CHAT: {
+            SEND: '/api/chat/send',
+            HISTORY: '/api/chat/history',
+            SESSIONS: '/api/chat/sessions',
+            SESSION: (id: string) => `/api/chat/sessions/${id}`,
+            DELETE_SESSION: (id: string) => `/api/chat/sessions/${id}`,
+            UPDATE_SESSION: (id: string) => `/api/chat/sessions/${id}`,
+            STATS: '/api/chat/stats',
         },
 
         LAWYERS: {

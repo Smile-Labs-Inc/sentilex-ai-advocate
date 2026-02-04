@@ -6,11 +6,12 @@
 import { cn } from '../../../lib/utils';
 import { Sidebar } from '../../organisms/Sidebar/Sidebar';
 import { BackgroundGradientAnimation } from '../../atoms/BackgroundGradientAnimation/BackgroundGradientAnimation';
-import type { User, NavItem } from '../../../types';
+import type { NavItem } from '../../../types';
+import type { UserProfile } from '../../../types/auth';
 import type { ComponentChildren } from 'preact';
 
 export interface DashboardLayoutProps {
-    user: User;
+    user: UserProfile;
     currentPath?: string;
     onNavigate?: (item: NavItem) => void;
     children: ComponentChildren;

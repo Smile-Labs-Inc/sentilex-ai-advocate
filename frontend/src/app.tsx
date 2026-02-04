@@ -13,7 +13,7 @@ import { EvidenceVaultPage } from './pages/EvidenceVault/EvidenceVault';
 import { LawbookPage } from './pages/Lawbook/Lawbook';
 import { AuthPage } from './pages/Auth/Auth';
 import { Settings } from './pages/Settings/Settings';
-import { mockUser } from './data/mockData';
+import { AIChatPage } from './pages/AIChat/AIChat';
 import { ThemeProvider } from './hooks/useTheme';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import type { Incident, NavItem } from './types';
@@ -37,13 +37,10 @@ function AppContent() {
     );
   }
 
-  // Show auth page if not authenticated
-  if (!isAuthenticated) {
+  // Show auth page if not authenticated or no user data
+  if (!isAuthenticated || !user) {
     return <AuthPage onSuccess={() => route('/dashboard')} />;
   }
-
-  // Use actual user data if available, fallback to mockUser for compatibility
-  const currentUser = user || mockUser;
 
   const handleNavigate = (item: NavItem) => {
     console.log('Navigate to:', item.href);
@@ -90,14 +87,14 @@ function AppContent() {
       />
       <NewIncidentPage
         path="/new-incident"
-        user={currentUser}
+        user={user}
         onNavigate={handleNavigate}
         onComplete={handleWizardComplete}
         onCancel={handleWizardCancel}
       />
       <IncidentWorkspacePage
         path="/incident-workspace"
-        user={currentUser}
+        user={user}
         wizardData={wizardData || undefined}
         onNavigate={handleNavigate}
         onBack={handleBackToDashboard}
@@ -105,14 +102,14 @@ function AppContent() {
       />
       <IncidentDetailPage
         path="/incident-detail"
-        user={currentUser}
+        user={user}
         incident={selectedIncident || undefined}
         onNavigate={handleNavigate}
         onBack={handleBackToDashboard}
       />
       <LawyerFinderPage
         path="/lawyers"
-        user={currentUser}
+        user={user}
         onNavigate={handleNavigate}
         onBack={handleBackToDashboard}
       />
@@ -122,6 +119,10 @@ function AppContent() {
       />
       <LawbookPage
         path="/lawbook"
+        onNavigate={handleNavigate}
+      />
+      <AIChatPage
+        path="/ai-chat"
         onNavigate={handleNavigate}
       />
       <Settings path="/settings" />

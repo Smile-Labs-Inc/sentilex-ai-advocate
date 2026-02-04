@@ -19,4 +19,7 @@ export type { LawyerFinderPageProps } from './LawyerFinder/LawyerFinder';
 
 export { AuthPage } from './Auth/Auth';
 
+export { AIChatPage } from './AIChat/AIChat';
+export type { AIChatPageProps } from './AIChat/AIChat';
+
 export { Settings } from './Settings/Settings';

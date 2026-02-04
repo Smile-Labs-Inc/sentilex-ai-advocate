@@ -10,11 +10,10 @@ import { Avatar } from '../../atoms/Avatar/Avatar';
 import { Icon } from '../../atoms/Icon/Icon';
 import { Button } from '../../atoms/Button/Button';
 import { useAuth } from '../../../hooks/useAuth';
-import type { User } from '../../../types';
 import type { UserProfile as AuthUserProfile } from '../../../types/auth';
 
 export interface UserProfileProps {
-    user: User | AuthUserProfile;
+    user: AuthUserProfile;
     variant?: 'compact' | 'expanded';
     onClick?: () => void;
     className?: string;
@@ -47,14 +46,8 @@ export function UserProfile({
         route('/settings');
     };
 
-    // Check if it's AuthUserProfile (has first_name and last_name)
-    const isAuthUser = 'first_name' in user && 'last_name' in user;
-    const displayName = isAuthUser
-        ? `${user.first_name} ${user.last_name}`
-        : user.name;
-    const avatarName = isAuthUser
-        ? `${user.first_name} ${user.last_name}`
-        : user.name;
+    const displayName = `${user.first_name} ${user.last_name}`;
+    const avatarName = `${user.first_name} ${user.last_name}`;
 
     return (
         <div className="relative">
@@ -79,9 +72,9 @@ export function UserProfile({
                     <p className="text-xs font-medium text-foreground truncate">
                         {displayName}
                     </p>
-                    {variant === 'expanded' && isAuthUser && (
+                    {variant === 'expanded' && user.email && (
                         <p className="text-[10px] text-muted-foreground truncate">
-                            {user.first_name} {user.last_name}
+                            {user.email}
                         </p>
                     )}
                 </div>
