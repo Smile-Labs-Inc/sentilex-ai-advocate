@@ -43,8 +43,8 @@ class IncidentChatMessage(Base):
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     
     # Relationships
-    incident = relationship("Incident", back_populates="incident_chat_messages")
-    user = relationship("User", backref="incident_chat_messages")
+    incident = relationship("Incident", back_populates="chat_messages")
+    user = relationship("User", back_populates="incident_chat_messages")
     
     def __repr__(self):
         return f"<IncidentChatMessage(id={self.id}, role='{self.role}', incident_id={self.incident_id})>"
