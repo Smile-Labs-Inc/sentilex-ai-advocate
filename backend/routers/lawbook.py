@@ -164,7 +164,8 @@ async def submit_query(request: QueryRequest):
                 ],
                 "suggestions": result.suggestions
             }
-        else:
+        else:...
+        
             raise ValueError(f"Unexpected result type: {type(result)}")
 
         return QueryResponse(
