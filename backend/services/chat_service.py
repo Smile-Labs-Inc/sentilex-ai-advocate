@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple
 from uuid import UUID, uuid4
 from datetime import datetime
 
-from models.chat import ChatMessage, ChatSession
+from models.session_chat import SessionChatMessage, ChatSession
 from schemas.chat import (
     ChatMessageCreate, 
     ChatSessionCreate, 

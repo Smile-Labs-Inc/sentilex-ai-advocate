@@ -12,7 +12,7 @@ from langchain_core.messages import AnyMessage, HumanMessage, AIMessage
 from database import get_db
 from agents.memory import IncidentChatHistory, UserGlobalChatHistory
 from agents.db_query_agent import get_user_context
-from models.chat_message import ChatMessage
+from models.incident_chat import IncidentChatMessage
 
 
 class CaseAgentState(TypedDict):

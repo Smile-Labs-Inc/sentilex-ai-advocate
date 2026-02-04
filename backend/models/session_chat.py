@@ -1,3 +1,9 @@
+"""
+Session Chat Models
+
+Database models for session-based chat with partitioning support.
+"""
+
 from sqlalchemy import Column, BigInteger, String, Text, DateTime, ForeignKey, Index, Integer
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.sql import func
@@ -5,12 +11,12 @@ from sqlalchemy.orm import relationship
 from database.config import Base
 import uuid
 
-class ChatMessage(Base):
+class SessionChatMessage(Base):
     """
-    Chat message model with partitioning support.
+    Session chat message model with partitioning support.
     Messages are partitioned by created_at (daily) for efficient querying.
     """
-    __tablename__ = 'chat_messages'
+    __tablename__ = 'session_chat_messages'
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     session_id = Column(UUID(as_uuid=True), nullable=False, index=True)
@@ -21,17 +27,17 @@ class ChatMessage(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, primary_key=True)
 
     # Relationship
-    user = relationship("User", back_populates="chat_messages")
+    user = relationship("User", back_populates="session_chat_messages")
 
     __table_args__ = (
-        Index('ix_chat_messages_session_time', 'session_id', 'created_at'),
-        Index('ix_chat_messages_user_time', 'user_id', 'created_at'),
-        Index('ix_chat_messages_metadata', 'metadata', postgresql_using='gin'),
+        Index('ix_session_chat_messages_session_time', 'session_id', 'created_at'),
+        Index('ix_session_chat_messages_user_time', 'user_id', 'created_at'),
+        Index('ix_session_chat_messages_metadata', 'metadata', postgresql_using='gin'),
         {'extend_existing': True}
     )
     
     def __repr__(self):
-        return f"<ChatMessage(id={self.id}, session={self.session_id}, role={self.role})>"
+        return f"<SessionChatMessage(id={self.id}, session={self.session_id}, role={self.role})>"
 
 
 
