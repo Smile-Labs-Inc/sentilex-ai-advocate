@@ -3,6 +3,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import settings
 import logging
+import os
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -46,8 +47,9 @@ def send_verification_email(email: str, token: str, user_name: str):
     """Send account verification email"""
     subject = "Verify your SentiLex Account"
     
-    # In a real app, this would be a URL to your frontend
-    verify_url = f"http://localhost:3000/verify-email?token={token}"
+    # Get frontend URL from environment variable
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5174")
+    verify_url = f"{frontend_url}/verify-email?token={token}"
     
     html_content = f"""
     <html>
