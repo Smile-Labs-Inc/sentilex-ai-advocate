@@ -30,6 +30,7 @@ from routers import lawbook
 from routers import lawyer_verification
 from routers import legal_queries
 from routers import incidents
+from routers import case_agent
 from routers import chat
 from mcp_server.mcp_client import get_mcp_client
 
@@ -88,6 +89,7 @@ app.include_router(lawbook.router)
 app.include_router(lawyer_verification.router)
 app.include_router(legal_queries.router)
 app.include_router(incidents.router)
+app.include_router(case_agent.router)
 app.include_router(chat.router)
 
 

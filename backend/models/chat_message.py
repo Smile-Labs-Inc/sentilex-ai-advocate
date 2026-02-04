@@ -22,8 +22,8 @@ class ChatMessage(Base):
     """
     ChatMessage model for storing conversation history with AI assistant.
     
-    Each message is linked to an incident and tracks the conversation context
-    for persistent case memory.
+    Each message is linked to an incident and optionally to a user
+    for persistent case memory and global user patterns.
     """
     __tablename__ = "chat_messages"
 
@@ -31,6 +31,9 @@ class ChatMessage(Base):
     
     # Incident association
     incident_id = Column(Integer, ForeignKey("incidents.id"), nullable=False, index=True)
+    
+    # User association (for global memory across incidents)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
     
     # Message details
     role = Column(Enum(ChatMessageRoleEnum, name='msg_role_type'), nullable=False)
@@ -41,6 +44,8 @@ class ChatMessage(Base):
     
     # Relationships
     incident = relationship("Incident", back_populates="chat_messages")
+    user = relationship("User", backref="chat_messages")
     
     def __repr__(self):
         return f"<ChatMessage(id={self.id}, role='{self.role}', incident_id={self.incident_id})>"
+
