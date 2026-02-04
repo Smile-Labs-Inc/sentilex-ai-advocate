@@ -155,68 +155,68 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
             </div>
 
             {/* Right Side - Auth Form */}
-            <div className="w-full lg:w-1/2 relative flex items-center justify-center p-6 overflow-y-auto">
+            <div className="w-full lg:w-1/2 relative flex items-center justify-center p-3 overflow-y-auto">
                 <div className="w-full max-w-md">
                     {/* Mobile Header */}
-                    <div className="text-center mb-6 lg:hidden">
-                        <h1 className="text-2xl font-bold text-white mb-2">
+                    <div className="text-center mb-3 lg:hidden">
+                        <h1 className="text-lg font-bold text-white mb-0.5">
                             {APP_CONFIG.NAME}
                         </h1>
                     </div>
 
                     {/* Auth Card Content */}
-                    <div className="space-y-6">
+                    <div className="space-y-3">
                         {/* Header */}
                         <div className="text-center">
-                            <h2 className="text-2xl font-bold text-foreground mb-2">
+                            <h2 className="text-lg font-bold text-foreground mb-1">
                                 {mode === 'login' ? 'Welcome Back' : 'Get Started'}
                             </h2>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-xs text-muted-foreground">
                                 {mode === 'login' ? 'Sign in to your account' : 'Create your account'}
                             </p>
                         </div>
 
                         {/* User Type Toggle */}
-                        <div className="flex gap-2 p-1 bg-secondary rounded-lg">
+                        <div className="flex gap-1 p-0.5 bg-secondary rounded-lg">
                             <button
                                 onClick={() => setUserType('user')}
-                                className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all ${userType === 'user'
+                                className={`flex-1 py-1 px-1.5 rounded-md text-xs font-medium transition-all ${userType === 'user'
                                     ? 'bg-primary text-primary-foreground'
                                     : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
-                                <Icon name="User" className="inline-block w-4 h-4 mr-2" />
+                                <Icon name="User" className="inline-block w-3 h-3 mr-0.5" />
                                 User
                             </button>
                             <button
                                 onClick={() => setUserType('lawyer')}
-                                className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all ${userType === 'lawyer'
+                                className={`flex-1 py-1 px-1.5 rounded-md text-xs font-medium transition-all ${userType === 'lawyer'
                                     ? 'bg-primary text-primary-foreground'
                                     : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
-                                <Icon name="Briefcase" className="inline-block w-4 h-4 mr-2" />
+                                <Icon name="Briefcase" className="inline-block w-3 h-3 mr-0.5" />
                                 Lawyer
                             </button>
                         </div>
 
                         {/* Error/Success Messages */}
                         {error && (
-                            <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+                            <div className="p-1.5 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-xs">
                                 {error}
                             </div>
                         )}
                         {success && (
-                            <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 text-green-500 text-sm">
+                            <div className="p-1.5 rounded-lg bg-green-500/10 border border-green-500/20 text-green-500 text-xs">
                                 {success}
                             </div>
                         )}
 
                         {/* Login Form */}
                         {mode === 'login' && (
-                            <form onSubmit={handleLogin} className="space-y-4">
+                            <form onSubmit={handleLogin} className="space-y-2.5">
                                 <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
+                                    <label className="block text-xs font-medium text-foreground mb-1">
                                         Email
                                     </label>
                                     <Input
@@ -228,8 +228,8 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                 </div>
 
                                 <div>
-                                    <div className="flex items-center justify-between mb-1.5">
-                                        <label className="block text-sm font-medium text-foreground">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <label className="block text-xs font-medium text-foreground">
                                             Password
                                         </label>
                                         <button
@@ -241,7 +241,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                             }}
                                             className="text-xs text-primary hover:text-primary/80 transition-colors"
                                         >
-                                            Forgot password?
+                                            Forgot?
                                         </button>
                                     </div>
                                     <Input
@@ -254,7 +254,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
                                 <Button
                                     variant="primary"
-                                    className="w-full"
+                                    className="w-full text-xs py-1.5 mt-1"
                                     isLoading={isLoading}
                                     disabled={isLoading}
                                 >
@@ -265,10 +265,10 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
                         {/* Register Form */}
                         {mode === 'register' && (
-                            <form onSubmit={handleRegister} className="space-y-3">
-                                <div className="grid grid-cols-2 gap-3">
+                            <form onSubmit={handleRegister} className="space-y-2">
+                                <div className="grid grid-cols-2 gap-2">
                                     <div>
-                                        <label className="block text-sm font-medium text-foreground mb-1.5">
+                                        <label className="block text-xs font-medium text-foreground mb-1">
                                             First Name
                                         </label>
                                         <Input
@@ -285,7 +285,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-foreground mb-1.5">
+                                        <label className="block text-xs font-medium text-foreground mb-1">
                                             Last Name
                                         </label>
                                         <Input
@@ -303,7 +303,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
+                                    <label className="block text-xs font-medium text-foreground mb-1">
                                         Email
                                     </label>
                                     <Input
@@ -320,7 +320,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
+                                    <label className="block text-xs font-medium text-foreground mb-1">
                                         District (Optional)
                                     </label>
                                     <Input
@@ -336,46 +336,45 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-2">
-                                        Password
-                                    </label>
-                                    <Input
-                                        type="password"
-                                        placeholder="••••••••"
-                                        value={registerData.password}
-                                        onInput={(e) =>
-                                            setRegisterData({
-                                                ...registerData,
-                                                password: (e.target as HTMLInputElement).value,
-                                            })
-                                        }
-                                    />
-                                    <p className="mt-1 text-xs text-muted-foreground">
-                                        Uppercase, lowercase, number, special character
-                                    </p>
-                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label className="block text-xs font-medium text-foreground mb-1">
+                                            Password
+                                        </label>
+                                        <Input
+                                            type="password"
+                                            placeholder="••••••••"
+                                            value={registerData.password}
+                                            onInput={(e) =>
+                                                setRegisterData({
+                                                    ...registerData,
+                                                    password: (e.target as HTMLInputElement).value,
+                                                })
+                                            }
+                                        />
+                                    </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
-                                        Confirm Password
-                                    </label>
-                                    <Input
-                                        type="password"
-                                        placeholder="••••••••"
-                                        value={registerData.confirmPassword}
-                                        onInput={(e) =>
-                                            setRegisterData({
-                                                ...registerData,
-                                                confirmPassword: (e.target as HTMLInputElement).value,
-                                            })
-                                        }
-                                    />
+                                    <div>
+                                        <label className="block text-xs font-medium text-foreground mb-1">
+                                            Confirm
+                                        </label>
+                                        <Input
+                                            type="password"
+                                            placeholder="••••••••"
+                                            value={registerData.confirmPassword}
+                                            onInput={(e) =>
+                                                setRegisterData({
+                                                    ...registerData,
+                                                    confirmPassword: (e.target as HTMLInputElement).value,
+                                                })
+                                            }
+                                        />
+                                    </div>
                                 </div>
 
                                 <Button
                                     variant="primary"
-                                    className="w-full"
+                                    className="w-full text-xs py-1.5 mt-1"
                                     isLoading={isLoading}
                                     disabled={isLoading}
                                 >
@@ -386,9 +385,9 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
                         {/* Forgot Password Form */}
                         {mode === 'forgot-password' && (
-                            <form onSubmit={handleForgotPassword} className="space-y-4">
+                            <form onSubmit={handleForgotPassword} className="space-y-2">
                                 <div>
-                                    <label className="block text-sm font-medium text-foreground mb-1.5">
+                                    <label className="block text-xs font-medium text-foreground mb-0.5">
                                         Email Address
                                     </label>
                                     <Input
@@ -397,14 +396,14 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                         value={forgotPasswordEmail}
                                         onInput={(e) => setForgotPasswordEmail((e.target as HTMLInputElement).value)}
                                     />
-                                    <p className="mt-1.5 text-xs text-muted-foreground">
+                                    <p className="mt-1 text-xs text-muted-foreground">
                                         We'll send you a link to reset your password
                                     </p>
                                 </div>
 
                                 <Button
                                     variant="primary"
-                                    className="w-full"
+                                    className="w-full text-xs py-1"
                                     isLoading={isLoading}
                                     disabled={isLoading}
                                 >
@@ -418,7 +417,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                         setError(null);
                                         setSuccess(null);
                                     }}
-                                    className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                    className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
                                     disabled={isLoading}
                                 >
                                     Back to login
@@ -429,7 +428,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                         {/* Google OAuth */}
                         {APP_CONFIG.GOOGLE_AUTH_ENABLED && (
                             <>
-                                <div className="relative my-4">
+                                <div className="relative my-2">
                                     <div className="absolute inset-0 flex items-center">
                                         <div className="w-full border-t border-border"></div>
                                     </div>
@@ -440,11 +439,11 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
                                 <Button
                                     variant="outline"
-                                    className="w-full"
+                                    className="w-full text-xs py-1"
                                     onClick={handleGoogleLogin}
                                     disabled={isLoading}
                                 >
-                                    <Icon name="Chrome" className="w-5 h-5 mr-2" />
+                                    <Icon name="Chrome" className="w-3 h-3 mr-1" />
                                     Google
                                 </Button>
                             </>
@@ -458,7 +457,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                     setError(null);
                                     setSuccess(null);
                                 }}
-                                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                                 disabled={isLoading}
                             >
                                 {mode === 'login' ? (
@@ -476,7 +475,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                         </div>
                     </div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }

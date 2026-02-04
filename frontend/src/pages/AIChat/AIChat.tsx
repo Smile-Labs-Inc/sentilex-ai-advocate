@@ -152,9 +152,11 @@ export function AIChatPage({ }: AIChatPageProps) {
                         const sessionData = await retryResponse.json();
                         setChatSessions(prev => prev.map(s =>
                             s.id === sessionId
-                                ? { ...s, messages: sessionData.messages }
+                                ? { ...s, messages: sessionData.messages || [] }
                                 : s
                         ));
+                    } else {
+                        console.error('Failed to load chat messages');
                     }
                 } catch (refreshError) {
                     console.error('Token refresh failed:', refreshError);
@@ -167,9 +169,11 @@ export function AIChatPage({ }: AIChatPageProps) {
                 const sessionData = await response.json();
                 setChatSessions(prev => prev.map(s =>
                     s.id === sessionId
-                        ? { ...s, messages: sessionData.messages }
+                        ? { ...s, messages: sessionData.messages || [] }
                         : s
                 ));
+            } else {
+                console.error('Failed to load chat messages');
             }
         } catch (error) {
             console.error('Failed to load session messages:', error);
@@ -223,7 +227,7 @@ export function AIChatPage({ }: AIChatPageProps) {
         }
 
         try {
-            const token = sessionStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
+            const token = localStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
             await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CHAT.DELETE_SESSION(sessionId)}`, {
                 method: 'DELETE',
                 headers: {
@@ -392,7 +396,8 @@ export function AIChatPage({ }: AIChatPageProps) {
                                             key={session.id}
                                             onClick={() => {
                                                 setCurrentSessionId(session.id);
-                                                if (!session.messages && !session.id.startsWith('temp-')) {
+                                                // Only load messages if not already loaded and not a temp session
+                                                if (session.messages === undefined && !session.id.startsWith('temp-')) {
                                                     loadSessionMessages(session.id);
                                                 }
                                             }}

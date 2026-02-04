@@ -118,7 +118,6 @@ def verify_structure():
     print_header("Verifying Project Structure")
 
     required_files = [
-        "app.py",
         "config.py",
         "requirements.txt",
         "alembic.ini",
