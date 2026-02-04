@@ -6,6 +6,7 @@ import secrets
 import json
 import hashlib
 from config import settings
+from sqlalchemy.orm import Session
 
 def hash_password(password: str) -> str:
     """
@@ -38,6 +39,10 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
     else:
         expire = datetime.utcnow() + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
     
+    # Add unique JTI (JSON Token Identifier) for token revocation
+    if "jti" not in to_encode:
+        to_encode["jti"] = secrets.token_hex(16)
+    
     # Only set type to "access" if not already set (allows for "mfa_required", etc.)
     if "type" not in to_encode:
         to_encode["type"] = "access"
@@ -62,10 +67,21 @@ def create_refresh_token(data: Dict[str, Any], expires_delta: Optional[timedelta
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
-def decode_token(token: str) -> Optional[Dict[str, Any]]:
-    """Decode and verify a JWT token"""
+def decode_token(token: str, db: Optional[Session] = None) -> Optional[Dict[str, Any]]:
+    """Decode and verify a JWT token and check if it's blacklisted"""
     try:
         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        
+        # Check if token is blacklisted (revoked after logout or password change)
+        if db and "jti" in payload:
+            from models.token_blacklist import TokenBlacklist
+            blacklist_entry = db.query(TokenBlacklist).filter(
+                TokenBlacklist.jti == payload["jti"]
+            ).first()
+            if blacklist_entry:
+                # Token has been revoked (logged out, password changed, etc.)
+                return None
+        
         return payload
     except JWTError:
         return None

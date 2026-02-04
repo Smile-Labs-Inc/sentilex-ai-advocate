@@ -15,6 +15,7 @@ security = HTTPBearer()
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)) -> User:
     """
     Get the current authenticated user from the JWT token.
+    Validates token signature and checks if token is blacklisted.
     """
     token = credentials.credentials
     credentials_exception = HTTPException(
@@ -23,7 +24,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         headers={"WWW-Authenticate": "Bearer"},
     )
     
-    payload = decode_token(token)
+    payload = decode_token(token, db)  # Pass db for blacklist check
     if payload is None:
         raise credentials_exception
         
