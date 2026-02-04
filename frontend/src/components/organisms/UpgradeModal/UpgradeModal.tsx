@@ -1,7 +1,7 @@
-import { useState } from 'preact/hooks';
-import { PayPalPayment } from '../PayPalPayment/PayPalPayment';
-import { Icon } from '../../atoms/Icon/Icon';
-import { Button } from '../../atoms/Button/Button';
+import { useState } from "preact/hooks";
+import { PayPalPayment } from "../PayPalPayment/PayPalPayment";
+import { Icon } from "../../atoms/Icon/Icon";
+import { Button } from "../../atoms/Button/Button";
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -13,17 +13,17 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const handlePaymentSuccess = async (details: any) => {
-    console.log('Payment completed:', details);
+    console.log("Payment completed:", details);
     setPaymentSuccess(true);
-    
+
     // TODO: Send payment details to your backend to upgrade the user
     // Example:
     // await fetch(`${API_CONFIG.BASE_URL}/payments/upgrade`, {
     //   method: 'POST',
     //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ 
+    //   body: JSON.stringify({
     //     orderId: details.id,
-    //     status: details.status 
+    //     status: details.status
     //   })
     // });
 
@@ -35,8 +35,8 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   };
 
   const handlePaymentError = (error: any) => {
-    console.error('Payment error:', error);
-    setPaymentError('Payment failed. Please try again.');
+    console.error("Payment error:", error);
+    setPaymentError("Payment failed. Please try again.");
   };
 
   if (!isOpen) return null;
@@ -49,7 +49,9 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Icon name="Crown" size="md" className="text-yellow-500" />
-              <h2 className="text-xl font-bold text-foreground">Upgrade to Pro</h2>
+              <h2 className="text-xl font-bold text-foreground">
+                Upgrade to Pro
+              </h2>
             </div>
             <button
               onClick={onClose}
@@ -80,31 +82,64 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
               <div className="bg-gradient-to-br from-secondary/50 to-background border border-border rounded-lg p-6 mb-6">
                 <div className="text-center mb-4">
                   <div className="text-4xl font-bold text-foreground mb-2">
-                    $29.99<span className="text-lg text-muted-foreground">/month</span>
+                    $29.99
+                    <span className="text-lg text-muted-foreground">
+                      /month
+                    </span>
                   </div>
                   <p className="text-sm text-muted-foreground">Pro Plan</p>
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex items-start gap-2">
-                    <Icon name="Check" size="sm" className="text-green-500 mt-0.5" />
-                    <span className="text-sm text-foreground">Priority AI support</span>
+                    <Icon
+                      name="Check"
+                      size="sm"
+                      className="text-green-500 mt-0.5"
+                    />
+                    <span className="text-sm text-foreground">
+                      Priority AI support
+                    </span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Icon name="Check" size="sm" className="text-green-500 mt-0.5" />
-                    <span className="text-sm text-foreground">Unlimited case storage</span>
+                    <Icon
+                      name="Check"
+                      size="sm"
+                      className="text-green-500 mt-0.5"
+                    />
+                    <span className="text-sm text-foreground">
+                      Unlimited case storage
+                    </span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Icon name="Check" size="sm" className="text-green-500 mt-0.5" />
-                    <span className="text-sm text-foreground">Advanced analytics</span>
+                    <Icon
+                      name="Check"
+                      size="sm"
+                      className="text-green-500 mt-0.5"
+                    />
+                    <span className="text-sm text-foreground">
+                      Advanced analytics
+                    </span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Icon name="Check" size="sm" className="text-green-500 mt-0.5" />
-                    <span className="text-sm text-foreground">24/7 legal consultation</span>
+                    <Icon
+                      name="Check"
+                      size="sm"
+                      className="text-green-500 mt-0.5"
+                    />
+                    <span className="text-sm text-foreground">
+                      24/7 legal consultation
+                    </span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Icon name="Check" size="sm" className="text-green-500 mt-0.5" />
-                    <span className="text-sm text-foreground">Priority lawyer matching</span>
+                    <Icon
+                      name="Check"
+                      size="sm"
+                      className="text-green-500 mt-0.5"
+                    />
+                    <span className="text-sm text-foreground">
+                      Priority lawyer matching
+                    </span>
                   </div>
                 </div>
               </div>
