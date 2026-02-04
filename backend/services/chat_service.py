@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple
 from uuid import UUID, uuid4
 from datetime import datetime
 
-from models.chat import ChatMessage, ChatSession
+from models.session_chat import SessionChatMessage, ChatSession
 from schemas.chat import (
     ChatMessageCreate, 
     ChatSessionCreate, 
@@ -61,7 +61,7 @@ class ChatService:
         now = datetime.now(timezone.utc)
         
         # Create user message
-        user_msg = ChatMessage(
+        user_msg = SessionChatMessage(
             user_id=user_id,
             session_id=session_id,
             role="user",
@@ -75,7 +75,7 @@ class ChatService:
         
         # Create assistant message with slightly different timestamp to avoid PK conflict
         assistant_now = datetime.now(timezone.utc)
-        assistant_msg = ChatMessage(
+        assistant_msg = SessionChatMessage(
             user_id=user_id,
             session_id=session_id,
             role="assistant",
@@ -194,8 +194,8 @@ class ChatService:
             return False
         
         # Delete all messages in the session
-        db.query(ChatMessage).filter(
-            ChatMessage.session_id == session_id
+        db.query(SessionChatMessage).filter(
+            SessionChatMessage.session_id == session_id
         ).delete()
         
         db.delete(session)
@@ -207,9 +207,9 @@ class ChatService:
         db: Session, 
         user_id: int, 
         message_data: ChatMessageCreate
-    ) -> ChatMessage:
+    ) -> SessionChatMessage:
         """Create a new chat message"""
-        message = ChatMessage(
+        message = SessionChatMessage(
             user_id=user_id,
             session_id=message_data.session_id,
             role=message_data.role,
@@ -241,11 +241,11 @@ class ChatService:
         offset: int = 0
     ) -> List[dict]:
         """Get messages for a specific session, returns dicts to avoid metadata attribute conflicts"""
-        messages = db.query(ChatMessage).filter(
-            ChatMessage.session_id == session_id,
-            ChatMessage.user_id == user_id
+        messages = db.query(SessionChatMessage).filter(
+            SessionChatMessage.session_id == session_id,
+            SessionChatMessage.user_id == user_id
         ).order_by(
-            ChatMessage.created_at.asc()
+            SessionChatMessage.created_at.asc()
         ).limit(limit).offset(offset).all()
         
         # Convert to dicts to avoid SQLAlchemy metadata conflicts
@@ -267,31 +267,31 @@ class ChatService:
         db: Session,
         user_id: int,
         query: ChatHistoryQuery
-    ) -> List[ChatMessage]:
+    ) -> List[SessionChatMessage]:
         """Get chat messages for a user with filters"""
-        filters = [ChatMessage.user_id == user_id]
+        filters = [SessionChatMessage.user_id == user_id]
         
         if query.session_id:
-            filters.append(ChatMessage.session_id == query.session_id)
+            filters.append(SessionChatMessage.session_id == query.session_id)
         
         if query.start_date:
-            filters.append(ChatMessage.created_at >= query.start_date)
+            filters.append(SessionChatMessage.created_at >= query.start_date)
         
         if query.end_date:
-            filters.append(ChatMessage.created_at <= query.end_date)
+            filters.append(SessionChatMessage.created_at <= query.end_date)
         
-        return db.query(ChatMessage).filter(
+        return db.query(SessionChatMessage).filter(
             *filters
         ).order_by(
-            desc(ChatMessage.created_at)
+            desc(SessionChatMessage.created_at)
         ).limit(query.limit).offset(query.offset).all()
     
     @staticmethod
     def delete_message(db: Session, message_id: int, user_id: int) -> bool:
         """Delete a specific chat message"""
-        message = db.query(ChatMessage).filter(
-            ChatMessage.id == message_id,
-            ChatMessage.user_id == user_id
+        message = db.query(SessionChatMessage).filter(
+            SessionChatMessage.id == message_id,
+            SessionChatMessage.user_id == user_id
         ).first()
         
         if not message:

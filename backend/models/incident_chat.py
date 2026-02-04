@@ -1,5 +1,5 @@
 """
-Chat Message Model
+Incident Chat Message Model
 
 Database model for storing AI chat conversation history per incident.
 """
@@ -11,29 +11,32 @@ from database.config import Base
 import enum
 
 
-class ChatMessageRoleEnum(str, enum.Enum):
+class IncidentChatRoleEnum(str, enum.Enum):
     """Role of the message sender."""
     USER = "user"
     ASSISTANT = "assistant"
     SYSTEM = "system"
 
 
-class ChatMessage(Base):
+class IncidentChatMessage(Base):
     """
-    ChatMessage model for storing conversation history with AI assistant.
+    IncidentChatMessage model for storing conversation history with AI assistant.
     
-    Each message is linked to an incident and tracks the conversation context
-    for persistent case memory.
+    Each message is linked to an incident and optionally to a user
+    for persistent case memory and global user patterns.
     """
-    __tablename__ = "chat_messages"
+    __tablename__ = "incident_chat_messages"
 
     id = Column(Integer, primary_key=True, index=True)
     
     # Incident association
     incident_id = Column(Integer, ForeignKey("incidents.id"), nullable=False, index=True)
     
+    # User association (for global memory across incidents)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    
     # Message details
-    role = Column(Enum(ChatMessageRoleEnum, name='msg_role_type'), nullable=False)
+    role = Column(Enum(IncidentChatRoleEnum, name='incident_msg_role_type'), nullable=False)
     content = Column(Text, nullable=False)
     
     # Timestamp
@@ -41,6 +44,7 @@ class ChatMessage(Base):
     
     # Relationships
     incident = relationship("Incident", back_populates="chat_messages")
+    user = relationship("User", back_populates="incident_chat_messages")
     
     def __repr__(self):
-        return f"<ChatMessage(id={self.id}, role='{self.role}', incident_id={self.incident_id})>"
+        return f"<IncidentChatMessage(id={self.id}, role='{self.role}', incident_id={self.incident_id})>"

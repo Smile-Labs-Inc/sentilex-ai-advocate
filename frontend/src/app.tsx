@@ -2,27 +2,30 @@
 // Veritas Protocol - Main App Component
 // =============================================================================
 
-import { useState } from 'preact/hooks';
-import Router, { route } from 'preact-router';
-import { Dashboard } from './pages/Dashboard/Dashboard';
-import { NewIncidentPage } from './pages/NewIncident/NewIncident';
-import { IncidentDetailPage } from './pages/IncidentDetail/IncidentDetail';
-import { IncidentWorkspacePage } from './pages/IncidentWorkspace/IncidentWorkspace';
-import { LawyerFinderPage } from './pages/LawyerFinder/LawyerFinder';
-import { EvidenceVaultPage } from './pages/EvidenceVault/EvidenceVault';
-import { LawbookPage } from './pages/Lawbook/Lawbook';
-import { AuthPage } from './pages/Auth/Auth';
-import { Settings } from './pages/Settings/Settings';
-import { AIChatPage } from './pages/AIChat/AIChat';
-import { ThemeProvider } from './hooks/useTheme';
-import { AuthProvider, useAuth } from './hooks/useAuth';
-import type { Incident, NavItem } from './types';
-import type { WizardData } from './components/organisms/OnboardingWizard/OnboardingWizard';
-import './index.css';
+import { useState } from "preact/hooks";
+import Router, { route } from "preact-router";
+import { Dashboard } from "./pages/Dashboard/Dashboard";
+import { NewIncidentPage } from "./pages/NewIncident/NewIncident";
+import { IncidentDetailPage } from "./pages/IncidentDetail/IncidentDetail";
+import { IncidentWorkspacePage } from "./pages/IncidentWorkspace/IncidentWorkspace";
+import { LawyerFinderPage } from "./pages/LawyerFinder/LawyerFinder";
+import { EvidenceVaultPage } from "./pages/EvidenceVault/EvidenceVault";
+import { LawbookPage } from "./pages/Lawbook/Lawbook";
+import { AuthPage } from "./pages/Auth/Auth";
+import { Settings } from "./pages/Settings/Settings";
+import { AIChatPage } from "./pages/AIChat/AIChat";
+import { VerifyEmailPage } from "./pages/VerifyEmail/VerifyEmail";
+import { ThemeProvider } from "./hooks/useTheme";
+import { AuthProvider, useAuth } from "./hooks/useAuth";
+import type { Incident, NavItem } from "./types";
+import type { WizardData } from "./components/organisms/OnboardingWizard/OnboardingWizard";
+import "./index.css";
 
 function AppContent() {
   const { isAuthenticated, isLoading, user } = useAuth();
-  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
+  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(
+    null,
+  );
   const [wizardData, setWizardData] = useState<WizardData | null>(null);
 
   // Show loading state while checking authentication
@@ -39,41 +42,41 @@ function AppContent() {
 
   // Show auth page if not authenticated or no user data
   if (!isAuthenticated || !user) {
-    return <AuthPage onSuccess={() => route('/dashboard')} />;
+    return <AuthPage onSuccess={() => route("/dashboard")} />;
   }
 
   const handleNavigate = (item: NavItem) => {
-    console.log('Navigate to:', item.href);
+    console.log("Navigate to:", item.href);
     route(item.href);
   };
 
   const handleNewIncident = () => {
-    route('/new-incident');
+    route("/new-incident");
   };
 
   const handleViewIncident = (incident: Incident) => {
     setSelectedIncident(incident);
-    route('/incident-detail');
+    route("/incident-detail");
   };
 
   const handleWizardComplete = (data: WizardData) => {
-    console.log('Wizard completed with data:', data);
+    console.log("Wizard completed with data:", data);
     setWizardData(data);
-    route('/incident-workspace');
+    route("/incident-workspace");
   };
 
   const handleWizardCancel = () => {
-    route('/dashboard');
+    route("/dashboard");
   };
 
   const handleBackToDashboard = () => {
     setSelectedIncident(null);
     setWizardData(null);
-    route('/dashboard');
+    route("/dashboard");
   };
 
   const handleFindLawyers = () => {
-    route('/lawyers');
+    route("/lawyers");
   };
 
   return (
@@ -113,18 +116,10 @@ function AppContent() {
         onNavigate={handleNavigate}
         onBack={handleBackToDashboard}
       />
-      <EvidenceVaultPage
-        path="/evidence"
-        onNavigate={handleNavigate}
-      />
-      <LawbookPage
-        path="/lawbook"
-        onNavigate={handleNavigate}
-      />
-      <AIChatPage
-        path="/ai-chat"
-        onNavigate={handleNavigate}
-      />
+      <EvidenceVaultPage path="/evidence" onNavigate={handleNavigate} />
+      <LawbookPage path="/lawbook" onNavigate={handleNavigate} />
+      <AIChatPage path="/ai-chat" onNavigate={handleNavigate} />
+      <VerifyEmailPage path="/verify-email" />
       <Settings path="/settings" />
     </Router>
   );

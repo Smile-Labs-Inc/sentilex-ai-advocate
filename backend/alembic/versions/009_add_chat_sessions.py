@@ -1,7 +1,7 @@
 """add chat sessions table
 
-Revision ID: a3f9c2e5d8b1
-Revises: 7eb3031b63a6
+Revision ID: 009_add_chat_sessions
+Revises: 008_session_chat_messages
 Create Date: 2026-02-03 02:00:00.000000
 
 """
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'a3f9c2e5d8b1'
-down_revision = '7eb3031b63a6'
+revision = '009_add_chat_sessions'
+down_revision = '008_session_chat_messages'
 branch_labels = None
 depends_on = None
 

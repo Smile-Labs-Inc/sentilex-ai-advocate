@@ -77,7 +77,7 @@ class Incident(Base):
     
     # Relationships
     user = relationship("User", backref="incidents")
-    chat_messages = relationship("ChatMessage", back_populates="incident", cascade="all, delete-orphan")
+    chat_messages = relationship("IncidentChatMessage", back_populates="incident", cascade="all, delete-orphan")
     evidence = relationship("Evidence", back_populates="incident", cascade="all, delete-orphan")
     
     def __repr__(self):
