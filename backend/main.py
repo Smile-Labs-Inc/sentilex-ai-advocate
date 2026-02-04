@@ -14,7 +14,7 @@ from database.config import check_db_connection, Base, engine
 from models.user import User
 from models.lawyers import Lawyer
 from models.admin import Admin
-from models.chat import ChatMessage, ChatSession
+from models.session_chat import SessionChatMessage, ChatSession
 from models.token_blacklist import TokenBlacklist
 from models.login_attempt import LoginAttempt
 from models.active_session import ActiveSession

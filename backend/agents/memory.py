@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 
-from models.chat_message import ChatMessage
+from models.incident_chat import IncidentChatMessage
 
 
 class IncidentChatHistory(BaseChatMessageHistory):

@@ -42,6 +42,7 @@ class User(Base):
     # Profile Completion (for OAuth users)
     profile_completed = Column(Boolean, default=False)  # True if all required fields filled
 
-    chat_messages = relationship("ChatMessage", back_populates="user", cascade="all, delete-orphan")
+    incident_chat_messages = relationship("IncidentChatMessage", back_populates="user", cascade="all, delete-orphan")
+    session_chat_messages = relationship("SessionChatMessage", back_populates="user", cascade="all, delete-orphan")
     chat_sessions = relationship("ChatSession", back_populates="user", cascade="all, delete-orphan")
     

@@ -17,19 +17,19 @@ depends_on = None
 
 
 def upgrade() -> None:
-    # Create chat_messages table
+    # Create incident_chat_messages table
     op.create_table(
-        'chat_messages',
+        'incident_chat_messages',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('incident_id', sa.Integer(), nullable=False),
-        sa.Column('role', sa.Enum('USER', 'ASSISTANT', 'SYSTEM', name='msg_role_type'), nullable=False),
+        sa.Column('role', sa.Enum('USER', 'ASSISTANT', 'SYSTEM', name='incident_msg_role_type'), nullable=False),
         sa.Column('content', sa.Text(), nullable=False),
         sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
         sa.ForeignKeyConstraint(['incident_id'], ['incidents.id'], ),
         sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_chat_messages_id'), 'chat_messages', ['id'], unique=False)
-    op.create_index(op.f('ix_chat_messages_incident_id'), 'chat_messages', ['incident_id'], unique=False)
+    op.create_index(op.f('ix_incident_chat_messages_id'), 'incident_chat_messages', ['id'], unique=False)
+    op.create_index(op.f('ix_incident_chat_messages_incident_id'), 'incident_chat_messages', ['incident_id'], unique=False)
 
     # Create evidence table
     op.create_table(
@@ -54,7 +54,8 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_evidence_id'), table_name='evidence')
     op.drop_table('evidence')
 
-    # Drop chat_messages table
-    op.drop_index(op.f('ix_chat_messages_incident_id'), table_name='chat_messages')
-    op.drop_index(op.f('ix_chat_messages_id'), table_name='chat_messages')
-    op.drop_table('chat_messages')
+    # Drop incident_chat_messages table
+    op.drop_index(op.f('ix_incident_chat_messages_incident_id'), table_name='incident_chat_messages')
+    op.drop_index(op.f('ix_incident_chat_messages_id'), table_name='incident_chat_messages')
+    op.drop_table('incident_chat_messages')
+

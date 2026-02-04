@@ -15,7 +15,7 @@ from models.token_blacklist import TokenBlacklist
 from models.login_attempt import LoginAttempt
 from models.active_session import ActiveSession
 from models.incident import Incident
-from models.chat_message import ChatMessage
+from models.incident_chat import IncidentChatMessage
 from models.evidence import Evidence
 
 # this is the Alembic Config object, which provides
