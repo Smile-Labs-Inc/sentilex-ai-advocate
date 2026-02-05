@@ -4,12 +4,14 @@ const ENV = {
     API_URL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000',
     FRONTEND_URL: import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173',
     ENABLE_GOOGLE_AUTH: import.meta.env.VITE_ENABLE_GOOGLE_AUTH === 'true' || false,
+    PAYPAL_CLIENT_ID: import.meta.env.VITE_PAYPAL_CLIENT_ID || '',
 };
 
 
 export const API_CONFIG = {
     BASE_URL: ENV.API_URL,
     TIMEOUT: 30000,
+    PAYPAL_CLIENT_ID: ENV.PAYPAL_CLIENT_ID,
     ENDPOINTS: {
 
         AUTH: {

@@ -9,9 +9,9 @@ export const quickLinks: QuickLink[] = [
     {
         id: 'police-emergency',
         label: 'Police Emergency',
-        description: 'Call 100 for immediate assistance',
+        description: 'Call 119 for immediate assistance',
         icon: 'Phone',
-        href: 'tel:100',
+        href: 'tel:119',
         type: 'hotline',
     },
     {
@@ -19,7 +19,7 @@ export const quickLinks: QuickLink[] = [
         label: 'Cybercrime Portal',
         description: 'Official cybercrime reporting',
         icon: 'Shield',
-        href: 'https://cybercrime.gov.in',
+        href: 'https://www.cert.gov.lk/report_incident',
         type: 'resource',
     },
     {
@@ -33,9 +33,9 @@ export const quickLinks: QuickLink[] = [
     {
         id: 'women-helpline',
         label: 'Women Helpline',
-        description: 'Call 1091 for women safety',
+        description: 'Call 1938 for women safety',
         icon: 'Heart',
-        href: 'tel:1091',
+        href: 'tel:1938',
         type: 'hotline',
     },
     {

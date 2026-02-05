@@ -28,6 +28,7 @@ from routers import auth
 from routers import admin_auth
 from routers import lawbook
 from routers import lawyer_verification
+from routers import payments
 from routers import legal_queries
 from routers import incidents
 from routers import case_agent
@@ -91,6 +92,7 @@ app.include_router(legal_queries.router)
 app.include_router(incidents.router)
 app.include_router(case_agent.router)
 app.include_router(chat.router)
+app.include_router(payments.router)
 
 
 # Session Middleware for OAuth (must be added before CORS)
