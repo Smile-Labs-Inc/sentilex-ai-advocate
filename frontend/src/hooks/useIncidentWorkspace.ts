@@ -3,7 +3,7 @@
 // Manages state for the incident workspace page
 // =============================================================================
 
-import { useState, useCallback } from 'preact/hooks';
+import { useState, useCallback, useEffect } from 'preact/hooks';
 import type {
     IncidentDraft,
     TimelineEventEditable,
@@ -13,7 +13,16 @@ import type {
     IncidentType
 } from '../types';
 import type { WizardData } from '../components/organisms/OnboardingWizard/OnboardingWizard';
-import { createIncident, type IncidentCreate } from '../services/incident';
+import { 
+    createIncident, 
+    type IncidentCreate,
+    sendIncidentChatMessage,
+    getIncidentChatMessages,
+    uploadEvidence as uploadEvidenceAPI,
+    getIncidentEvidence,
+    deleteEvidence as deleteEvidenceAPI,
+    type IncidentChatMessageResponse
+} from '../services/incident';
 
 // Helper to generate unique IDs
 const generateId = () => Math.random().toString(36).substring(2, 11);
@@ -132,15 +141,9 @@ export function useIncidentWorkspace(wizardData?: WizardData): UseIncidentWorksp
     });
 
     const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-        {
-            id: '1',
-            role: 'assistant',
-            content: `Hello! I'm your AI Legal Assistant. I've reviewed your initial report about "${incident.title}". I'll help you document this incident thoroughly and identify applicable laws.\n\nTo get started, could you tell me more about when this first began happening?`,
-            timestamp: new Date(),
-        },
-    ]);
+    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
     const [isChatLoading, setIsChatLoading] = useState(false);
+    const [incidentId, setIncidentId] = useState<number | null>(null);
 
     // Simulate AI analysis after a delay
     useState(() => {
@@ -218,42 +221,68 @@ export function useIncidentWorkspace(wizardData?: WizardData): UseIncidentWorksp
     }, []);
 
     // Evidence operations
-    const addEvidence = useCallback((files: File[]) => {
-        const newEvidence: Evidence[] = files.map(file => ({
-            id: generateId(),
-            fileName: file.name,
-            fileSize: file.size,
-            fileType: getEvidenceType(file.type),
-            mimeType: file.type,
-            uploadedAt: new Date(),
-            isEncrypted: true,
-        }));
+    const addEvidence = useCallback(async (files: File[]) => {
+        if (!incidentId) {
+            console.error('No incident ID available');
+            return;
+        }
 
-        setIncident(prev => ({
-            ...prev,
-            evidence: [...prev.evidence, ...newEvidence],
-            timeline: [
-                ...prev.timeline,
-                {
-                    id: generateId(),
-                    type: 'evidence',
-                    title: 'Evidence Uploaded',
-                    description: `${files.length} file${files.length > 1 ? 's' : ''} added to the case.`,
-                    timestamp: new Date(),
-                    linkedEvidenceIds: newEvidence.map(e => e.id),
-                },
-            ],
-            updatedAt: new Date(),
-        }));
-    }, []);
+        try {
+            // Upload files to backend
+            const uploadedEvidence = await uploadEvidenceAPI(incidentId, files);
+            
+            // Convert to frontend format
+            const newEvidence: Evidence[] = uploadedEvidence.map(e => ({
+                id: e.id.toString(),
+                fileName: e.file_name,
+                fileSize: e.file_size || 0,
+                fileType: getEvidenceTypeFromMime(e.file_type || ''),
+                mimeType: e.file_type || '',
+                uploadedAt: new Date(e.uploaded_at),
+                isEncrypted: true,
+            }));
 
-    const deleteEvidence = useCallback((evidence: Evidence) => {
-        setIncident(prev => ({
-            ...prev,
-            evidence: prev.evidence.filter(e => e.id !== evidence.id),
-            updatedAt: new Date(),
-        }));
-    }, []);
+            setIncident(prev => ({
+                ...prev,
+                evidence: [...prev.evidence, ...newEvidence],
+                timeline: [
+                    ...prev.timeline,
+                    {
+                        id: generateId(),
+                        type: 'evidence',
+                        title: 'Evidence Uploaded',
+                        description: `${files.length} file${files.length > 1 ? 's' : ''} added to the case.`,
+                        timestamp: new Date(),
+                        linkedEvidenceIds: newEvidence.map(e => e.id),
+                    },
+                ],
+                updatedAt: new Date(),
+            }));
+        } catch (error) {
+            console.error('Failed to upload evidence:', error);
+            alert('Failed to upload evidence. Please try again.');
+        }
+    }, [incidentId]);
+
+    const deleteEvidence = useCallback(async (evidence: Evidence) => {
+        if (!incidentId) {
+            console.error('No incident ID available');
+            return;
+        }
+
+        try {
+            await deleteEvidenceAPI(incidentId, parseInt(evidence.id));
+            
+            setIncident(prev => ({
+                ...prev,
+                evidence: prev.evidence.filter(e => e.id !== evidence.id),
+                updatedAt: new Date(),
+            }));
+        } catch (error) {
+            console.error('Failed to delete evidence:', error);
+            alert('Failed to delete evidence. Please try again.');
+        }
+    }, [incidentId]);
 
     const updateEvidenceDescription = useCallback((evidenceId: string, description: string) => {
         setIncident(prev => ({
@@ -276,8 +305,74 @@ export function useIncidentWorkspace(wizardData?: WizardData): UseIncidentWorksp
         }));
     }, []);
 
+    // Load chat messages when incident ID is available
+    useEffect(() => {
+        if (incidentId) {
+            loadChatMessages();
+            loadEvidence();
+        }
+    }, [incidentId]);
+
+    const loadChatMessages = async () => {
+        if (!incidentId) return;
+        
+        try {
+            const messages = await getIncidentChatMessages(incidentId);
+            const formattedMessages: ChatMessage[] = messages.map(msg => ({
+                id: msg.id.toString(),
+                role: msg.role as 'user' | 'assistant',
+                content: msg.content,
+                timestamp: new Date(msg.created_at),
+            }));
+            setChatMessages(formattedMessages);
+        } catch (error) {
+            console.error('Failed to load chat messages:', error);
+        }
+    };
+
+    const loadEvidence = async () => {
+        if (!incidentId) return;
+        
+        try {
+            const response = await getIncidentEvidence(incidentId);
+            const formattedEvidence: Evidence[] = response.evidence.map(e => ({
+                id: e.id.toString(),
+                fileName: e.file_name,
+                fileSize: e.file_size || 0,
+                fileType: getEvidenceTypeFromMime(e.file_type || ''),
+                mimeType: e.file_type || '',
+                uploadedAt: new Date(e.uploaded_at),
+                isEncrypted: true,
+            }));
+            
+            setIncident(prev => ({
+                ...prev,
+                evidence: formattedEvidence,
+                updatedAt: new Date(),
+            }));
+        } catch (error) {
+            console.error('Failed to load evidence:', error);
+        }
+    };
+
+    const getEvidenceTypeFromMime = (mimeType: string): EvidenceType => {
+        if (mimeType.startsWith('image/')) return 'image';
+        if (mimeType.startsWith('video/')) return 'video';
+        if (mimeType.startsWith('audio/')) return 'audio';
+        if (mimeType.includes('pdf') || mimeType.includes('document') || mimeType.includes('text')) {
+            return 'document';
+        }
+        return 'other';
+    };
+
     // Chat operations
-    const sendMessage = useCallback((message: string) => {
+    const sendMessage = useCallback(async (message: string) => {
+        if (!incidentId) {
+            console.error('No incident ID available');
+            return;
+        }
+
+        // Add user message to UI immediately
         const userMessage: ChatMessage = {
             id: generateId(),
             role: 'user',
@@ -287,36 +382,42 @@ export function useIncidentWorkspace(wizardData?: WizardData): UseIncidentWorksp
         setChatMessages(prev => [...prev, userMessage]);
         setIsChatLoading(true);
 
-        // Simulate AI response
-        setTimeout(() => {
-            const responses: Record<string, string> = {
-                default: `Thank you for that information. Based on what you've shared, this appears to strengthen the case under the Computer Crimes Act No. 24 of 2007. Would you like me to add this to your timeline?`,
-                evidence: `I recommend collecting and uploading any screenshots or messages that document this behavior. Would you like tips on how to properly capture digital evidence?`,
-                legal: `In Sri Lanka, cyber crimes can be reported to the Computer Crimes Division of the CID (Criminal Investigation Department). Given the severity of your case, I'd recommend consulting with one of our affiliated lawyers. Would you like me to find nearby legal professionals?`,
-                timeline: `I've noted this information. To build a stronger case, can you tell me approximately how many times this has occurred? Having specific dates and times helps establish a pattern of behavior.`,
-            };
-
-            let response = responses.default;
-            const lowerMessage = message.toLowerCase();
-
-            if (lowerMessage.includes('evidence') || lowerMessage.includes('screenshot') || lowerMessage.includes('proof')) {
-                response = responses.evidence;
-            } else if (lowerMessage.includes('legal') || lowerMessage.includes('police') || lowerMessage.includes('lawyer')) {
-                response = responses.legal;
-            } else if (lowerMessage.includes('time') || lowerMessage.includes('when') || lowerMessage.includes('date')) {
-                response = responses.timeline;
-            }
-
+        try {
+            // Send message to backend and get AI response
+            const response = await sendIncidentChatMessage(incidentId, message);
+            
+            // Add AI response to UI
             const aiMessage: ChatMessage = {
+                id: response.assistant_message.id.toString(),
+                role: 'assistant',
+                content: response.assistant_message.content,
+                timestamp: new Date(response.assistant_message.created_at),
+            };
+            
+            setChatMessages(prev => [
+                ...prev.slice(0, -1), // Remove temporary user message
+                {
+                    id: response.user_message.id.toString(),
+                    role: 'user',
+                    content: response.user_message.content,
+                    timestamp: new Date(response.user_message.created_at),
+                },
+                aiMessage
+            ]);
+        } catch (error) {
+            console.error('Failed to send message:', error);
+            // Add error message
+            const errorMessage: ChatMessage = {
                 id: generateId(),
                 role: 'assistant',
-                content: response,
+                content: 'Sorry, I encountered an error processing your message. Please try again.',
                 timestamp: new Date(),
             };
-            setChatMessages(prev => [...prev, aiMessage]);
+            setChatMessages(prev => [...prev, errorMessage]);
+        } finally {
             setIsChatLoading(false);
-        }, 1500);
-    }, []);
+        }
+    }, [incidentId]);
 
     // Submission
     const canSubmit = incident.identifiedLaws.some(l => l.isViolated) &&
@@ -356,6 +457,9 @@ export function useIncidentWorkspace(wizardData?: WizardData): UseIncidentWorksp
                 status: 'draft',
                 updatedAt: new Date(),
             }));
+            
+            // Store incident ID for future API calls
+            setIncidentId(response.id);
 
             alert('Draft saved successfully!');
         } catch (error) {

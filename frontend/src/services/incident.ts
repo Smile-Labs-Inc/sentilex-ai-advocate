@@ -140,3 +140,191 @@ export async function getIncident(incidentId: number): Promise<IncidentResponse>
 
     return response.json();
 }
+
+// ============================================================================
+// Incident Chat API Functions
+// ============================================================================
+
+export type IncidentChatRole = 'user' | 'assistant' | 'system';
+
+export interface IncidentChatMessageCreate {
+    content: string;
+}
+
+export interface IncidentChatMessageResponse {
+    id: number;
+    incident_id: number;
+    user_id: number | null;
+    role: IncidentChatRole;
+    content: string;
+    created_at: string;
+}
+
+export interface IncidentChatExchangeResponse {
+    user_message: IncidentChatMessageResponse;
+    assistant_message: IncidentChatMessageResponse;
+}
+
+/**
+ * Send a message in incident chat and get AI response.
+ */
+export async function sendIncidentChatMessage(
+    incidentId: number,
+    content: string
+): Promise<IncidentChatExchangeResponse> {
+    const token = getAuthToken();
+
+    if (!token) {
+        throw new Error('User is not authenticated');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}/messages`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ content }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Failed to send message: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+/**
+ * Get all chat messages for an incident.
+ */
+export async function getIncidentChatMessages(
+    incidentId: number
+): Promise<IncidentChatMessageResponse[]> {
+    const token = getAuthToken();
+
+    if (!token) {
+        throw new Error('User is not authenticated');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}/messages`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Failed to fetch messages: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+// ============================================================================
+// Evidence Upload API Functions
+// ============================================================================
+
+export interface EvidenceResponse {
+    id: number;
+    incident_id: number;
+    file_name: string;
+    file_path: string;
+    file_type: string | null;
+    file_size: number | null;
+    uploaded_at: string;
+}
+
+export interface EvidenceListResponse {
+    evidence: EvidenceResponse[];
+    total: number;
+}
+
+/**
+ * Upload evidence files for an incident.
+ */
+export async function uploadEvidence(
+    incidentId: number,
+    files: File[]
+): Promise<EvidenceResponse[]> {
+    const token = getAuthToken();
+
+    if (!token) {
+        throw new Error('User is not authenticated');
+    }
+
+    const formData = new FormData();
+    files.forEach(file => {
+        formData.append('files', file);
+    });
+
+    const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}/evidence`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Failed to upload evidence: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+/**
+ * Get all evidence for an incident.
+ */
+export async function getIncidentEvidence(
+    incidentId: number
+): Promise<EvidenceListResponse> {
+    const token = getAuthToken();
+
+    if (!token) {
+        throw new Error('User is not authenticated');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}/evidence`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Failed to fetch evidence: ${response.status}`);
+    }
+
+    return response.json();
+}
+
+/**
+ * Delete an evidence file.
+ */
+export async function deleteEvidence(
+    incidentId: number,
+    evidenceId: number
+): Promise<void> {
+    const token = getAuthToken();
+
+    if (!token) {
+        throw new Error('User is not authenticated');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}/evidence/${evidenceId}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Failed to delete evidence: ${response.status}`);
+    }
+}
+

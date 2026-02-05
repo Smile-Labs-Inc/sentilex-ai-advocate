@@ -77,3 +77,63 @@ class IncidentListResponse(BaseModel):
     """Schema for listing incidents."""
     incidents: list[IncidentResponse]
     total: int
+
+
+# ============================================================================
+# Incident Chat Schemas
+# ============================================================================
+
+class IncidentChatRoleEnum(str, Enum):
+    """Role of the message sender."""
+    USER = "user"
+    ASSISTANT = "assistant"
+    SYSTEM = "system"
+
+
+class IncidentChatMessageCreate(BaseModel):
+    """Schema for creating an incident chat message."""
+    content: str = Field(..., min_length=1)
+
+
+class IncidentChatMessageResponse(BaseModel):
+    """Schema for incident chat message responses."""
+    id: int
+    incident_id: int
+    user_id: Optional[int]
+    role: IncidentChatRoleEnum
+    content: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class IncidentChatExchangeResponse(BaseModel):
+    """Schema for chat exchange (user message + AI response)."""
+    user_message: IncidentChatMessageResponse
+    assistant_message: IncidentChatMessageResponse
+
+
+# ============================================================================
+# Evidence Schemas
+# ============================================================================
+
+class EvidenceResponse(BaseModel):
+    """Schema for evidence responses."""
+    id: int
+    incident_id: int
+    file_name: str
+    file_path: str
+    file_type: Optional[str]
+    file_size: Optional[int]
+    uploaded_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class EvidenceListResponse(BaseModel):
+    """Schema for listing evidence."""
+    evidence: list[EvidenceResponse]
+    total: int
+
