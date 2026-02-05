@@ -39,9 +39,13 @@ async def create_incident(
     """
     
     # Create incident with user association
+    # Get the enum value string (lowercase) and use it to get the model enum
+    incident_type_value = incident_data.incident_type.value  # This gives us "cyberbullying" etc.
+    model_incident_type = ModelIncidentType(incident_type_value)
+    
     new_incident = Incident(
         user_id=current_user.id,
-        incident_type=ModelIncidentType(incident_data.incident_type.value),
+        incident_type=model_incident_type,
         title=incident_data.title,
         description=incident_data.description,
         date_occurred=incident_data.date_occurred,

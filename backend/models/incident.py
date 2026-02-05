@@ -46,7 +46,7 @@ class Incident(Base):
     
     # Incident classification
     incident_type = Column(
-        Enum(IncidentTypeEnum),
+        Enum(IncidentTypeEnum, values_callable=lambda x: [e.value for e in x]),
         nullable=False
     )
     
@@ -66,7 +66,7 @@ class Incident(Base):
     
     # Status tracking
     status = Column(
-        Enum(IncidentStatusEnum),
+        Enum(IncidentStatusEnum, values_callable=lambda x: [e.value for e in x]),
         default=IncidentStatusEnum.SUBMITTED,
         nullable=False
     )

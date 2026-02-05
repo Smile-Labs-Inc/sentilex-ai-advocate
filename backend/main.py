@@ -95,11 +95,7 @@ app.include_router(chat.router)
 app.include_router(payments.router)
 
 
-# Session Middleware for OAuth (must be added before CORS)
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production-min-32-chars")
-app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
-
-# CORS Configuration
+# CORS Configuration (must be added first)
 origins = [
     "http://localhost:3000",
     "http://localhost:5173",
@@ -113,6 +109,11 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Session Middleware for OAuth (added after CORS)
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production-min-32-chars")
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+
 
 
 @app.get("/")

@@ -145,6 +145,44 @@ export function useIncidentWorkspace(wizardData?: WizardData): UseIncidentWorksp
     const [isChatLoading, setIsChatLoading] = useState(false);
     const [incidentId, setIncidentId] = useState<number | null>(null);
 
+    // Automatically create incident in database when wizard data is provided
+    useEffect(() => {
+        if (wizardData && !incidentId) {
+            // Create incident immediately after wizard completion
+            const createInitialIncident = async () => {
+                try {
+                    const dateOccurred = wizardData.dateOccurred
+                        ? new Date(wizardData.dateOccurred).toISOString().split('T')[0]
+                        : null;
+
+                    const incidentData: IncidentCreate = {
+                        incident_type: wizardData.incidentType as any,
+                        title: wizardData.title,
+                        description: wizardData.description,
+                        date_occurred: dateOccurred,
+                        location: wizardData.location || null,
+                        jurisdiction: 'Sri Lanka',
+                        platforms_involved: wizardData.platformsInvolved || null,
+                        perpetrator_info: wizardData.perpetratorInfo || null,
+                        evidence_notes: null,
+                    };
+
+                    console.log('Creating incident with data:', incidentData);
+                    const response = await createIncident(incidentData);
+                    console.log('Incident created successfully:', response);
+                    
+                    // Store incident ID for future API calls
+                    setIncidentId(response.id);
+                } catch (error) {
+                    console.error('Failed to create incident:', error);
+                    alert('Failed to create incident. Please try again.');
+                }
+            };
+
+            createInitialIncident();
+        }
+    }, [wizardData, incidentId]);
+
     // Simulate AI analysis after a delay
     useState(() => {
         const timer = setTimeout(() => {
