@@ -208,8 +208,7 @@ from schemas.incident import (
     IncidentChatMessageResponse,
     IncidentChatExchangeResponse
 )
-from schemas.messages import UserQuery
-from chains import invoke_chain
+
 
 
 @router.post("/{incident_id}/messages", response_model=IncidentChatExchangeResponse)
@@ -253,43 +252,26 @@ async def send_incident_message(
     db.commit()
     db.refresh(user_message)
     
-    # Get AI response using the legal reasoning chain
+    
+    # Get AI response using the case agent graph (with memory + context)
     try:
-        # Create context from incident details
-        case_context = f"""
-Incident Type: {incident.incident_type.value}
-Title: {incident.title}
-Description: {incident.description}
-Date Occurred: {incident.date_occurred}
-Location: {incident.location or 'Not specified'}
-Jurisdiction: {incident.jurisdiction or 'Sri Lanka'}
-Platforms Involved: {incident.platforms_involved or 'Not specified'}
-"""
+        from agents.case_agent_graph import invoke_case_agent
         
-        # Create UserQuery for the chain
-        user_query = UserQuery(
-            question=message_data.content,
-            case_context=case_context
+        # Invoke the case agent with full context
+        agent_result = invoke_case_agent(
+            incident_id=incident_id,
+            user_id=current_user.id,
+            message=message_data.content
         )
         
-        # Invoke the AI chain
-        ai_response = invoke_chain(user_query)
-        
-        # Extract response text
-        if hasattr(ai_response, 'response'):
-            assistant_content = ai_response.response
-        elif hasattr(ai_response, 'answer'):
-            assistant_content = ai_response.answer
-        elif hasattr(ai_response, 'reason'):
-            assistant_content = ai_response.reason
-        else:
-            assistant_content = str(ai_response)
+        assistant_content = agent_result.get("response", "I apologize, but I couldn't generate a response.")
             
     except Exception as e:
         # Fallback response if AI fails
         assistant_content = "I apologize, but I'm having trouble processing your request right now. Please try rephrasing your question or contact support if the issue persists."
         import logging
-        logging.error(f"AI chain error for incident {incident_id}: {str(e)}")
+        logging.error(f"Case agent error for incident {incident_id}: {str(e)}")
+    
     
     # Save assistant message
     assistant_message = IncidentChatMessage(

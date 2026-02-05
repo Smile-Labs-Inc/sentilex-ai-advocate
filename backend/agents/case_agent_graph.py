@@ -102,7 +102,7 @@ def save_memories_node(state: CaseAgentState) -> dict:
         # This automatically enables global user queries via user_id filter
         for msg in messages_to_save:
             role = "user" if isinstance(msg, HumanMessage) else "assistant"
-            chat_msg = ChatMessage(
+            chat_msg = IncidentChatMessage(
                 incident_id=state["incident_id"],
                 user_id=state["user_id"],
                 role=role,
