@@ -18,6 +18,7 @@ from models.session_chat import SessionChatMessage, ChatSession
 from models.token_blacklist import TokenBlacklist
 from models.login_attempt import LoginAttempt
 from models.active_session import ActiveSession
+from models.occurrence import Occurrence
 
 from schemas.messages import UserQuery, SynthesizerOutput, RefusalOutput
 from chains import invoke_chain
@@ -31,6 +32,7 @@ from routers import lawyer_verification
 from routers import payments
 from routers import legal_queries
 from routers import incidents
+from routers import occurrences
 from routers import case_agent
 from routers import chat
 from mcp_server.mcp_client import get_mcp_client
@@ -90,6 +92,7 @@ app.include_router(lawbook.router)
 app.include_router(lawyer_verification.router)
 app.include_router(legal_queries.router)
 app.include_router(incidents.router)
+app.include_router(occurrences.router)
 app.include_router(case_agent.router)
 app.include_router(chat.router)
 app.include_router(payments.router)

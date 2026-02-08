@@ -24,6 +24,9 @@ class Evidence(Base):
     # Incident association
     incident_id = Column(Integer, ForeignKey("incidents.id"), nullable=False, index=True)
     
+    # Occurrence association (optional - for evidence linked to specific occurrences)
+    occurrence_id = Column(Integer, ForeignKey("occurrences.id", ondelete="SET NULL"), nullable=True, index=True)
+    
     # File metadata
     file_name = Column(String(255), nullable=False)
     file_path = Column(String(500), nullable=False)  # Stored path on disk
@@ -35,6 +38,7 @@ class Evidence(Base):
     
     # Relationships
     incident = relationship("Incident", back_populates="evidence")
+    occurrence = relationship("Occurrence", back_populates="evidence")
     
     def __repr__(self):
         return f"<Evidence(id={self.id}, file_name='{self.file_name}', incident_id={self.incident_id})>"

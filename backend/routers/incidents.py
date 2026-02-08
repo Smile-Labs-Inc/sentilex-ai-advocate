@@ -343,6 +343,7 @@ EVIDENCE_DIR.mkdir(exist_ok=True)
 async def upload_evidence(
     incident_id: int,
     files: list[UploadFile] = File(...),
+    occurrence_id: Optional[int] = None,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
@@ -350,6 +351,7 @@ async def upload_evidence(
     Upload evidence files for an incident.
     
     Accepts multiple files and stores them securely.
+    Optionally link evidence to a specific occurrence.
     Returns metadata for all uploaded files.
     """
     
@@ -364,6 +366,20 @@ async def upload_evidence(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Incident not found"
         )
+    
+    # If occurrence_id provided, verify it belongs to this incident
+    if occurrence_id:
+        from models.occurrence import Occurrence
+        occurrence = db.query(Occurrence).filter(
+            Occurrence.id == occurrence_id,
+            Occurrence.incident_id == incident_id
+        ).first()
+        
+        if not occurrence:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Occurrence not found"
+            )
     
     uploaded_evidence = []
     
@@ -387,6 +403,7 @@ async def upload_evidence(
             # Create evidence record
             evidence = Evidence(
                 incident_id=incident_id,
+                occurrence_id=occurrence_id,  # Link to occurrence if provided
                 file_name=file.filename,
                 file_path=str(file_path),
                 file_type=file.content_type,

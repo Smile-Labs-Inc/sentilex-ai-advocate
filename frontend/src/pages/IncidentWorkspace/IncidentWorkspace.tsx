@@ -10,6 +10,7 @@ import { EvidenceSection } from '../../components/organisms/EvidenceSection/Evid
 import { EnhancedLawsSection } from '../../components/organisms/EnhancedLawsSection/EnhancedLawsSection';
 import { AIChatSection } from '../../components/organisms/AIChatSection/AIChatSection';
 import { SubmitConfirmationModal } from '../../components/organisms/SubmitConfirmationModal/SubmitConfirmationModal';
+import { OccurrenceModal } from '../../components/organisms/OccurrenceModal/OccurrenceModal';
 import { SubmitToPoliceButton } from '../../components/molecules/SubmitToPoliceButton/SubmitToPoliceButton';
 import { FindLawyersButton } from '../../components/molecules/FindLawyersButton/FindLawyersButton';
 import { Card, CardHeader, CardTitle } from '../../components/atoms/Card/Card';
@@ -55,6 +56,7 @@ export function IncidentWorkspacePage({
     } = useIncidentWorkspace(wizardData);
 
     const [showSubmitModal, setShowSubmitModal] = useState(false);
+    const [showOccurrenceModal, setShowOccurrenceModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -129,6 +131,14 @@ export function IncidentWorkspacePage({
                     </div>
 
                     <div className="flex items-center gap-3">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowOccurrenceModal(true)}
+                        >
+                            <Icon name="Plus" size="xs" />
+                            Record Occurrence
+                        </Button>
                         <Button variant="outline" size="sm">
                             <Icon name="Download" size="xs" />
                             Export
@@ -263,6 +273,18 @@ export function IncidentWorkspacePage({
                 onConfirm={handleSubmit}
                 onCancel={() => setShowSubmitModal(false)}
                 isSubmitting={isSubmitting}
+            />
+
+            {/* Occurrence modal */}
+            <OccurrenceModal
+                incidentId={parseInt(incident.id)}
+                isOpen={showOccurrenceModal}
+                onClose={() => setShowOccurrenceModal(false)}
+                onOccurrenceCreated={() => {
+                    setShowOccurrenceModal(false);
+                    // TODO: Reload occurrences and refresh timeline
+                    console.log('Occurrence created successfully');
+                }}
             />
         </DashboardLayout>
     );
