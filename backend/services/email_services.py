@@ -300,11 +300,11 @@ def get_welcome_email_html(user_name: str) -> str:
             <h3 style="color: #667eea;">What You Can Do Now:</h3>
             
             <ul style="padding-left: 20px;">
-                <li style="margin-bottom: 10px;">📝 <strong>Report Incidents:</strong> File complaints with AI-powered legal support</li>
-                <li style="margin-bottom: 10px;">⚖️ <strong>Legal Guidance:</strong> Get instant legal advice in Sinhala, Tamil, or English</li>
-                <li style="margin-bottom: 10px;">👨‍⚖️ <strong>Find Lawyers:</strong> Connect with verified legal professionals</li>
-                <li style="margin-bottom: 10px;">📚 <strong>Legal Knowledge:</strong> Access Sri Lankan law resources</li>
-                <li style="margin-bottom: 10px;">🔒 <strong>Secure Evidence:</strong> Store documents with blockchain verification</li>
+                <li style="margin-bottom: 10px;"><strong>Report Incidents:</strong> File complaints with AI-powered legal support</li>
+                <li style="margin-bottom: 10px;"><strong>Legal Guidance:</strong> Get instant legal advice in Sinhala, Tamil, or English</li>
+                <li style="margin-bottom: 10px;"><strong>Find Lawyers:</strong> Connect with verified legal professionals</li>
+                <li style="margin-bottom: 10px;"><strong>Legal Knowledge:</strong> Access Sri Lankan law resources</li>
+                <li style="margin-bottom: 10px;"><strong>Secure Evidence:</strong> Store documents with blockchain verification</li>
             </ul>
             
             <div style="text-align: center; margin: 30px 0;">
