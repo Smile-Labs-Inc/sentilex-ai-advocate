@@ -1,0 +1,170 @@
+"""
+PDF Generation Service
+
+Handles generation of PDF documents from HTML templates using WeasyPrint.
+"""
+
+from datetime import datetime
+from pathlib import Path
+from typing import Optional, List
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from weasyprint import HTML, CSS
+from io import BytesIO
+
+# Get templates directory
+TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
+
+# Initialize Jinja2 environment
+jinja_env = Environment(
+    loader=FileSystemLoader(str(TEMPLATES_DIR)),
+    autoescape=select_autoescape(['html', 'xml'])
+)
+
+
+def generate_police_statement_pdf(
+    incident: dict,
+    user: dict,
+    evidence_list: Optional[List[dict]] = None,
+    occurrences: Optional[List[dict]] = None
+) -> BytesIO:
+    """
+    Generate a police statement PDF from incident data.
+    
+    Args:
+        incident: Incident data dictionary
+        user: User data dictionary
+        evidence_list: Optional list of evidence items
+        occurrences: Optional list of occurrence events
+        
+    Returns:
+        BytesIO: PDF file as bytes
+    """
+    template = jinja_env.get_template('police_statement.html')
+    
+    html_content = template.render(
+        incident=incident,
+        user=user,
+        evidence_list=evidence_list or [],
+        occurrences=occurrences or [],
+        now=datetime.now()
+    )
+    
+    # Generate PDF
+    pdf_file = BytesIO()
+    HTML(string=html_content).write_pdf(pdf_file)
+    pdf_file.seek(0)
+    
+    return pdf_file
+
+
+def generate_cert_report_pdf(
+    incident: dict,
+    user: dict,
+    evidence_list: Optional[List[dict]] = None,
+    occurrences: Optional[List[dict]] = None
+) -> BytesIO:
+    """
+    Generate a CERT technical report PDF from incident data.
+    
+    Args:
+        incident: Incident data dictionary
+        user: User data dictionary
+        evidence_list: Optional list of evidence items
+        occurrences: Optional list of occurrence events
+        
+    Returns:
+        BytesIO: PDF file as bytes
+    """
+    template = jinja_env.get_template('cert_report.html')
+    
+    html_content = template.render(
+        incident=incident,
+        user=user,
+        evidence_list=evidence_list or [],
+        occurrences=occurrences or [],
+        now=datetime.now()
+    )
+    
+    # Generate PDF
+    pdf_file = BytesIO()
+    HTML(string=html_content).write_pdf(pdf_file)
+    pdf_file.seek(0)
+    
+    return pdf_file
+
+
+def generate_evidence_manifest_pdf(
+    incident: dict,
+    evidence_list: List[dict]
+) -> BytesIO:
+    """
+    Generate an evidence manifest PDF listing all evidence files.
+    
+    Args:
+        incident: Incident data dictionary
+        evidence_list: List of evidence items
+        
+    Returns:
+        BytesIO: PDF file as bytes
+    """
+    # Simple HTML template for evidence manifest
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Evidence Manifest - {incident.get('title', 'Incident')}</title>
+        <style>
+            body {{ font-family: Arial, sans-serif; margin: 2cm; }}
+            h1 {{ color: #003d7a; border-bottom: 2px solid #003d7a; padding-bottom: 10px; }}
+            table {{ width: 100%; border-collapse: collapse; margin-top: 20px; }}
+            th, td {{ border: 1px solid #666; padding: 8px; text-align: left; }}
+            th {{ background-color: #003d7a; color: white; }}
+            .footer {{ margin-top: 30px; font-size: 9pt; color: #666; }}
+        </style>
+    </head>
+    <body>
+        <h1>Evidence Manifest</h1>
+        <p><strong>Incident ID:</strong> {incident.get('id')}</p>
+        <p><strong>Incident Title:</strong> {incident.get('title')}</p>
+        <p><strong>Generated:</strong> {datetime.now().strftime('%d %B %Y, %I:%M %p')}</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>File Name</th>
+                    <th>Type</th>
+                    <th>Size (KB)</th>
+                    <th>Upload Date</th>
+                    <th>File Path</th>
+                </tr>
+            </thead>
+            <tbody>
+                {''.join([f'''
+                <tr>
+                    <td>{ev.get('id')}</td>
+                    <td>{ev.get('file_name')}</td>
+                    <td>{ev.get('file_type', 'Unknown')}</td>
+                    <td>{round(ev.get('file_size', 0) / 1024, 2) if ev.get('file_size') else 'N/A'}</td>
+                    <td>{ev.get('uploaded_at').strftime('%Y-%m-%d %H:%M') if ev.get('uploaded_at') else 'N/A'}</td>
+                    <td style="font-size: 8pt;">{ev.get('file_path', 'N/A')}</td>
+                </tr>
+                ''' for ev in evidence_list])}
+            </tbody>
+        </table>
+        
+        <div class="footer">
+            <p>Total Evidence Files: {len(evidence_list)}</p>
+            <p>This manifest was generated by the Sentilex AI Advocate System</p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    # Generate PDF
+    pdf_file = BytesIO()
+    HTML(string=html_content).write_pdf(pdf_file)
+    pdf_file.seek(0)
+    
+    return pdf_file

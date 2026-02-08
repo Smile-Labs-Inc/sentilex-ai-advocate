@@ -202,14 +202,14 @@ export function useIncidentWorkspace(
       setIsAnalyzing(true);
       // Load evidence
       const evidenceData = await getIncidentEvidence(incidentId);
-      const formattedEvidence: Evidence[] = evidenceData.map((e) => ({
+      const formattedEvidence: Evidence[] = evidenceData.evidence.map((e) => ({
         id: e.id.toString(),
         fileName: e.file_name,
         fileSize: e.file_size || 0,
         fileType: getEvidenceTypeFromMime(e.file_type || ""),
         mimeType: e.file_type || "",
         uploadedAt: new Date(e.uploaded_at),
-        description: e.description || "",
+        description: "",
         isEncrypted: false,
         thumbnailUrl: e.file_path,
       }));

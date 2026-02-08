@@ -34,6 +34,7 @@ from routers import legal_queries
 from routers import incidents
 from routers import occurrences
 from routers import evidence
+from routers import documents
 from routers import case_agent
 from routers import chat
 from mcp_server.mcp_client import get_mcp_client
@@ -95,6 +96,7 @@ app.include_router(legal_queries.router)
 app.include_router(incidents.router)
 app.include_router(occurrences.router)
 app.include_router(evidence.router)
+app.include_router(documents.router)
 app.include_router(case_agent.router)
 app.include_router(chat.router)
 app.include_router(payments.router)

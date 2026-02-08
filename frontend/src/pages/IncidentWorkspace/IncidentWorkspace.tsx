@@ -13,6 +13,7 @@ import { SubmitConfirmationModal } from '../../components/organisms/SubmitConfir
 import { OccurrenceModal } from '../../components/organisms/OccurrenceModal/OccurrenceModal';
 import { SubmitToPoliceButton } from '../../components/molecules/SubmitToPoliceButton/SubmitToPoliceButton';
 import { FindLawyersButton } from '../../components/molecules/FindLawyersButton/FindLawyersButton';
+import { ExportButton } from '../../components/molecules/ExportButton/ExportButton';
 import { Card, CardHeader, CardTitle } from '../../components/atoms/Card/Card';
 import { Button } from '../../components/atoms/Button/Button';
 import { Icon } from '../../components/atoms/Icon/Icon';
@@ -142,10 +143,10 @@ export function IncidentWorkspacePage({
                             <Icon name="Plus" size="xs" />
                             Record Occurrence
                         </Button>
-                        <Button variant="outline" size="sm">
-                            <Icon name="Download" size="xs" />
-                            Export
-                        </Button>
+                        <ExportButton
+                            incidentId={parseInt(incident.id.replace('inc_', ''))}
+                            variant="outline"
+                        />
                         <Button
                             variant="secondary"
                             size="sm"
@@ -280,7 +281,7 @@ export function IncidentWorkspacePage({
 
             {/* Occurrence modal */}
             <OccurrenceModal
-                incidentId={parseInt(incident.id)}
+                incidentId={parseInt(incident.id.replace('inc_', ''))}
                 isOpen={showOccurrenceModal}
                 onClose={() => setShowOccurrenceModal(false)}
                 onOccurrenceCreated={async () => {
@@ -289,7 +290,7 @@ export function IncidentWorkspacePage({
                     console.log('Occurrence created successfully description timeline refreshed');
                 }}
             />
-        </DashboardLayout>
+        </DashboardLayout >
     );
 }
 
