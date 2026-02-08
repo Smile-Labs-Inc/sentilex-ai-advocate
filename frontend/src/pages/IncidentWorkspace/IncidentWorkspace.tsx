@@ -18,13 +18,14 @@ import { Button } from '../../components/atoms/Button/Button';
 import { Icon } from '../../components/atoms/Icon/Icon';
 import { Badge, getStatusVariant, getStatusLabel } from '../../components/atoms/Badge/Badge';
 import { useIncidentWorkspace } from '../../hooks/useIncidentWorkspace';
-import type { NavItem } from '../../types';
+import type { NavItem, Incident } from '../../types';
 import type { UserProfile } from '../../types/auth';
 import type { WizardData } from '../../components/organisms/OnboardingWizard/OnboardingWizard';
 
 export interface IncidentWorkspacePageProps {
     user: UserProfile;
     wizardData?: WizardData;
+    incident?: Incident;  // For loading existing incidents
     onNavigate: (item: NavItem) => void;
     onBack: () => void;
     onFindLawyers: () => void;
@@ -33,6 +34,7 @@ export interface IncidentWorkspacePageProps {
 export function IncidentWorkspacePage({
     user,
     wizardData,
+    incident: existingIncident,
     onNavigate,
     onBack,
     onFindLawyers,
@@ -53,7 +55,8 @@ export function IncidentWorkspacePage({
         sendMessage,
         chatMessages,
         isChatLoading,
-    } = useIncidentWorkspace(wizardData);
+        refreshIncident,
+    } = useIncidentWorkspace(wizardData, existingIncident);
 
     const [showSubmitModal, setShowSubmitModal] = useState(false);
     const [showOccurrenceModal, setShowOccurrenceModal] = useState(false);
@@ -280,10 +283,10 @@ export function IncidentWorkspacePage({
                 incidentId={parseInt(incident.id)}
                 isOpen={showOccurrenceModal}
                 onClose={() => setShowOccurrenceModal(false)}
-                onOccurrenceCreated={() => {
+                onOccurrenceCreated={async () => {
                     setShowOccurrenceModal(false);
-                    // TODO: Reload occurrences and refresh timeline
-                    console.log('Occurrence created successfully');
+                    await refreshIncident();
+                    console.log('Occurrence created successfully description timeline refreshed');
                 }}
             />
         </DashboardLayout>
