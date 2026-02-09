@@ -20,6 +20,7 @@ export interface EvidenceItem {
   incident_title: string;
   incident_type: string;
   incident_status: string;
+  thumbnail_url?: string | null;
 }
 
 export interface EvidenceListResponse {

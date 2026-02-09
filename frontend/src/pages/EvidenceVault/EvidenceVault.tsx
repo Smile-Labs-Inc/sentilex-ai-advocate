@@ -45,7 +45,7 @@ export function EvidenceVaultPage({ onNavigate }: EvidenceVaultPageProps) {
         uploadedAt: new Date(item.uploaded_at),
         description: item.description || '',
         isEncrypted: true,
-        thumbnailUrl: undefined,
+        thumbnailUrl: item.thumbnail_url || undefined,
     }));
 
     // Helper to determine evidence type from MIME type

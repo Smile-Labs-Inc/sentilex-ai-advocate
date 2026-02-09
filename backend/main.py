@@ -15,13 +15,6 @@ from models.user import User
 from models.lawyers import Lawyer
 from models.admin import Admin
 
-# Suppress GLib/GIO warnings on Windows
-os.environ["G_MESSAGES_DEBUG"] = "none"
-import sys
-if sys.platform == "win32":
-    # Suppress specific GLib/GIO warning domains
-    os.environ["G_LOG_DOMAIN"] = "GLib-GIO"
-
 from models.session_chat import SessionChatMessage, ChatSession
 from models.token_blacklist import TokenBlacklist
 from models.login_attempt import LoginAttempt
@@ -42,7 +35,7 @@ from routers import legal_queries
 from routers import incidents
 from routers import occurrences
 from routers import evidence
-from routers import documents
+# from routers import documents
 from routers import case_agent
 from routers import chat
 from mcp_server.mcp_client import get_mcp_client
@@ -124,7 +117,7 @@ app.include_router(legal_queries.router)
 app.include_router(incidents.router)
 app.include_router(occurrences.router)
 app.include_router(evidence.router)
-app.include_router(documents.router)
+# app.include_router(documents.router)
 app.include_router(case_agent.router)
 app.include_router(chat.router)
 app.include_router(payments.router)
@@ -152,7 +145,12 @@ async def health_check():
     }
 
 def main():
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run(
+        "main:app", 
+        host="127.0.0.1", 
+        port=8000, 
+        reload=True
+    )
 
 
 if __name__ == "__main__":

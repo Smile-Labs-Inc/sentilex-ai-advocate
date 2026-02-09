@@ -21,6 +21,7 @@ class EvidenceResponse(BaseModel):
     file_size: Optional[int] = None
     uploaded_at: datetime
     description: Optional[str] = None
+    thumbnail_url: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -38,6 +39,7 @@ class EvidenceWithIncidentResponse(BaseModel):
     file_size: Optional[int] = None
     uploaded_at: datetime
     description: Optional[str] = None
+    thumbnail_url: Optional[str] = None
     
     # Incident details
     incident_title: str

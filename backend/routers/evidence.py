@@ -80,8 +80,22 @@ async def list_all_evidence(
     evidence_list = query.order_by(Evidence.uploaded_at.desc()).all()
     
     # Format response with incident details
+    # Format response with incident details
     evidence_with_incident = []
+    
+    # Import helper for generating URLs
+    from services.s3_service import generate_presigned_url
+
     for evidence in evidence_list:
+        # Generate thumbnail URL for image files
+        thumbnail_url = None
+        if evidence.file_key and evidence.file_type and evidence.file_type.startswith('image/'):
+            try:
+                # Generate a short-lived URL for the thumbnail (15 mins)
+                thumbnail_url = generate_presigned_url(evidence.file_key, expiration=900)
+            except Exception:
+                pass
+
         evidence_with_incident.append({
             "id": evidence.id,
             "incident_id": evidence.incident_id,
@@ -92,7 +106,8 @@ async def list_all_evidence(
             "file_type": evidence.file_type,
             "file_size": evidence.file_size,
             "uploaded_at": evidence.uploaded_at,
-            "description": None,  # Add if you have description field
+            "description": None,
+            "thumbnail_url": thumbnail_url,
             "incident_title": evidence.incident.title,
             "incident_type": evidence.incident.incident_type.value,
             "incident_status": evidence.incident.status.value
