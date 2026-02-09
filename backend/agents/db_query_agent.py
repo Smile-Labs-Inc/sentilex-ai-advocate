@@ -37,7 +37,7 @@ def get_agent_db(user_id: int) -> SQLDatabase:
     
     return SQLDatabase.from_uri(
         uri,
-        include_tables=["users", "incidents", "chat_messages"]
+        include_tables=["users", "incidents", "incident_chat_messages"]
     )
 
 
@@ -48,7 +48,7 @@ You are a read-only database analyst retrieving user profile and case context fo
 SAFE TABLES ONLY (permission denied on others):
 - users (profile, preferences, expertise)
 - incidents (case metadata for this user only) 
-- chat_messages (conversation history for this user/incident)
+- incident_chat_messages (conversation history for this user/incident)
 
 SECURITY RULES:
 - SELECT queries ONLY. No INSERT, UPDATE, DELETE, ALTER, DROP, CREATE.

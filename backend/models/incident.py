@@ -46,7 +46,7 @@ class Incident(Base):
     
     # Incident classification
     incident_type = Column(
-        Enum(IncidentTypeEnum),
+        Enum(IncidentTypeEnum, values_callable=lambda x: [e.value for e in x]),
         nullable=False
     )
     
@@ -66,7 +66,7 @@ class Incident(Base):
     
     # Status tracking
     status = Column(
-        Enum(IncidentStatusEnum),
+        Enum(IncidentStatusEnum, values_callable=lambda x: [e.value for e in x]),
         default=IncidentStatusEnum.SUBMITTED,
         nullable=False
     )
@@ -79,6 +79,7 @@ class Incident(Base):
     user = relationship("User", backref="incidents")
     chat_messages = relationship("IncidentChatMessage", back_populates="incident", cascade="all, delete-orphan")
     evidence = relationship("Evidence", back_populates="incident", cascade="all, delete-orphan")
+    occurrences = relationship("Occurrence", back_populates="incident", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<Incident(id={self.id}, title='{self.title}', status='{self.status}')>"

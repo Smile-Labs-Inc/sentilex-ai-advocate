@@ -56,7 +56,7 @@ function AppContent() {
 
   const handleViewIncident = (incident: Incident) => {
     setSelectedIncident(incident);
-    route("/incident-detail");
+    route("/incident-workspace");
   };
 
   const handleWizardComplete = (data: WizardData) => {
@@ -99,6 +99,7 @@ function AppContent() {
         path="/incident-workspace"
         user={user}
         wizardData={wizardData || undefined}
+        incident={selectedIncident || undefined}
         onNavigate={handleNavigate}
         onBack={handleBackToDashboard}
         onFindLawyers={handleFindLawyers}
