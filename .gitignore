@@ -7,13 +7,25 @@ __pycache__/
 *.so
 .Python
 /backend/agents/__pycache__
-/backend/agents/__pycache__
-/backend/agents/__pycache__
 /backend/mcp_server/__pycache__
 /backend/chains/__pycache__
 backend/project_idea.md
 frontend/implementation_plan.md
-frontend/implementation_plan.md
-frontend/implementation_plan.md
-frontend/implementation_plan.md
 frontend/.env
+
+# Docker & Production
+.env.production
+docker-compose.override.yml
+postgres_data/
+*.sql
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+.env
+DEPLOYMENT.md
