@@ -329,14 +329,8 @@ async def get_incident_messages(
 from fastapi import UploadFile, File
 from models.evidence import Evidence
 from schemas.incident import EvidenceResponse, EvidenceListResponse
-from pathlib import Path
-import os
 import uuid
-
-
-# Evidence storage directory
-EVIDENCE_DIR = Path("uploaded_evidence")
-EVIDENCE_DIR.mkdir(exist_ok=True)
+from services.s3_service import upload_file_to_s3
 
 
 @router.post("/{incident_id}/evidence", response_model=list[EvidenceResponse])
@@ -348,9 +342,9 @@ async def upload_evidence(
     db: Session = Depends(get_db)
 ):
     """
-    Upload evidence files for an incident.
+    Upload evidence files for an incident to S3.
     
-    Accepts multiple files and stores them securely.
+    Files are streamed to S3 with AES-256 encryption and SHA-256 hashing.
     Optionally link evidence to a specific occurrence.
     Returns metadata for all uploaded files.
     """
@@ -384,28 +378,28 @@ async def upload_evidence(
     uploaded_evidence = []
     
     for file in files:
-        # Generate unique filename
-        file_extension = Path(file.filename).suffix
-        unique_filename = f"{uuid.uuid4()}{file_extension}"
-        
-        # Create incident-specific directory
-        incident_dir = EVIDENCE_DIR / f"incident_{incident_id}"
-        incident_dir.mkdir(exist_ok=True)
-        
-        # Save file to disk
-        file_path = incident_dir / unique_filename
+        # Generate S3 key with pattern: incidents/{incident_id}/evidence/{uuid}_{filename}
+        file_uuid = str(uuid.uuid4())
+        file_key = f"incidents/{incident_id}/evidence/{file_uuid}_{file.filename}"
         
         try:
+            # Read file content
             contents = await file.read()
-            with open(file_path, "wb") as f:
-                f.write(contents)
             
-            # Create evidence record
+            # Upload to S3 and get SHA-256 hash
+            file_hash = upload_file_to_s3(
+                file_content=contents,
+                file_key=file_key,
+                content_type=file.content_type
+            )
+            
+            # Create evidence record with S3 metadata
             evidence = Evidence(
                 incident_id=incident_id,
-                occurrence_id=occurrence_id,  # Link to occurrence if provided
+                occurrence_id=occurrence_id,
                 file_name=file.filename,
-                file_path=str(file_path),
+                file_key=file_key,
+                file_hash=file_hash,
                 file_type=file.content_type,
                 file_size=len(contents)
             )
@@ -417,9 +411,8 @@ async def upload_evidence(
             uploaded_evidence.append(evidence)
             
         except Exception as e:
-            # Clean up file if database operation fails
-            if file_path.exists():
-                file_path.unlink()
+            # Rollback database if S3 upload succeeded but DB failed
+            db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Failed to upload {file.filename}: {str(e)}"
@@ -471,9 +464,9 @@ async def delete_evidence(
     db: Session = Depends(get_db)
 ):
     """
-    Delete an evidence file.
+    Delete an evidence file from S3 and database.
     
-    Removes both the file from disk and the database record.
+    Removes both the file from S3 and the database record.
     """
     
     # Verify incident exists and belongs to user
@@ -500,14 +493,14 @@ async def delete_evidence(
             detail="Evidence not found"
         )
     
-    # Delete file from disk
-    file_path = Path(evidence.file_path)
-    if file_path.exists():
-        try:
-            file_path.unlink()
-        except Exception as e:
-            import logging
-            logging.error(f"Failed to delete file {file_path}: {str(e)}")
+    # Delete file from S3
+    try:
+        from services.s3_service import delete_file_from_s3
+        delete_file_from_s3(evidence.file_key)
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to delete file from S3: {evidence.file_key} - {str(e)}")
+        # Continue with database deletion even if S3 deletion fails
     
     # Delete database record
     db.delete(evidence)

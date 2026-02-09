@@ -14,6 +14,14 @@ from database.config import check_db_connection, Base, engine
 from models.user import User
 from models.lawyers import Lawyer
 from models.admin import Admin
+
+# Suppress GLib/GIO warnings on Windows
+os.environ["G_MESSAGES_DEBUG"] = "none"
+import sys
+if sys.platform == "win32":
+    # Suppress specific GLib/GIO warning domains
+    os.environ["G_LOG_DOMAIN"] = "GLib-GIO"
+
 from models.session_chat import SessionChatMessage, ChatSession
 from models.token_blacklist import TokenBlacklist
 from models.login_attempt import LoginAttempt
@@ -86,23 +94,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-app.include_router(lawyers.router)
-app.include_router(auth.router)
-app.include_router(admin_auth.router)
-app.include_router(google_oauth.router)
-app.include_router(lawbook.router)
-app.include_router(lawyer_verification.router)
-app.include_router(legal_queries.router)
-app.include_router(incidents.router)
-app.include_router(occurrences.router)
-app.include_router(evidence.router)
-app.include_router(documents.router)
-app.include_router(case_agent.router)
-app.include_router(chat.router)
-app.include_router(payments.router)
-
-
-# CORS Configuration (must be added first)
+# CORS Configuration (MUST be added BEFORE routers)
 origins = [
     "http://localhost:3000",
     "http://localhost:5173",
@@ -120,6 +112,22 @@ app.add_middleware(
 # Session Middleware for OAuth (added after CORS)
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production-min-32-chars")
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+
+# Include all routers AFTER middleware
+app.include_router(lawyers.router)
+app.include_router(auth.router)
+app.include_router(admin_auth.router)
+app.include_router(google_oauth.router)
+app.include_router(lawbook.router)
+app.include_router(lawyer_verification.router)
+app.include_router(legal_queries.router)
+app.include_router(incidents.router)
+app.include_router(occurrences.router)
+app.include_router(evidence.router)
+app.include_router(documents.router)
+app.include_router(case_agent.router)
+app.include_router(chat.router)
+app.include_router(payments.router)
 
 
 

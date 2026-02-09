@@ -12,7 +12,7 @@ import zipstream
 from pathlib import Path
 from datetime import datetime
 
-from database.connection import get_db
+from database.config import get_db
 from models.user import User
 from models.incident import Incident
 from models.evidence import Evidence

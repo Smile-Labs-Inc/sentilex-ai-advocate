@@ -8,8 +8,26 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional, List
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from weasyprint import HTML, CSS
 from io import BytesIO
+import logging
+
+# Optional WeasyPrint import to handle missing system dependencies
+try:
+    from weasyprint import HTML, CSS
+    WEASYPRINT_AVAILABLE = True
+except (ImportError, OSError) as e:
+    logging.warning(f"WeasyPrint not available (PDF generation disabled): {e}")
+    WEASYPRINT_AVAILABLE = False
+    
+    # Dummy classes to prevent NameError
+    class HTML:
+        def __init__(self, string=None, **kwargs):
+            pass
+        def write_pdf(self, target):
+            raise ImportError("WeasyPrint not installed or configured propertly")
+            
+    class CSS:
+        pass
 
 # Get templates directory
 TEMPLATES_DIR = Path(__file__).parent.parent / "templates"

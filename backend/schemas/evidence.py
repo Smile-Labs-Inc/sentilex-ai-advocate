@@ -15,7 +15,8 @@ class EvidenceResponse(BaseModel):
     incident_id: int
     occurrence_id: Optional[int] = None
     file_name: str
-    file_path: str
+    file_key: str
+    file_hash: str
     file_type: Optional[str] = None
     file_size: Optional[int] = None
     uploaded_at: datetime
@@ -31,7 +32,8 @@ class EvidenceWithIncidentResponse(BaseModel):
     incident_id: int
     occurrence_id: Optional[int] = None
     file_name: str
-    file_path: str
+    file_key: str
+    file_hash: str
     file_type: Optional[str] = None
     file_size: Optional[int] = None
     uploaded_at: datetime
@@ -56,3 +58,11 @@ class EvidenceWithIncidentListResponse(BaseModel):
     """Schema for paginated evidence list with incident details"""
     evidence: list[EvidenceWithIncidentResponse]
     total: int
+
+
+class EvidenceDownloadResponse(BaseModel):
+    """Schema for evidence download with presigned URL"""
+    download_url: str
+    expires_at: datetime
+    file_name: str
+    file_size: Optional[int] = None

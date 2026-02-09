@@ -14,8 +14,9 @@ class Evidence(Base):
     """
     Evidence model for storing metadata about uploaded files.
     
-    Files are stored on disk, and this model tracks their location,
-    type, and size for retrieval and management.
+    Files are stored in Amazon S3 with AES-256 encryption.
+    This model tracks S3 keys, cryptographic hashes, and metadata
+    for retrieval and forensic audit trails.
     """
     __tablename__ = "evidence"
 
@@ -29,7 +30,8 @@ class Evidence(Base):
     
     # File metadata
     file_name = Column(String(255), nullable=False)
-    file_path = Column(String(500), nullable=False)  # Stored path on disk
+    file_key = Column(String(500), nullable=False)   # S3 object key
+    file_hash = Column(String(64), nullable=False)   # SHA-256 hash for forensic audit
     file_type = Column(String(100), nullable=True)   # MIME type
     file_size = Column(Integer, nullable=True)       # Size in bytes
     

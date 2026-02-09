@@ -16,7 +16,8 @@ from models.incident import Incident
 from schemas.evidence import (
     EvidenceResponse,
     EvidenceWithIncidentResponse,
-    EvidenceWithIncidentListResponse
+    EvidenceWithIncidentListResponse,
+    EvidenceDownloadResponse
 )
 from auth.dependencies import get_current_active_user
 
@@ -86,7 +87,8 @@ async def list_all_evidence(
             "incident_id": evidence.incident_id,
             "occurrence_id": evidence.occurrence_id,
             "file_name": evidence.file_name,
-            "file_path": evidence.file_path,
+            "file_key": evidence.file_key,
+            "file_hash": evidence.file_hash,
             "file_type": evidence.file_type,
             "file_size": evidence.file_size,
             "uploaded_at": evidence.uploaded_at,
@@ -136,7 +138,8 @@ async def get_evidence(
         "incident_id": evidence.incident_id,
         "occurrence_id": evidence.occurrence_id,
         "file_name": evidence.file_name,
-        "file_path": evidence.file_path,
+        "file_key": evidence.file_key,
+        "file_hash": evidence.file_hash,
         "file_type": evidence.file_type,
         "file_size": evidence.file_size,
         "uploaded_at": evidence.uploaded_at,
@@ -147,6 +150,47 @@ async def get_evidence(
     }
 
 
+
+
+@router.get("/{evidence_id}/download", response_model=EvidenceDownloadResponse)
+async def download_evidence(
+    evidence_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Generate a presigned URL for downloading evidence.
+    
+    Returns a temporary download URL that expires in 15 minutes.
+    Does not expose the S3 key directly to the frontend.
+    """
+    
+    evidence = db.query(Evidence).join(Incident).filter(
+        Evidence.id == evidence_id,
+        Incident.user_id == current_user.id
+    ).first()
+    
+    if not evidence:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Evidence not found or you do not have permission to access it"
+        )
+    
+    # Generate presigned URL (expires in 15 minutes = 900 seconds)
+    from services.s3_service import generate_presigned_url
+    from datetime import timedelta
+    
+    download_url = generate_presigned_url(evidence.file_key, expiration=900)
+    expires_at = datetime.utcnow() + timedelta(seconds=900)
+    
+    return EvidenceDownloadResponse(
+        download_url=download_url,
+        expires_at=expires_at,
+        file_name=evidence.file_name,
+        file_size=evidence.file_size
+    )
+
+
 @router.delete("/{evidence_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_evidence(
     evidence_id: int,
@@ -154,7 +198,7 @@ async def delete_evidence(
     db: Session = Depends(get_db)
 ):
     """
-    Delete an evidence file.
+    Delete an evidence file from S3 and database.
     
     Verifies that the evidence belongs to one of the user's incidents.
     """
@@ -170,12 +214,17 @@ async def delete_evidence(
             detail="Evidence not found or you do not have permission to delete it"
         )
     
-    # TODO: Delete the actual file from disk
-    # import os
-    # if os.path.exists(evidence.file_path):
-    #     os.remove(evidence.file_path)
+    # Delete file from S3
+    try:
+        from services.s3_service import delete_file_from_s3
+        delete_file_from_s3(evidence.file_key)
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to delete file from S3: {evidence.file_key} - {str(e)}")
+        # Continue with database deletion even if S3 deletion fails
     
     db.delete(evidence)
     db.commit()
     
     return None
+
