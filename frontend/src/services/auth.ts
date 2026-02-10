@@ -126,6 +126,8 @@ class AuthService {
             body: JSON.stringify(credentials),
         });
 
+        // If backend redirected to an HTML login page or returned non-JSON,
+        // attempt to produce a friendly message for common auth failures.
         if (!response.ok) {
             const error = await response.json();
             console.error('Login error response:', error);
@@ -148,6 +150,7 @@ class AuthService {
             throw new Error(errorMsg);
         }
 
+        // Parse successful response
         const data: LoginResponse = await response.json();
 
         // Store tokens and user data

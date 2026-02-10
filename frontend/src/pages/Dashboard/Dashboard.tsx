@@ -12,7 +12,8 @@ import { NewIncidentCTA } from "../../components/organisms/NewIncidentCTA/NewInc
 import { IncidentsList } from "../../components/organisms/IncidentsList/IncidentsList";
 import { QuickLinksPanel } from "../../components/organisms/QuickLinksPanel/QuickLinksPanel";
 import { QuickActionsGrid } from "../../components/organisms/QuickActionsGrid/QuickActionsGrid";
-import { ActivityFeed } from "../../components/organisms/ActivityFeed/ActivityFeed";
+import { ActivityModal } from "../../components/organisms/ActivityModal/ActivityModal";
+import { useState } from "preact/hooks";
 import { DonutChart } from "../../components/organisms/Charts/DonutChart";
 import { useAuth } from "../../hooks/useAuth";
 import type { Incident, NavItem } from "../../types";
@@ -28,6 +29,7 @@ export function Dashboard({
   onNewIncident,
   onViewIncident,
 }: DashboardProps) {
+  const [showActivityModal, setShowActivityModal] = useState(false);
   const { user } = useAuth();
   const {
     notifications,
@@ -103,7 +105,11 @@ export function Dashboard({
   };
 
   return (
-    <DashboardLayout user={user} onNavigate={onNavigate}>
+    <DashboardLayout
+      user={user}
+      onNavigate={onNavigate}
+      onOpenActivity={() => setShowActivityModal(true)}
+    >
       {/* Header */}
       <DashboardHeader
         user={user}
@@ -155,10 +161,22 @@ export function Dashboard({
           {/* Quick Links */}
           <QuickLinksPanel links={quickLinks} />
 
-          {/* Activity Feed (returning users only) */}
-          {!isNewUser && <ActivityFeed activities={activity} />}
+          {/* Activity Feed moved to top-left button (opens modal) */}
         </div>
       </div>
+
+      {/* Activity modal opened from top-left button */}
+      {!isNewUser && (
+        <>
+          {showActivityModal && (
+            <ActivityModal
+              isOpen={showActivityModal}
+              activities={activity}
+              onClose={() => setShowActivityModal(false)}
+            />
+          )}
+        </>
+      )}
     </DashboardLayout>
   );
 }
