@@ -115,6 +115,7 @@ export function Dashboard({
         user={user}
         notifications={notifications}
         onNewIncident={handleNewIncident}
+        onOpenActivity={() => setShowActivityModal(true)}
         onMarkNotificationAsRead={handleMarkNotificationAsRead}
         onMarkAllNotificationsAsRead={handleMarkAllNotificationsAsRead}
         onViewAllNotifications={handleViewAllNotifications}
