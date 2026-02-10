@@ -18,7 +18,7 @@ Test Account:
 import requests
 import json
 
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "http://127.0.0.1:8001"
 
 # Test admin credentials
 ADMIN_EMAIL = "kaveesha@gmail.com"

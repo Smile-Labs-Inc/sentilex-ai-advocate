@@ -7,7 +7,7 @@ import requests
 import pyotp
 import json
 
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "http://127.0.0.1:8001"
 
 # Test admin created with MFA enabled from the start
 ADMIN_EMAIL = "test.admin@sentilex.com"

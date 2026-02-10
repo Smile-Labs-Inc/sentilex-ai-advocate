@@ -1,7 +1,7 @@
 # SentiLex API Endpoint Testing Script
 # Tests all major endpoints to ensure they're working correctly
 
-$baseUrl = "http://localhost:8000"
+$baseUrl = "http://localhost:8001"
 $testResults = @()
 
 function Test-Endpoint {
@@ -183,4 +183,4 @@ if ($failed -eq 0) {
     Write-Host "`n⚠️  Some endpoints failed. Please review the errors above." -ForegroundColor Yellow
 }
 
-Write-Host "`n📚 Full API Documentation: http://localhost:8000/docs" -ForegroundColor Cyan
+Write-Host "`n📚 Full API Documentation: http://localhost:8001/docs" -ForegroundColor Cyan

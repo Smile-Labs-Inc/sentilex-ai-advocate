@@ -31,7 +31,7 @@ class Settings:
     
     # API Configuration
     API_HOST: str = os.getenv("API_HOST", "0.0.0.0")
-    API_PORT: int = int(os.getenv("API_PORT", "8000"))
+    API_PORT: int = int(os.getenv("API_PORT", "8001"))
     API_RELOAD: bool = os.getenv("API_RELOAD", "true").lower() in ("1", "true", "yes")
     
     # Audit Logging

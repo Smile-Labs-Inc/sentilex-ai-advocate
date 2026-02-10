@@ -12,7 +12,7 @@ import time
 from typing import Optional
 
 # Configuration
-BASE_URL = "http://localhost:8000"
+BASE_URL = "http://localhost:8001"
 
 # Test user credentials
 TEST_EMAIL = "sarah.smith@example.com"
