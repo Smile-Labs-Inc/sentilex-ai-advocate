@@ -46,7 +46,7 @@ class Incident(Base):
     
     # Incident classification
     incident_type = Column(
-        Enum(IncidentTypeEnum),
+        Enum(IncidentTypeEnum, native_enum=False),
         nullable=False
     )
     
@@ -66,7 +66,7 @@ class Incident(Base):
     
     # Status tracking
     status = Column(
-        Enum(IncidentStatusEnum),
+        Enum(IncidentStatusEnum, native_enum=False),
         default=IncidentStatusEnum.SUBMITTED,
         nullable=False
     )

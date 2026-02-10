@@ -21,6 +21,7 @@ export interface SidebarProps {
   user: AuthUserProfile;
   currentPath?: string;
   onNavigate?: (item: NavItemType) => void;
+  onOpenActivity?: () => void;
   className?: string;
 }
 
@@ -28,6 +29,7 @@ export function Sidebar({
   user,
   currentPath = "/",
   onNavigate,
+  onOpenActivity,
   className,
 }: SidebarProps) {
   const [activeItem, setActiveItem] = useState(currentPath);
@@ -56,13 +58,15 @@ export function Sidebar({
             <Icon name="Scale" size="md" />
             <span className="font-['Space_Grotesk']">VERITAS</span>
           </div>
-          <button className="p-1.5 hover:bg-secondary rounded-lg transition-colors">
-            <Icon
-              name="PanelLeftClose"
-              size="sm"
-              className="text-muted-foreground"
-            />
-          </button>
+          <div className="flex items-center gap-2">
+            <button className="p-1.5 hover:bg-secondary rounded-lg transition-colors">
+              <Icon
+                name="PanelLeftClose"
+                size="sm"
+                className="text-muted-foreground"
+              />
+            </button>
+          </div>
         </div>
 
         {/* Search */}

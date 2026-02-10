@@ -91,18 +91,32 @@ class AuthService {
             body: JSON.stringify(credentials),
         });
 
+        // If backend redirected to an HTML login page or returned non-JSON,
+        // attempt to produce a friendly message for common auth failures.
         if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.detail || 'Login failed');
+            // Prefer explicit 401 mapping for incorrect credentials
+            if (response.status === 401) {
+                throw new Error('Incorrect email or password');
+            }
+
+            // Try to parse JSON error body safely
+            try {
+                const error = await response.json();
+                throw new Error(error.detail || 'Login failed');
+            } catch (parseErr) {
+                // Non-JSON response (e.g. HTML redirect) or parse failed
+                throw new Error('Login failed: server returned an unexpected response');
+            }
         }
 
-        const data: LoginResponse = await response.json();
+    // Parse successful response
+    const data: LoginResponse = await response.json();
 
-        // Store tokens and user data
-        this.setTokens(data.access_token, data.refresh_token);
+    // Store tokens and user data
+    this.setTokens(data.access_token, data.refresh_token);
 
-        return data;
-    }
+    return data;
+}
 
     // Logout
     async logout(): Promise<void> {
