@@ -12,6 +12,7 @@ from schemas.lawyers import (
 )
 from models.DocumentStorageService import document_storage
 from auth.dependencies import get_current_lawyer, get_current_admin
+from services.notification_service import LawyerNotificationService
 
 router = APIRouter(prefix="/api/lawyer/verification", tags=["Lawyer Verification"])
 
@@ -79,6 +80,17 @@ def complete_step2(
     current_lawyer.verification_status = VerificationStatusEnum.in_progress
     
     db.commit()
+    
+    # Send notification about step 2 completion
+    notification_service = LawyerNotificationService(db)
+    notification_service.send(
+        recipient_id=current_lawyer.id,
+        title="📋 Enrollment Details Submitted",
+        message=f"Your Supreme Court enrollment details have been recorded. Next step: Upload your required documents.",
+        notification_type="VERIFICATION",
+        priority=2,
+        action_url="/profile/verification"
+    )
     
     log_audit(
         db, current_lawyer.id, "step_2_completed", 2, 

@@ -20,6 +20,9 @@ export type { SearchInputProps } from './SearchInput/SearchInput';
 export { UserProfile } from './UserProfile/UserProfile';
 export type { UserProfileProps } from './UserProfile/UserProfile';
 
+export { NotificationBell } from './NotificationBell/NotificationBell';
+export type { NotificationBellProps } from './NotificationBell/NotificationBell';
+
 export { NavItem } from './NavItem/NavItem';
 export type { NavItemProps } from './NavItem/NavItem';
 

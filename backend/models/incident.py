@@ -13,21 +13,21 @@ import enum
 
 class IncidentStatusEnum(str, enum.Enum):
     """Status of an incident report."""
-    DRAFT = "draft"
-    SUBMITTED = "submitted"
-    UNDER_REVIEW = "under_review"
-    RESOLVED = "resolved"
+    DRAFT = "DRAFT"
+    SUBMITTED = "SUBMITTED"
+    UNDER_REVIEW = "UNDER_REVIEW"
+    RESOLVED = "RESOLVED"
 
 
 class IncidentTypeEnum(str, enum.Enum):
     """Types of incidents that can be reported."""
-    CYBERBULLYING = "cyberbullying"
-    HARASSMENT = "harassment"
-    STALKING = "stalking"
-    NON_CONSENSUAL_LEAK = "non-consensual-leak"
-    IDENTITY_THEFT = "identity-theft"
-    ONLINE_FRAUD = "online-fraud"
-    OTHER = "other"
+    CYBERBULLYING = "CYBERBULLYING"
+    HARASSMENT = "HARASSMENT"
+    STALKING = "STALKING"
+    NON_CONSENSUAL_LEAK = "NON_CONSENSUAL_LEAK"
+    IDENTITY_THEFT = "IDENTITY_THEFT"
+    ONLINE_FRAUD = "ONLINE_FRAUD"
+    OTHER = "OTHER"
 
 
 class Incident(Base):
