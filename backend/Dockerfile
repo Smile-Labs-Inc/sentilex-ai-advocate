@@ -23,6 +23,9 @@ RUN useradd -m -u 1000 appuser
 # Copy application code
 COPY --chown=appuser:appuser . .
 
+# Fix line endings (in case host is Windows) and permissions
+RUN sed -i 's/\r$//' run.sh && chmod +x run.sh
+
 # Switch to non-root user
 USER appuser
 
@@ -34,9 +37,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:8001/health || exit 1
 
 # Run application
-# Copy scripts
-COPY run.sh .
-RUN chmod +x run.sh
-
-# Run application
-CMD ["./run.sh"]
+CMD ["/bin/bash", "run.sh"]
