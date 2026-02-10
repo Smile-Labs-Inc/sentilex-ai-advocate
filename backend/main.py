@@ -39,6 +39,7 @@ from routers import evidence
 from routers import case_agent
 from routers import chat
 from routers import notifications
+from routers import stats
 from mcp_server.mcp_client import get_mcp_client
 
 
@@ -123,6 +124,7 @@ app.include_router(case_agent.router)
 app.include_router(chat.router)
 app.include_router(payments.router)
 app.include_router(notifications.router)
+app.include_router(stats.router)
 
 
 

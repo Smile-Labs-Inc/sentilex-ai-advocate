@@ -12,13 +12,12 @@ import type {
     CaseTypeDistribution
 } from '../types';
 import {
-    mockUserStats,
-    mockGlobalStats,
     mockActivityFeed,
     mockCaseTypeDistribution,
 } from '../data/mockData';
 import { primaryQuickLinks } from '../data/quickLinks';
 import { getIncidents, type IncidentResponse } from '../services/incident';
+import { getUserStats, getGlobalStats, type UserStatsResponse, type GlobalStatsResponse } from '../services/stats';
 
 interface DashboardData {
     isNewUser: boolean;
@@ -52,6 +51,26 @@ function convertIncident(backendIncident: IncidentResponse): Incident {
     };
 }
 
+// Helper to convert backend user stats to frontend format
+function convertUserStats(backendStats: UserStatsResponse): UserStats {
+    return {
+        pendingReports: backendStats.pending_reports,
+        totalReports: backendStats.total_reports,
+        resolvedCases: backendStats.resolved_cases,
+        inProgressCases: backendStats.in_progress_cases,
+    };
+}
+
+// Helper to convert backend global stats to frontend format
+function convertGlobalStats(backendStats: GlobalStatsResponse): GlobalStats {
+    return {
+        totalCasesSolved: backendStats.total_cases_solved,
+        activeUsers: backendStats.active_users,
+        affiliatedLawyers: backendStats.affiliated_lawyers,
+        caseTypesHandled: backendStats.case_types_handled,
+    };
+}
+
 /**
  * Custom hook for dashboard data
  * Toggle useNewUser to test different dashboard states
@@ -59,46 +78,59 @@ function convertIncident(backendIncident: IncidentResponse): Incident {
 export function useDashboardData(useNewUser = false): DashboardData {
     const [isLoading, setIsLoading] = useState(true);
     const [incidents, setIncidents] = useState<Incident[]>([]);
+    const [userStats, setUserStats] = useState<UserStats | null>(null);
+    const [globalStats, setGlobalStats] = useState<GlobalStats | null>(null);
 
     // Determine new user based on parameter
     const isNewUser = useNewUser;
 
-    // Fetch real incidents from API
+    // Fetch real data from API
     useEffect(() => {
-        const fetchIncidents = async () => {
-            if (isNewUser) {
-                setIncidents([]);
-                setIsLoading(false);
-                return;
-            }
+        const fetchData = async () => {
+            setIsLoading(true);
 
             try {
-                setIsLoading(true);
-                const response = await getIncidents();
-                const convertedIncidents = response.incidents.map(convertIncident);
-                setIncidents(convertedIncidents);
+                // Fetch global stats (always available)
+                const globalStatsData = await getGlobalStats();
+                setGlobalStats(convertGlobalStats(globalStatsData));
+
+                // If not a new user, fetch user-specific data
+                if (!isNewUser) {
+                    // Fetch user stats
+                    const userStatsData = await getUserStats();
+                    setUserStats(convertUserStats(userStatsData));
+
+                    // Fetch user incidents
+                    const incidentsData = await getIncidents();
+                    setIncidents(incidentsData.incidents.map(convertIncident));
+                } else {
+                    setUserStats(null);
+                    setIncidents([]);
+                }
             } catch (error) {
-                console.error('Failed to fetch incidents:', error);
+                console.error('Failed to fetch dashboard data:', error);
+                setUserStats(null);
+                setGlobalStats(null);
                 setIncidents([]);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchIncidents();
+        fetchData();
     }, [isNewUser]);
 
     // Memoize computed data
     const data = useMemo(() => ({
         isNewUser,
-        userStats: isNewUser ? null : mockUserStats,
-        globalStats: mockGlobalStats,
+        userStats,
+        globalStats,
         incidents,
         activity: isNewUser ? [] : mockActivityFeed,
         caseDistribution: mockCaseTypeDistribution,
         quickLinks: primaryQuickLinks,
         isLoading,
-    }), [isNewUser, incidents, isLoading]);
+    }), [isNewUser, userStats, globalStats, incidents, isLoading]);
 
     return data;
 }

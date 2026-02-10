@@ -71,8 +71,10 @@ def send_verification_email(email: str, token: str, user_name: str):
 def send_password_reset_email(email: str, token: str, user_name: str):
     """Send password reset email"""
     subject = "Reset your Password - SentiLex"
-    
-    reset_url = f"http://localhost:3000/reset-password?token={token}"
+
+    # Get frontend URL from environment variable
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5174")
+    reset_url = f"{frontend_url}/reset-password?token={token}"
     
     html_content = f"""
     <html>
@@ -115,14 +117,18 @@ def send_password_changed_email(email: str, user_name: str, ip_address: str, tim
 def send_welcome_email(email: str, user_name: str):
     """Send welcome email after verification"""
     subject = "Welcome to SentiLex AI Advocate!"
-    
+
+    # Get frontend URL from environment variable
+    frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5174")
+    login_url = f"{frontend_url}/dashboard"
+
     html_content = f"""
     <html>
         <body>
             <h2>Welcome {user_name}!</h2>
             <p>Your email has been verified.</p>
             <p>You can now log in to your account and access all features.</p>
-            <p><a href="http://localhost:3000/login">Go to Login</a></p>
+            <p><a href="{login_url}">Go to Login</a></p>
         </body>
     </html>
     """
