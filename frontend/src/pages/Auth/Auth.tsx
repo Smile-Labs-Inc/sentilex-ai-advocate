@@ -19,12 +19,15 @@ interface AuthPageProps {
 }
 
 export function AuthPage({ onSuccess }: AuthPageProps) {
-    const { login, register } = useAuth();
+    const { login, register, error: authError, isLoading: authLoading } = useAuth();
     const [mode, setMode] = useState<AuthMode>('login');
     const [userType, setUserType] = useState<UserType>('user');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+
+    // Use auth error from context if available, otherwise use local error
+    const displayError = authError || error;
 
     // Login form state
     const [loginEmail, setLoginEmail] = useState('');
@@ -43,6 +46,28 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
         preferred_language: 'en',
         district: '',
     });
+
+    // Password validation state
+    const [passwordValidation, setPasswordValidation] = useState({
+        minLength: false,
+        hasUppercase: false,
+        hasLowercase: false,
+        hasDigit: false,
+        hasSpecial: false,
+        passwordsMatch: true,
+    });
+
+    // Validate password in real-time
+    const validatePassword = (password: string, confirmPassword: string) => {
+        setPasswordValidation({
+            minLength: password.length >= 8,
+            hasUppercase: /[A-Z]/.test(password),
+            hasLowercase: /[a-z]/.test(password),
+            hasDigit: /\d/.test(password),
+            hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+            passwordsMatch: !confirmPassword || password === confirmPassword,
+        });
+    };
 
     const handleLogin = async (e: Event) => {
         e.preventDefault();
@@ -63,7 +88,19 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                 onSuccess?.();
             }, 500);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Login failed');
+            const errorMessage = err instanceof Error ? err.message : 'Login failed';
+
+            // Add user-friendly context to common errors
+            let displayError = errorMessage;
+            if (errorMessage.includes('Incorrect email or password')) {
+                displayError = 'Incorrect email or password. Please check your credentials and try again.';
+            } else if (errorMessage.includes('Account is inactive')) {
+                displayError = 'Your account is inactive. Please contact support.';
+            } else if (errorMessage.includes('email_verified')) {
+                displayError = 'Please verify your email address before logging in. Check your inbox for the verification link.';
+            }
+
+            setError(displayError);
         } finally {
             setIsLoading(false);
         }
@@ -84,17 +121,26 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
         try {
             const { confirmPassword, ...registrationData } = registerData;
+
             const response = await register(registrationData);
 
-            setSuccess(response.message);
+            // Show detailed success message
+            const successMsg = response.verification_sent
+                ? `${response.message} Please check your email to verify your account.`
+                : response.message;
+            setSuccess(successMsg);
 
             // Switch to login mode after successful registration
             setTimeout(() => {
                 setMode('login');
                 setLoginEmail(registerData.email);
-            }, 2000);
+                setSuccess('Email verified! You can now log in.');
+                // Clear the second message after showing login form
+                setTimeout(() => setSuccess(null), 3000);
+            }, 3000);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Registration failed');
+            const errorMessage = err instanceof Error ? err.message : 'Registration failed';
+            setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -201,14 +247,24 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                         </div>
 
                         {/* Error/Success Messages */}
-                        {error && (
-                            <div className="p-1.5 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-xs">
-                                {error}
+                        {displayError && (
+                            <div className="p-3 rounded-lg bg-white/5 border border-white/20 backdrop-blur-sm">
+                                <div className="flex items-start gap-2.5">
+                                    <Icon name="Info" className="text-white/60 mt-0.5 flex-shrink-0" size="sm" />
+                                    <div className="flex-1">
+                                        {displayError.split('\n').map((line, i) => (
+                                            <p key={i} className="text-sm text-white/80 leading-relaxed">{line}</p>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
                         )}
                         {success && (
-                            <div className="p-1.5 rounded-lg bg-green-500/10 border border-green-500/20 text-green-500 text-xs">
-                                {success}
+                            <div className="p-3 rounded-lg bg-white/5 border border-white/20 backdrop-blur-sm">
+                                <div className="flex items-start gap-2.5">
+                                    <Icon name="CheckCircle" className="text-white/60 mt-0.5 flex-shrink-0" size="sm" />
+                                    <p className="text-sm text-white/80 leading-relaxed">{success}</p>
+                                </div>
                             </div>
                         )}
 
@@ -345,12 +401,14 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                             type="password"
                                             placeholder="••••••••"
                                             value={registerData.password}
-                                            onInput={(e) =>
+                                            onInput={(e) => {
+                                                const newPassword = (e.target as HTMLInputElement).value;
                                                 setRegisterData({
                                                     ...registerData,
-                                                    password: (e.target as HTMLInputElement).value,
-                                                })
-                                            }
+                                                    password: newPassword,
+                                                });
+                                                validatePassword(newPassword, registerData.confirmPassword);
+                                            }}
                                         />
                                     </div>
 
@@ -362,15 +420,57 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                             type="password"
                                             placeholder="••••••••"
                                             value={registerData.confirmPassword}
-                                            onInput={(e) =>
+                                            onInput={(e) => {
+                                                const newConfirm = (e.target as HTMLInputElement).value;
                                                 setRegisterData({
                                                     ...registerData,
-                                                    confirmPassword: (e.target as HTMLInputElement).value,
-                                                })
-                                            }
+                                                    confirmPassword: newConfirm,
+                                                });
+                                                validatePassword(registerData.password, newConfirm);
+                                            }}
                                         />
                                     </div>
                                 </div>
+                                {/* Live Password Validation */}
+                                {registerData.password && (
+                                    <div className="bg-muted/20 border border-border/50 rounded px-2 py-2 -mt-1">
+                                        <p className="text-xs font-medium text-foreground/70 mb-1.5">Password must have:</p>
+                                        <div className="space-y-0.5">
+                                            <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.minLength ? 'text-green-500' : 'text-muted-foreground'
+                                                }`}>
+                                                <Icon name={passwordValidation.minLength ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
+                                                <span>At least 8 characters</span>
+                                            </div>
+                                            <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.hasUppercase ? 'text-green-500' : 'text-muted-foreground'
+                                                }`}>
+                                                <Icon name={passwordValidation.hasUppercase ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
+                                                <span>One uppercase letter</span>
+                                            </div>
+                                            <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.hasLowercase ? 'text-green-500' : 'text-muted-foreground'
+                                                }`}>
+                                                <Icon name={passwordValidation.hasLowercase ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
+                                                <span>One lowercase letter</span>
+                                            </div>
+                                            <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.hasDigit ? 'text-green-500' : 'text-muted-foreground'
+                                                }`}>
+                                                <Icon name={passwordValidation.hasDigit ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
+                                                <span>One digit</span>
+                                            </div>
+                                            <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.hasSpecial ? 'text-green-500' : 'text-muted-foreground'
+                                                }`}>
+                                                <Icon name={passwordValidation.hasSpecial ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
+                                                <span>One special character (!@#$%...)</span>
+                                            </div>
+                                            {registerData.confirmPassword && (
+                                                <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.passwordsMatch ? 'text-green-500' : 'text-destructive'
+                                                    }`}>
+                                                    <Icon name={passwordValidation.passwordsMatch ? 'CheckCircle' : 'XCircle'} size="sm" className="w-3 h-3" />
+                                                    <span>Passwords match</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
 
                                 <Button
                                     variant="primary"

@@ -69,15 +69,50 @@ class AuthService {
 
     // Register new user
     async register(data: RegisterRequest): Promise<RegistrationResponse> {
+        // Ensure preferred_language has a valid value
+        const registrationData: any = {
+            first_name: data.first_name,
+            last_name: data.last_name,
+            email: data.email,
+            password: data.password,
+            preferred_language: data.preferred_language || 'en',
+        };
+
+        // Only include district if it has a value
+        if (data.district && data.district.trim()) {
+            registrationData.district = data.district.trim();
+        }
+
+        console.log('Registration data being sent:', registrationData);
+
         const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.AUTH.REGISTER}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
+            body: JSON.stringify(registrationData),
         });
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.detail || 'Registration failed');
+            console.error('Registration error response:', error);
+
+            // Parse Pydantic validation errors
+            if (Array.isArray(error.detail)) {
+                // Extract user-friendly error messages from validation errors
+                const errorMessages = error.detail.map((err: any) => {
+                    const field = err.loc ? err.loc[err.loc.length - 1] : 'field';
+                    const msg = err.msg || 'Invalid value';
+                    // Remove "Value error, " prefix if present
+                    const cleanMsg = msg.replace(/^Value error,\s*/i, '');
+                    return `${field}: ${cleanMsg}`;
+                });
+                throw new Error(errorMessages.join('\n'));
+            }
+
+            // Handle string error details
+            const errorMsg = typeof error.detail === 'string'
+                ? error.detail
+                : 'Registration failed';
+            throw new Error(errorMsg);
         }
 
         return response.json();
@@ -93,7 +128,24 @@ class AuthService {
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.detail || 'Login failed');
+            console.error('Login error response:', error);
+
+            // Parse Pydantic validation errors
+            if (Array.isArray(error.detail)) {
+                const errorMessages = error.detail.map((err: any) => {
+                    const field = err.loc ? err.loc[err.loc.length - 1] : 'field';
+                    const msg = err.msg || 'Invalid value';
+                    const cleanMsg = msg.replace(/^Value error,\s*/i, '');
+                    return `${field}: ${cleanMsg}`;
+                });
+                throw new Error(errorMessages.join('\n'));
+            }
+
+            // Handle string error details (like "Incorrect email or password")
+            const errorMsg = typeof error.detail === 'string'
+                ? error.detail
+                : 'Login failed';
+            throw new Error(errorMsg);
         }
 
         const data: LoginResponse = await response.json();
