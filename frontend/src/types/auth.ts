@@ -29,7 +29,7 @@ export interface RegisterRequest {
     last_name: string;
     email: string;
     password: string;
-    preferred_language?: string;
+    preferred_language: string;  // Required: must be 'en', 'si', or 'ta'
     district?: string;
 }
 

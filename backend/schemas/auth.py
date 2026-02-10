@@ -21,6 +21,22 @@ class UserRegister(BaseModel):
     preferred_language: str = Field(default="en", pattern="^(si|ta|en)$")
     district: Optional[str] = Field(None, max_length=50)
 
+    @validator("district", pre=True)
+    def validate_district(cls, v):
+        """Convert empty string to None"""
+        if v == "" or (isinstance(v, str) and v.strip() == ""):
+            return None
+        return v
+
+    @validator("first_name", "last_name", pre=True)
+    def validate_names(cls, v):
+        """Ensure names are not empty after stripping"""
+        if isinstance(v, str):
+            v = v.strip()
+            if len(v) < 2:
+                raise ValueError("Name must be at least 2 characters")
+        return v
+
     @validator("password")
     def validate_password(cls, v):
         if len(v) < 8:
