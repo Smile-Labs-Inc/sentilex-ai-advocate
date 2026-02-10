@@ -93,6 +93,8 @@ origins = [
     "http://localhost:5173",
     "http://localhost:8080",
     "http://127.0.0.1:8080",
+    "http://142.93.221.245:8080",  # Remote frontend
+    "http://142.93.221.245:8001",  # Remote backend (for same-origin requests)
 ]
 
 app.add_middleware(
