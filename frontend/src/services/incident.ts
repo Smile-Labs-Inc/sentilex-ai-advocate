@@ -4,7 +4,8 @@
  * Handles communication with the backend incidents API.
  */
 
-import { API_BASE_URL, APP_CONFIG } from "../config";
+import { API_BASE_URL } from "../config";
+import { apiClient } from "./apiClient";
 
 // Types matching backend schemas
 export type IncidentType =
@@ -57,32 +58,12 @@ export interface IncidentListResponse {
 }
 
 /**
- * Get the auth token from localStorage.
- */
-function getAuthToken(): string | null {
-  return localStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
-}
-
-/**
  * Create a new incident report.
  */
 export async function createIncident(
   data: IncidentCreate,
 ): Promise<IncidentResponse> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/incidents/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-  });
+  const response = await apiClient.post(`${API_BASE_URL}/incidents/`, data);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -100,23 +81,12 @@ export async function createIncident(
 export async function getIncidents(
   statusFilter?: IncidentStatus,
 ): Promise<IncidentListResponse> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
   const url = new URL(`${API_BASE_URL}/incidents/`);
   if (statusFilter) {
     url.searchParams.append("status_filter", statusFilter);
   }
 
-  const response = await fetch(url.toString(), {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get(url.toString());
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -134,18 +104,7 @@ export async function getIncidents(
 export async function getIncident(
   incidentId: number,
 ): Promise<IncidentResponse> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.get(`${API_BASE_URL}/incidents/${incidentId}`);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -158,21 +117,10 @@ export async function getIncident(
 }
 
 /**
- * Delete an incident (only DRAFT status incidents can be deleted).
+ * Delete an incident (any status can be deleted).
  */
 export async function deleteIncident(incidentId: number): Promise<void> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
-  const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await apiClient.delete(`${API_BASE_URL}/incidents/${incidentId}`);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -213,22 +161,9 @@ export async function sendIncidentChatMessage(
   incidentId: number,
   content: string,
 ): Promise<IncidentChatExchangeResponse> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
-  const response = await fetch(
+  const response = await apiClient.post(
     `${API_BASE_URL}/incidents/${incidentId}/messages`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ content }),
-    },
+    { content }
   );
 
   if (!response.ok) {
@@ -247,20 +182,8 @@ export async function sendIncidentChatMessage(
 export async function getIncidentChatMessages(
   incidentId: number,
 ): Promise<IncidentChatMessageResponse[]> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/incidents/${incidentId}/messages`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+  const response = await apiClient.get(
+    `${API_BASE_URL}/incidents/${incidentId}/messages`
   );
 
   if (!response.ok) {
@@ -299,33 +222,19 @@ export async function uploadEvidence(
   incidentId: number,
   files: File[],
 ): Promise<EvidenceResponse[]> {
-  const token = getAuthToken();
-  console.log('[incident.uploadEvidence] Token retrieved:', !!token, token?.length || 0);
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
   const formData = new FormData();
   files.forEach((file) => {
     formData.append("files", file);
   });
 
-  console.log('[incident.uploadEvidence] Making request to:', `${API_BASE_URL}/incidents/${incidentId}/evidence`);
-  console.log('[incident.uploadEvidence] Token (first 20 chars):', token.substring(0, 20) + '...');
-
-  const response = await fetch(
+  const response = await apiClient.fetch(
     `${API_BASE_URL}/incidents/${incidentId}/evidence`,
     {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       body: formData,
-    },
+      // Don't set Content-Type header for FormData - browser will set it with boundary
+    }
   );
-
-  console.log('[incident.uploadEvidence] Response status:', response.status);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -343,20 +252,8 @@ export async function uploadEvidence(
 export async function getIncidentEvidence(
   incidentId: number,
 ): Promise<EvidenceListResponse> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/incidents/${incidentId}/evidence`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+  const response = await apiClient.get(
+    `${API_BASE_URL}/incidents/${incidentId}/evidence`
   );
 
   if (!response.ok) {
@@ -376,20 +273,8 @@ export async function deleteEvidence(
   incidentId: number,
   evidenceId: number,
 ): Promise<void> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/incidents/${incidentId}/evidence/${evidenceId}`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+  const response = await apiClient.delete(
+    `${API_BASE_URL}/incidents/${incidentId}/evidence/${evidenceId}`
   );
 
   if (!response.ok) {
@@ -438,22 +323,9 @@ export async function createOccurrence(
   incidentId: number,
   data: OccurrenceCreate,
 ): Promise<OccurrenceResponse> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
-  const response = await fetch(
+  const response = await apiClient.post(
     `${API_BASE_URL}/incidents/${incidentId}/occurrences`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data),
-    },
+    data
   );
 
   if (!response.ok) {
@@ -472,20 +344,8 @@ export async function createOccurrence(
 export async function getOccurrences(
   incidentId: number,
 ): Promise<OccurrenceListResponse> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/incidents/${incidentId}/occurrences`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+  const response = await apiClient.get(
+    `${API_BASE_URL}/incidents/${incidentId}/occurrences`
   );
 
   if (!response.ok) {
@@ -505,20 +365,8 @@ export async function getOccurrence(
   incidentId: number,
   occurrenceId: number,
 ): Promise<OccurrenceResponse> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/incidents/${incidentId}/occurrences/${occurrenceId}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+  const response = await apiClient.get(
+    `${API_BASE_URL}/incidents/${incidentId}/occurrences/${occurrenceId}`
   );
 
   if (!response.ok) {
@@ -539,26 +387,17 @@ export async function uploadEvidenceToOccurrence(
   occurrenceId: number,
   files: File[],
 ): Promise<EvidenceResponse[]> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
   const formData = new FormData();
   files.forEach((file) => {
     formData.append("files", file);
   });
 
-  const response = await fetch(
+  const response = await apiClient.fetch(
     `${API_BASE_URL}/incidents/${incidentId}/evidence?occurrence_id=${occurrenceId}`,
     {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
       body: formData,
-    },
+    }
   );
 
   if (!response.ok) {
@@ -578,20 +417,8 @@ export async function deleteOccurrence(
   incidentId: number,
   occurrenceId: number,
 ): Promise<void> {
-  const token = getAuthToken();
-
-  if (!token) {
-    throw new Error("User is not authenticated");
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/incidents/${incidentId}/occurrences/${occurrenceId}`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+  const response = await apiClient.delete(
+    `${API_BASE_URL}/incidents/${incidentId}/occurrences/${occurrenceId}`
   );
 
   if (!response.ok) {

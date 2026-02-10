@@ -54,7 +54,6 @@ export function IncidentDetailPage({
 
                 setMessages(formattedMessages);
             } catch (err) {
-                console.error('Failed to load chat history:', err);
                 setError('Failed to load chat history');
             } finally {
                 setIsLoadingHistory(false);
@@ -102,7 +101,6 @@ export function IncidentDetailPage({
                 return [...updated, aiMessage];
             });
         } catch (err) {
-            console.error('Failed to send message:', err);
             setError(err instanceof Error ? err.message : 'Failed to send message');
 
             // Remove optimistic user message on error

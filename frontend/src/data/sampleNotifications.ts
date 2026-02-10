@@ -75,7 +75,7 @@ export function MyComponent() {
 
   const handleViewAll = () => {
     // Navigate to notifications page
-    console.log('Navigate to /notifications');
+    
   };
 
   return (

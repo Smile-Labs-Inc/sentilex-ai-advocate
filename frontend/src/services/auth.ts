@@ -83,7 +83,7 @@ class AuthService {
             registrationData.district = data.district.trim();
         }
 
-        console.log('Registration data being sent:', registrationData);
+        
 
         const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.AUTH.REGISTER}`, {
             method: 'POST',
@@ -93,7 +93,7 @@ class AuthService {
 
         if (!response.ok) {
             const error = await response.json();
-            console.error('Registration error response:', error);
+            
 
             // Parse Pydantic validation errors
             if (Array.isArray(error.detail)) {
@@ -130,7 +130,7 @@ class AuthService {
         // attempt to produce a friendly message for common auth failures.
         if (!response.ok) {
             const error = await response.json();
-            console.error('Login error response:', error);
+            
 
             // Parse Pydantic validation errors
             if (Array.isArray(error.detail)) {

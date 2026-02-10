@@ -171,30 +171,24 @@ async def delete_incident(
 ):
     """
     Delete an incident.
-    
-    Users can only delete their own incidents that are in 'draft' status.
+
+    Users can delete their own incidents regardless of status.
     """
-    
+
     incident = db.query(Incident).filter(
         Incident.id == incident_id,
         Incident.user_id == current_user.id
     ).first()
-    
+
     if not incident:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Incident not found"
         )
-    
-    if incident.status != ModelIncidentStatus.DRAFT:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Only draft incidents can be deleted"
-        )
-    
+
     db.delete(incident)
     db.commit()
-    
+
     return None
 
 

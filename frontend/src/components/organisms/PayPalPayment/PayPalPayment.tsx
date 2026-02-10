@@ -52,22 +52,22 @@ export function PayPalPayment({
           onApprove={async (_data, actions) => {
             try {
               const details = await actions.order!.capture();
-              console.log("Payment successful:", details);
+              
               setIsPaying(false);
               onSuccess(details);
             } catch (error) {
-              console.error("Payment capture error:", error);
+              
               setIsPaying(false);
               onError?.(error);
             }
           }}
           onError={(err) => {
-            console.error("PayPal error:", err);
+            
             setIsPaying(false);
             onError?.(err);
           }}
           onCancel={() => {
-            console.log("Payment cancelled");
+            
             setIsPaying(false);
           }}
         />

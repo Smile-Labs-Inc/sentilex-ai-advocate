@@ -41,7 +41,7 @@ export function useEvidenceVault(): UseEvidenceVaultReturn {
       setTotalCount(response.total);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load evidence");
-      console.error("Error fetching evidence:", err);
+      
     } finally {
       setIsLoading(false);
     }

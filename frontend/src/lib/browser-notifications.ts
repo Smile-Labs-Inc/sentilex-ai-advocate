@@ -6,7 +6,7 @@
 export class BrowserNotificationUtil {
     static async requestPermission(): Promise<NotificationPermission> {
         if (!('Notification' in window)) {
-            console.warn('This browser does not support desktop notifications');
+            
             return 'denied';
         }
 
@@ -35,7 +35,7 @@ export class BrowserNotificationUtil {
             });
             return true;
         } catch (error) {
-            console.error('Failed to show notification:', error);
+            
             return false;
         }
     }

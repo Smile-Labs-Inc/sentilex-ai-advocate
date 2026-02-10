@@ -45,7 +45,6 @@ export function EvidenceVaultPage({ onNavigate }: EvidenceVaultPageProps) {
                     );
                 }
             } catch (err) {
-                console.error('Failed to load incidents:', err);
                 setIncidents([]);
             } finally {
                 setIncidentsLoading(false);
@@ -88,33 +87,19 @@ export function EvidenceVaultPage({ onNavigate }: EvidenceVaultPageProps) {
                 return;
             }
 
-            console.log('[EvidenceVault] Downloading evidence:', { id, fileName: item.file_name });
             await downloadEvidence(parseInt(id));
-            console.log('[EvidenceVault] Download completed');
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to download evidence';
-            console.error('[EvidenceVault] Download failed:', errorMessage, err);
             alert(`Download failed: ${errorMessage}`);
         }
     };
 
     const handleUpload = async (files: File[], incidentId: number) => {
-        console.log('Starting upload:', { fileCount: files.length, incidentId, fileNames: files.map(f => f.name) });
-
-        // Debug: Check token
-        const token = localStorage.getItem('sentilex_auth_token');
-        console.log('[EvidenceVault] Token present:', !!token, 'Token length:', token?.length || 0);
-        if (token) {
-            console.log('[EvidenceVault] Token (first 20 chars):', token.substring(0, 20) + '...');
-        }
-
         try {
             await uploadEvidenceFiles(incidentId, files);
-            console.log('Upload successful');
             alert('Evidence uploaded successfully!');
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to upload evidence';
-            console.error('Upload failed:', errorMessage, err);
             alert(`Upload failed: ${errorMessage}`);
             throw err;
         }

@@ -66,12 +66,10 @@ export function Dashboard({
 
   const handleNewIncident = () => {
     onNewIncident?.();
-    console.log("Start new incident");
   };
 
   const handleViewIncident = (incident: Incident) => {
     onViewIncident?.(incident);
-    console.log("View incident:", incident.id);
   };
 
   const handleViewAllIncidents = () => {
@@ -84,7 +82,6 @@ export function Dashboard({
   };
 
   const handleFilterIncidents = () => {
-    console.log("Filter incidents clicked");
     // Filter functionality can be implemented based on requirements
   };
 
@@ -104,7 +101,6 @@ export function Dashboard({
       setIncidentToDelete(null);
       onIncidentsUpdated?.();
     } catch (error) {
-      console.error('Delete failed:', error);
       alert(error instanceof Error ? error.message : 'Failed to delete incident');
     } finally {
       setIsDeleting(false);
@@ -119,7 +115,6 @@ export function Dashboard({
   };
 
   const handleQuickAction = (actionId: string) => {
-    console.log("Quick action:", actionId);
     if (actionId === "new-incident") {
       handleNewIncident();
     } else if (actionId === "ai-chat") {

@@ -24,7 +24,7 @@ export function DashboardWithNotifications() {
 
     const handleNewIncident = () => {
         // setShowNewIncidentModal(true); // Uncomment when modal is implemented
-        console.log('New incident clicked - implement modal here');
+        
     };
 
     const handleViewAllNotifications = () => {

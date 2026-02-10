@@ -17,6 +17,7 @@ import { AuthPage } from "./pages/Auth/Auth";
 import { Settings } from "./pages/Settings/Settings";
 import { AIChatPage } from "./pages/AIChat/AIChat";
 import { VerifyEmailPage } from "./pages/VerifyEmail/VerifyEmail";
+import { ResetPasswordPage } from "./pages/ResetPassword/ResetPassword";
 import { ThemeProvider } from "./hooks/useTheme";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import type { Incident, NavItem } from "./types";
@@ -42,13 +43,17 @@ function AppContent() {
     );
   }
 
-  // Show auth page if not authenticated or no user data
-  if (!isAuthenticated || !user) {
+  // Public routes accessible without authentication
+  const currentPath = window.location.pathname;
+  const publicRoutes = ['/verify-email', '/reset-password'];
+  const isPublicRoute = publicRoutes.some(route => currentPath.startsWith(route));
+
+  // Show auth page if not authenticated or no user data (except for public routes)
+  if ((!isAuthenticated || !user) && !isPublicRoute) {
     return <AuthPage onSuccess={() => route("/dashboard")} />;
   }
 
   const handleNavigate = (item: NavItem) => {
-    console.log("Navigate to:", item.href);
     route(item.href);
   };
 
@@ -66,7 +71,6 @@ function AppContent() {
   };
 
   const handleWizardComplete = (data: WizardData) => {
-    console.log("Wizard completed with data:", data);
     setWizardData(data);
     route("/incident-workspace");
   };
@@ -141,6 +145,7 @@ function AppContent() {
       <LawbookPage path="/lawbook" onNavigate={handleNavigate} />
       <AIChatPage path="/ai-chat" onNavigate={handleNavigate} />
       <VerifyEmailPage path="/verify-email" />
+      <ResetPasswordPage path="/reset-password" />
       <Settings path="/settings" />
     </Router>
   );

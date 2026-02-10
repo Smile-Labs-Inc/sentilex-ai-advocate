@@ -80,11 +80,11 @@ export function IncidentWorkspacePage({
     };
 
     const handleViewEvidence = (evidence: any) => {
-        console.log('View evidence:', evidence);
+        // View evidence functionality
     };
 
     const handleAddNote = (evidence: any) => {
-        console.log('Add note to evidence:', evidence);
+        // Add note functionality
     };
 
     // Map incident status to badge status
@@ -290,7 +290,6 @@ export function IncidentWorkspacePage({
                 onOccurrenceCreated={async () => {
                     setShowOccurrenceModal(false);
                     await refreshIncident();
-                    console.log('Occurrence created successfully description timeline refreshed');
                 }}
             />
         </DashboardLayout >

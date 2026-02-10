@@ -38,7 +38,6 @@ export function IncidentsPage({
 
   const handleViewIncident = (incident: Incident) => {
     onViewIncident?.(incident);
-    console.log("View incident:", incident.id);
   };
 
   const handleDeleteIncident = (incident: Incident) => {
@@ -57,7 +56,6 @@ export function IncidentsPage({
       setIncidentToDelete(null);
       onIncidentsUpdated?.();
     } catch (error) {
-      console.error('Delete failed:', error);
       alert(error instanceof Error ? error.message : 'Failed to delete incident');
     } finally {
       setIsDeleting(false);
@@ -72,94 +70,93 @@ export function IncidentsPage({
   };
 
   const handleViewAllIncidents = () => {
-    console.log("Already on incidents page");
+    // Already on incidents page
   };
 
   const handleFilterIncidents = () => {
-    console.log("Filter incidents clicked");
-    // Filter functionality can be implemented based on requirements
+    // Filter functionality
   };
-
+  // Filter functionality can be implemented based on requirements
   return (
-    <DashboardLayout
-      user={user}
-      onNavigate={onNavigate}
-    >
-      {/* Full width incidents list */}
-      <div className="max-w-6xl mx-auto">
-        <IncidentsList
-          incidents={incidents}
-          onIncidentClick={handleViewIncident}
-          onDeleteIncident={handleDeleteIncident}
-          onNewIncident={onNewIncident}
-          onViewAllIncidents={handleViewAllIncidents}
-          onFilterClick={handleFilterIncidents}
+  <DashboardLayout
+    user={user}
+    onNavigate={onNavigate}
+  >
+    {/* Full width incidents list */}
+    <div className="max-w-6xl mx-auto">
+      <IncidentsList
+        incidents={incidents}
+        onIncidentClick={handleViewIncident}
+        onDeleteIncident={handleDeleteIncident}
+        onNewIncident={onNewIncident}
+        onViewAllIncidents={handleViewAllIncidents}
+        onFilterClick={handleFilterIncidents}
+      />
+    </div>
+
+    {/* Delete confirmation modal */}
+    {showDeleteModal && incidentToDelete && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+          onClick={cancelDelete}
         />
-      </div>
 
-      {/* Delete confirmation modal */}
-      {showDeleteModal && incidentToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-background/80 backdrop-blur-sm"
-            onClick={cancelDelete}
-          />
-
-          {/* Modal */}
-          <div className="relative w-full max-w-md bg-card border border-border rounded-lg shadow-lg overflow-hidden animate-scale-in">
-            {/* Header */}
-            <div className="flex items-center gap-3 p-6 border-b border-border">
-              <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
-                <Icon name="AlertTriangle" size="sm" className="text-muted-foreground" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">Delete Incident</h3>
-                <p className="text-sm text-muted-foreground">This action cannot be undone</p>
-              </div>
+        {/* Modal */}
+        <div className="relative w-full max-w-md bg-card border border-border rounded-lg shadow-lg overflow-hidden animate-scale-in">
+          {/* Header */}
+          <div className="flex items-center gap-3 p-6 border-b border-border">
+            <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
+              <Icon name="AlertTriangle" size="sm" className="text-muted-foreground" />
             </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">Delete Incident</h3>
+              <p className="text-sm text-muted-foreground">This action cannot be undone</p>
+            </div>
+          </div>
 
-            {/* Content */}
-            <div className="p-6 space-y-4">
-              <div className="bg-muted/30 border border-border/50 rounded-lg p-4">
-                <p className="text-sm text-foreground font-medium">
-                  {incidentToDelete.title}
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Case #{incidentToDelete.id.slice(0, 8).toUpperCase()}
-                </p>
-              </div>
-
-              <p className="text-sm text-muted-foreground">
-                All incident data, including timeline events, evidence, and chat history will be permanently deleted. This action cannot be undone.
+          {/* Content */}
+          <div className="p-6 space-y-4">
+            <div className="bg-muted/30 border border-border/50 rounded-lg p-4">
+              <p className="text-sm text-foreground font-medium">
+                {incidentToDelete.title}
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Case #{incidentToDelete.id.slice(0, 8).toUpperCase()}
               </p>
             </div>
 
-            {/* Footer */}
-            <div className="flex items-center justify-end gap-3 p-6 border-t border-border bg-muted/20">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={cancelDelete}
-                disabled={isDeleting}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={confirmDelete}
-                disabled={isDeleting}
-                className="gap-2 border-muted-foreground/30 text-muted-foreground hover:bg-muted hover:text-foreground"
-              >
-                {isDeleting && <Icon name="Loader2" size="xs" className="animate-spin" />}
-                {isDeleting ? 'Deleting...' : 'Delete Incident'}
-              </Button>
-            </div>
+            <p className="text-sm text-muted-foreground">
+              All incident data, including timeline events, evidence, and chat history will be permanently deleted. This action cannot be undone.
+            </p>
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-end gap-3 p-6 border-t border-border bg-muted/20">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={cancelDelete}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="gap-2 border-muted-foreground/30 text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              {isDeleting && <Icon name="Loader2" size="xs" className="animate-spin" />}
+              {isDeleting ? 'Deleting...' : 'Delete Incident'}
+            </Button>
           </div>
         </div>
-      )}
-    </DashboardLayout>
+      </div>
+    )}
+  </DashboardLayout>
   );
 }
 
