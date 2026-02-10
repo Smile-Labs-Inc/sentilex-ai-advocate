@@ -157,6 +157,31 @@ export async function getIncident(
   return response.json();
 }
 
+/**
+ * Delete an incident (only DRAFT status incidents can be deleted).
+ */
+export async function deleteIncident(incidentId: number): Promise<void> {
+  const token = getAuthToken();
+
+  if (!token) {
+    throw new Error("User is not authenticated");
+  }
+
+  const response = await fetch(`${API_BASE_URL}/incidents/${incidentId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      errorData.detail || `Failed to delete incident: ${response.status}`,
+    );
+  }
+}
+
 // ============================================================================
 // Incident Chat API Functions
 // ============================================================================

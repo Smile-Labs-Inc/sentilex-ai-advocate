@@ -5,6 +5,7 @@
 import { useState } from "preact/hooks";
 import Router, { route } from "preact-router";
 import { Dashboard } from "./pages/Dashboard/Dashboard";
+import { IncidentsPage } from "./pages/Incidents/Incidents";
 import { NewIncidentPage } from "./pages/NewIncident/NewIncident";
 import { IncidentDetailPage } from "./pages/IncidentDetail/IncidentDetail";
 import { IncidentWorkspacePage } from "./pages/IncidentWorkspace/IncidentWorkspace";
@@ -55,6 +56,10 @@ function AppContent() {
     route("/new-incident");
   };
 
+  const handleViewAllIncidents = () => {
+    route("/dashboard");
+  };
+
   const handleViewIncident = (incident: Incident) => {
     setSelectedIncident(incident);
     route("/incident-workspace");
@@ -80,6 +85,11 @@ function AppContent() {
     route("/lawyers");
   };
 
+  const handleIncidentsUpdated = () => {
+    // Force re-render by navigating to the current route
+    window.location.reload();
+  };
+
   return (
     <Router>
       <Dashboard
@@ -88,6 +98,14 @@ function AppContent() {
         onNavigate={handleNavigate}
         onNewIncident={handleNewIncident}
         onViewIncident={handleViewIncident}
+        onIncidentsUpdated={handleIncidentsUpdated}
+      />
+      <IncidentsPage
+        path="/incidents"
+        onNavigate={handleNavigate}
+        onNewIncident={handleNewIncident}
+        onViewIncident={handleViewIncident}
+        onIncidentsUpdated={handleIncidentsUpdated}
       />
       <NewIncidentPage
         path="/new-incident"

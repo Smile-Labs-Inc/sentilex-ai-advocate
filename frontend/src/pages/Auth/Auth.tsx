@@ -201,54 +201,54 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
             </div>
 
             {/* Right Side - Auth Form */}
-            <div className="w-full lg:w-1/2 relative flex items-center justify-center p-3 overflow-y-auto">
-                <div className="w-full max-w-md">
+            <div className="w-full lg:w-1/2 relative flex items-center justify-center p-4 overflow-y-auto">
+                <div className="w-full max-w-xl">
                     {/* Mobile Header */}
                     <div className="text-center mb-3 lg:hidden">
-                        <h1 className="text-lg font-bold text-white mb-0.5">
+                        <h1 className="text-xl font-bold text-white mb-1">
                             {APP_CONFIG.NAME}
                         </h1>
                     </div>
 
                     {/* Auth Card Content */}
-                    <div className="space-y-3">
+                    <div className="space-y-3.5">
                         {/* Header */}
                         <div className="text-center">
-                            <h2 className="text-lg font-bold text-foreground mb-1">
+                            <h2 className="text-xl font-bold text-foreground mb-1.5">
                                 {mode === 'login' ? 'Welcome Back' : 'Get Started'}
                             </h2>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-sm text-muted-foreground">
                                 {mode === 'login' ? 'Sign in to your account' : 'Create your account'}
                             </p>
                         </div>
 
                         {/* User Type Toggle */}
-                        <div className="flex gap-1 p-0.5 bg-secondary rounded-lg">
+                        <div className="flex gap-1.5 p-1 bg-secondary rounded-lg">
                             <button
                                 onClick={() => setUserType('user')}
-                                className={`flex-1 py-1 px-1.5 rounded-md text-xs font-medium transition-all ${userType === 'user'
+                                className={`flex-1 py-2 px-2.5 rounded-md text-xs font-medium transition-all ${userType === 'user'
                                     ? 'bg-primary text-primary-foreground'
                                     : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
-                                <Icon name="User" className="inline-block w-3 h-3 mr-0.5" />
+                                <Icon name="User" className="inline-block w-3.5 h-3.5 mr-0.5" />
                                 User
                             </button>
                             <button
                                 onClick={() => setUserType('lawyer')}
-                                className={`flex-1 py-1 px-1.5 rounded-md text-xs font-medium transition-all ${userType === 'lawyer'
+                                className={`flex-1 py-2 px-2.5 rounded-md text-xs font-medium transition-all ${userType === 'lawyer'
                                     ? 'bg-primary text-primary-foreground'
                                     : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
-                                <Icon name="Briefcase" className="inline-block w-3 h-3 mr-0.5" />
+                                <Icon name="Briefcase" className="inline-block w-3.5 h-3.5 mr-0.5" />
                                 Lawyer
                             </button>
                         </div>
 
                         {/* Error/Success Messages */}
                         {displayError && (
-                            <div className="p-3 rounded-lg bg-white/5 border border-white/20 backdrop-blur-sm">
+                            <div className="p-3.5 rounded-lg bg-white/5 border border-white/20 backdrop-blur-sm">
                                 <div className="flex items-start gap-2.5">
                                     <Icon name="Info" className="text-white/60 mt-0.5 flex-shrink-0" size="sm" />
                                     <div className="flex-1">
@@ -260,7 +260,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                             </div>
                         )}
                         {success && (
-                            <div className="p-3 rounded-lg bg-white/5 border border-white/20 backdrop-blur-sm">
+                            <div className="p-3.5 rounded-lg bg-white/5 border border-white/20 backdrop-blur-sm">
                                 <div className="flex items-start gap-2.5">
                                     <Icon name="CheckCircle" className="text-white/60 mt-0.5 flex-shrink-0" size="sm" />
                                     <p className="text-sm text-white/80 leading-relaxed">{success}</p>
@@ -270,9 +270,9 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
                         {/* Login Form */}
                         {mode === 'login' && (
-                            <form onSubmit={handleLogin} className="space-y-2.5">
+                            <form onSubmit={handleLogin} className="space-y-3">
                                 <div>
-                                    <label className="block text-xs font-medium text-foreground mb-1">
+                                    <label className="block text-xs font-medium text-foreground mb-1.5">
                                         Email
                                     </label>
                                     <Input
@@ -284,7 +284,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                 </div>
 
                                 <div>
-                                    <div className="flex items-center justify-between mb-1">
+                                    <div className="flex items-center justify-between mb-1.5">
                                         <label className="block text-xs font-medium text-foreground">
                                             Password
                                         </label>
@@ -310,7 +310,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
                                 <Button
                                     variant="primary"
-                                    className="w-full text-xs py-1.5 mt-1"
+                                    className="w-full text-xs py-2 mt-1.5"
                                     isLoading={isLoading}
                                     disabled={isLoading}
                                 >
@@ -321,10 +321,10 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
                         {/* Register Form */}
                         {mode === 'register' && (
-                            <form onSubmit={handleRegister} className="space-y-2">
-                                <div className="grid grid-cols-2 gap-2">
+                            <form onSubmit={handleRegister} className="space-y-2.5">
+                                <div className="grid grid-cols-2 gap-2.5">
                                     <div>
-                                        <label className="block text-xs font-medium text-foreground mb-1">
+                                        <label className="block text-xs font-medium text-foreground mb-1.5">
                                             First Name
                                         </label>
                                         <Input
@@ -341,7 +341,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-medium text-foreground mb-1">
+                                        <label className="block text-xs font-medium text-foreground mb-1.5">
                                             Last Name
                                         </label>
                                         <Input
@@ -359,7 +359,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-medium text-foreground mb-1">
+                                    <label className="block text-xs font-medium text-foreground mb-1.5">
                                         Email
                                     </label>
                                     <Input
@@ -376,7 +376,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs font-medium text-foreground mb-1">
+                                    <label className="block text-xs font-medium text-foreground mb-1.5">
                                         District (Optional)
                                     </label>
                                     <Input
@@ -392,9 +392,9 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-2 gap-2.5">
                                     <div>
-                                        <label className="block text-xs font-medium text-foreground mb-1">
+                                        <label className="block text-xs font-medium text-foreground mb-1.5">
                                             Password
                                         </label>
                                         <Input
@@ -413,7 +413,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                     </div>
 
                                     <div>
-                                        <label className="block text-xs font-medium text-foreground mb-1">
+                                        <label className="block text-xs font-medium text-foreground mb-1.5">
                                             Confirm
                                         </label>
                                         <Input
@@ -433,38 +433,38 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                 </div>
                                 {/* Live Password Validation */}
                                 {registerData.password && (
-                                    <div className="bg-muted/20 border border-border/50 rounded px-2 py-2 -mt-1">
+                                    <div className="bg-muted/20 border border-border/50 rounded px-2.5 py-2.5 -mt-1">
                                         <p className="text-xs font-medium text-foreground/70 mb-1.5">Password must have:</p>
                                         <div className="space-y-0.5">
                                             <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.minLength ? 'text-green-500' : 'text-muted-foreground'
                                                 }`}>
-                                                <Icon name={passwordValidation.minLength ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
+                                                <Icon name={passwordValidation.minLength ? 'CheckCircle' : 'Circle'} size="sm" className="w-3.5 h-3.5" />
                                                 <span>At least 8 characters</span>
                                             </div>
                                             <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.hasUppercase ? 'text-green-500' : 'text-muted-foreground'
                                                 }`}>
-                                                <Icon name={passwordValidation.hasUppercase ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
+                                                <Icon name={passwordValidation.hasUppercase ? 'CheckCircle' : 'Circle'} size="sm" className="w-3.5 h-3.5" />
                                                 <span>One uppercase letter</span>
                                             </div>
                                             <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.hasLowercase ? 'text-green-500' : 'text-muted-foreground'
                                                 }`}>
-                                                <Icon name={passwordValidation.hasLowercase ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
+                                                <Icon name={passwordValidation.hasLowercase ? 'CheckCircle' : 'Circle'} size="sm" className="w-3.5 h-3.5" />
                                                 <span>One lowercase letter</span>
                                             </div>
                                             <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.hasDigit ? 'text-green-500' : 'text-muted-foreground'
                                                 }`}>
-                                                <Icon name={passwordValidation.hasDigit ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
+                                                <Icon name={passwordValidation.hasDigit ? 'CheckCircle' : 'Circle'} size="sm" className="w-3.5 h-3.5" />
                                                 <span>One digit</span>
                                             </div>
                                             <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.hasSpecial ? 'text-green-500' : 'text-muted-foreground'
                                                 }`}>
-                                                <Icon name={passwordValidation.hasSpecial ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
+                                                <Icon name={passwordValidation.hasSpecial ? 'CheckCircle' : 'Circle'} size="sm" className="w-3.5 h-3.5" />
                                                 <span>One special character (!@#$%...)</span>
                                             </div>
                                             {registerData.confirmPassword && (
                                                 <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.passwordsMatch ? 'text-green-500' : 'text-destructive'
                                                     }`}>
-                                                    <Icon name={passwordValidation.passwordsMatch ? 'CheckCircle' : 'XCircle'} size="sm" className="w-3 h-3" />
+                                                    <Icon name={passwordValidation.passwordsMatch ? 'CheckCircle' : 'XCircle'} size="sm" className="w-3.5 h-3.5" />
                                                     <span>Passwords match</span>
                                                 </div>
                                             )}
@@ -474,7 +474,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
                                 <Button
                                     variant="primary"
-                                    className="w-full text-xs py-1.5 mt-1"
+                                    className="w-full text-xs py-2 mt-1.5"
                                     isLoading={isLoading}
                                     disabled={isLoading}
                                 >
@@ -485,9 +485,9 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
                         {/* Forgot Password Form */}
                         {mode === 'forgot-password' && (
-                            <form onSubmit={handleForgotPassword} className="space-y-2">
+                            <form onSubmit={handleForgotPassword} className="space-y-2.5">
                                 <div>
-                                    <label className="block text-xs font-medium text-foreground mb-0.5">
+                                    <label className="block text-xs font-medium text-foreground mb-1.5">
                                         Email Address
                                     </label>
                                     <Input
@@ -496,7 +496,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                         value={forgotPasswordEmail}
                                         onInput={(e) => setForgotPasswordEmail((e.target as HTMLInputElement).value)}
                                     />
-                                    <p className="mt-1 text-xs text-muted-foreground">
+                                    <p className="mt-1.5 text-xs text-muted-foreground">
                                         We'll send you a link to reset your password
                                     </p>
                                 </div>
@@ -528,7 +528,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                         {/* Google OAuth */}
                         {APP_CONFIG.GOOGLE_AUTH_ENABLED && (
                             <>
-                                <div className="relative my-2">
+                                <div className="relative my-2.5">
                                     <div className="absolute inset-0 flex items-center">
                                         <div className="w-full border-t border-border"></div>
                                     </div>
@@ -539,11 +539,11 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
                                 <Button
                                     variant="outline"
-                                    className="w-full text-xs py-1"
+                                    className="w-full text-xs py-2"
                                     onClick={handleGoogleLogin}
                                     disabled={isLoading}
                                 >
-                                    <Icon name="Chrome" className="w-3 h-3 mr-1" />
+                                    <Icon name="Chrome" className="w-3.5 h-3.5 mr-0.5" />
                                     Google
                                 </Button>
                             </>

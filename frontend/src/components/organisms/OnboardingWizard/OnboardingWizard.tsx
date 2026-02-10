@@ -85,6 +85,7 @@ const steps = [
 
 export function OnboardingWizard({ onComplete, onCancel, className }: OnboardingWizardProps) {
     const [currentStep, setCurrentStep] = useState(1);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [data, setData] = useState<WizardData>({
         incidentType: '',
         title: '',
@@ -98,6 +99,27 @@ export function OnboardingWizard({ onComplete, onCancel, className }: Onboarding
 
     const updateData = (field: keyof WizardData, value: string) => {
         setData((prev) => ({ ...prev, [field]: value }));
+    };
+
+    const handleFileSelect = (e: Event) => {
+        const input = e.target as HTMLInputElement;
+        const files = Array.from(input.files || []);
+
+        // Validate files
+        const validFiles = files.filter(file => {
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            if (file.size > maxSize) {
+                alert(`File ${file.name} is too large. Maximum size is 10MB.`);
+                return false;
+            }
+            return true;
+        });
+
+        setSelectedFiles(validFiles);
+    };
+
+    const handleRemoveFile = (index: number) => {
+        setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
     };
 
     const canProceed = () => {
@@ -265,10 +287,63 @@ export function OnboardingWizard({ onComplete, onCancel, className }: Onboarding
                             <p className="text-xs text-muted-foreground">
                                 Supports images, PDFs, and documents up to 10MB
                             </p>
-                            <Button variant="secondary" size="sm" className="mt-4">
+                            <Button
+                                variant="secondary"
+                                size="sm"
+                                className="mt-4"
+                                onClick={() => {
+                                    const input = document.getElementById('file-upload') as HTMLInputElement;
+                                    input?.click();
+                                }}
+                            >
                                 Browse Files
                             </Button>
+                            <input
+                                id="file-upload"
+                                type="file"
+                                multiple
+                                className="hidden"
+                                onChange={handleFileSelect}
+                                accept="image/*,.pdf,.doc,.docx,.txt"
+                            />
                         </div>
+
+                        {/* Selected files */}
+                        {selectedFiles.length > 0 && (
+                            <div className="space-y-2">
+                                <h3 className="text-sm font-medium text-foreground">
+                                    Selected Files ({selectedFiles.length})
+                                </h3>
+                                <div className="space-y-2">
+                                    {selectedFiles.map((file, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex items-center justify-between p-3 bg-secondary/50 rounded-lg"
+                                        >
+                                            <div className="flex items-center gap-3 flex-1">
+                                                <Icon name="FileText" size="sm" className="text-muted-foreground flex-shrink-0" />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm text-foreground truncate">
+                                                        {file.name}
+                                                    </p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {(file.size / 1024).toFixed(2)} KB
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => handleRemoveFile(index)}
+                                                className="text-destructive hover:text-destructive/80"
+                                            >
+                                                <Icon name="X" size="sm" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 

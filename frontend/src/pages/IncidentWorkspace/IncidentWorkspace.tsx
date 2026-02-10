@@ -134,27 +134,30 @@ export function IncidentWorkspacePage({
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                         <Button
-                            variant="outline"
+                            variant="secondary"
                             size="sm"
                             onClick={() => setShowOccurrenceModal(true)}
+                            className="gap-1.5 text-xs"
                         >
                             <Icon name="Plus" size="xs" />
-                            Record Occurrence
+                            Record
                         </Button>
                         <ExportButton
                             incidentId={parseInt(incident.id.replace('inc_', ''))}
-                            variant="outline"
+                            variant="secondary"
+                            size="sm"
                         />
                         <Button
                             variant="secondary"
                             size="sm"
                             onClick={handleSaveDraft}
                             disabled={isSaving}
+                            className="gap-1.5 text-xs"
                         >
                             <Icon name="Save" size="xs" />
-                            {isSaving ? 'Saving...' : 'Save Draft'}
+                            {isSaving ? 'Saving...' : 'Draft'}
                         </Button>
                     </div>
                 </div>
