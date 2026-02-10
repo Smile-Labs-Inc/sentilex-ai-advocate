@@ -44,7 +44,7 @@ export function ExportButton({ incidentId, className, variant = 'primary', size 
                     break;
             }
         } catch (error) {
-            console.error('Export failed:', error);
+            
             alert(error instanceof Error ? error.message : 'Failed to export document');
         } finally {
             setIsExporting(false);

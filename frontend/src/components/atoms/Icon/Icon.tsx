@@ -34,7 +34,7 @@ export function Icon({
     const LucideIcon = LucideIcons[name] as any;
 
     if (!LucideIcon) {
-        console.warn(`Icon "${name}" not found in lucide-preact`);
+        
         return null;
     }
 

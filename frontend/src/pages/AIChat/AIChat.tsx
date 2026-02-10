@@ -110,7 +110,7 @@ export function AIChatPage({ }: AIChatPageProps) {
                         })));
                     }
                 } catch (refreshError) {
-                    console.error('Token refresh failed:', refreshError);
+                    
                     window.location.href = '/auth';
                 }
                 return;
@@ -125,7 +125,7 @@ export function AIChatPage({ }: AIChatPageProps) {
                 })));
             }
         } catch (error) {
-            console.error('Failed to load chat history:', error);
+            
         }
     };
 
@@ -156,10 +156,10 @@ export function AIChatPage({ }: AIChatPageProps) {
                                 : s
                         ));
                     } else {
-                        console.error('Failed to load chat messages');
+                        
                     }
                 } catch (refreshError) {
-                    console.error('Token refresh failed:', refreshError);
+                    
                     window.location.href = '/auth';
                 }
                 return;
@@ -173,10 +173,10 @@ export function AIChatPage({ }: AIChatPageProps) {
                         : s
                 ));
             } else {
-                console.error('Failed to load chat messages');
+                
             }
         } catch (error) {
-            console.error('Failed to load session messages:', error);
+            
         }
     };
 
@@ -240,7 +240,7 @@ export function AIChatPage({ }: AIChatPageProps) {
                 setCurrentSessionId(null);
             }
         } catch (error) {
-            console.error('Failed to delete chat:', error);
+            
         }
     };
 
@@ -312,7 +312,7 @@ export function AIChatPage({ }: AIChatPageProps) {
                 throw new Error('Failed to send message');
             }
         } catch (error) {
-            console.error('Error sending message:', error);
+            
             alert('Failed to send message. Please try again.');
         } finally {
             setIsLoading(false);

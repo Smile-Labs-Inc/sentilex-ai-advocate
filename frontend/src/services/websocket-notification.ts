@@ -38,7 +38,6 @@ class WebSocketNotificationService {
     connect(): void {
         const token = localStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
         if (!token) {
-            console.warn('No auth token available for WebSocket connection');
             return;
         }
 
@@ -53,7 +52,6 @@ class WebSocketNotificationService {
             this.ws = new WebSocket(url);
 
             this.ws.onopen = () => {
-                console.log('WebSocket connected for notifications');
                 this.reconnectAttempts = 0;
                 this.reconnectInterval = 1000;
 
@@ -66,12 +64,11 @@ class WebSocketNotificationService {
                     const message: WebSocketMessage = JSON.parse(event.data);
                     this.handleMessage(message);
                 } catch (error) {
-                    console.error('Failed to parse WebSocket message:', error);
+                    // Failed to parse message
                 }
             };
 
             this.ws.onclose = (event) => {
-                console.log('WebSocket connection closed:', event.code, event.reason);
                 this.ws = null;
 
                 if (!this.isManualClose) {
@@ -80,11 +77,10 @@ class WebSocketNotificationService {
             };
 
             this.ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
+                // WebSocket error occurred
             };
 
         } catch (error) {
-            console.error('Failed to create WebSocket connection:', error);
             this.attemptReconnect();
         }
     }
@@ -121,7 +117,7 @@ class WebSocketNotificationService {
                 break;
 
             default:
-                console.log('Unknown WebSocket message type:', message.type);
+            // Unknown message type
         }
     }
 
@@ -136,13 +132,10 @@ class WebSocketNotificationService {
 
     private attemptReconnect(): void {
         if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-            console.error('Max WebSocket reconnection attempts reached');
             return;
         }
 
         this.reconnectAttempts++;
-
-        console.log(`Attempting to reconnect WebSocket (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
 
         setTimeout(() => {
             if (!this.isManualClose) {

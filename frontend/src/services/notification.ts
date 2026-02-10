@@ -45,7 +45,6 @@ class NotificationService {
             const notifications = this.transformNotifications(data.notifications || []);
             return notifications;
         } catch (error) {
-            console.error('Failed to fetch notifications:', error);
             return [];
         }
     }
@@ -64,7 +63,6 @@ class NotificationService {
             const data: UnreadCountResponse = await response.json();
             return data.unread_count;
         } catch (error) {
-            console.error('Failed to fetch unread count:', error);
             return 0;
         }
     }
@@ -82,7 +80,6 @@ class NotificationService {
 
             return response.ok;
         } catch (error) {
-            console.error('Failed to mark notification as read:', error);
             return false;
         }
     }
@@ -97,7 +94,6 @@ class NotificationService {
 
             return response.ok;
         } catch (error) {
-            console.error('Failed to mark all notifications as read:', error);
             return false;
         }
     }

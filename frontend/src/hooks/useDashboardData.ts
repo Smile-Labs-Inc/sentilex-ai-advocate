@@ -108,7 +108,7 @@ export function useDashboardData(useNewUser = false): DashboardData {
                     setIncidents([]);
                 }
             } catch (error) {
-                console.error('Failed to fetch dashboard data:', error);
+                // Failed to fetch dashboard data
                 setUserStats(null);
                 setGlobalStats(null);
                 setIncidents([]);
@@ -150,7 +150,7 @@ export function useIncident(id: string): Incident | null {
                 const backendIncident = await getIncident(numericId);
                 setIncident(convertIncident(backendIncident));
             } catch (error) {
-                console.error('Failed to fetch incident:', error);
+                // Failed to fetch incident
                 setIncident(null);
             }
         };
@@ -193,7 +193,7 @@ export function useFilteredIncidents(status?: string): Incident[] {
 
                 setIncidents(filtered);
             } catch (error) {
-                console.error('Failed to fetch incidents:', error);
+                // Failed to fetch incidents
                 setIncidents([]);
             }
         };

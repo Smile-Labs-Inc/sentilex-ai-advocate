@@ -23,7 +23,6 @@ export function EvidencePreview({ id }: { id?: string }) {
                 setError(null);
             } catch (err) {
                 const errorMessage = err instanceof Error ? err.message : 'Failed to load evidence';
-                console.error('Failed to load evidence:', errorMessage);
                 setError(errorMessage);
             } finally {
                 setIsLoading(false);

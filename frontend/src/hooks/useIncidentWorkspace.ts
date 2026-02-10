@@ -255,7 +255,7 @@ export function useIncidentWorkspace(
         };
       });
     } catch (error) {
-      console.error("Failed to load incident data:", error);
+      
     } finally {
       setIsAnalyzing(false);
     }
@@ -283,14 +283,14 @@ export function useIncidentWorkspace(
             evidence_notes: null,
           };
 
-          console.log("Creating incident with data:", incidentData);
+          
           const response = await createIncident(incidentData);
-          console.log("Incident created successfully:", response);
+          
 
           // Store incident ID for future API calls
           setIncidentId(response.id);
         } catch (error) {
-          console.error("Failed to create incident:", error);
+          
           // alert("Failed to create incident. Please try again.");
         }
       };
@@ -383,7 +383,7 @@ export function useIncidentWorkspace(
   const addEvidence = useCallback(
     async (files: File[]) => {
       if (!incidentId) {
-        console.error("No incident ID available");
+        
         return;
       }
 
@@ -419,7 +419,7 @@ export function useIncidentWorkspace(
           updatedAt: new Date(),
         }));
       } catch (error) {
-        console.error("Failed to upload evidence:", error);
+        
         alert("Failed to upload evidence. Please try again.");
       }
     },
@@ -429,7 +429,7 @@ export function useIncidentWorkspace(
   const deleteEvidence = useCallback(
     async (evidence: Evidence) => {
       if (!incidentId) {
-        console.error("No incident ID available");
+        
         return;
       }
 
@@ -442,7 +442,7 @@ export function useIncidentWorkspace(
           updatedAt: new Date(),
         }));
       } catch (error) {
-        console.error("Failed to delete evidence:", error);
+        
         alert("Failed to delete evidence. Please try again.");
       }
     },
@@ -494,7 +494,7 @@ export function useIncidentWorkspace(
       }));
       setChatMessages(formattedMessages);
     } catch (error) {
-      console.error("Failed to load chat messages:", error);
+      
     }
   };
 
@@ -519,7 +519,7 @@ export function useIncidentWorkspace(
         updatedAt: new Date(),
       }));
     } catch (error) {
-      console.error("Failed to load evidence:", error);
+      
     }
   };
 
@@ -541,7 +541,7 @@ export function useIncidentWorkspace(
   const sendMessage = useCallback(
     async (message: string) => {
       if (!incidentId) {
-        console.error("No incident ID available");
+        
         return;
       }
 
@@ -578,7 +578,7 @@ export function useIncidentWorkspace(
           aiMessage,
         ]);
       } catch (error) {
-        console.error("Failed to send message:", error);
+        
         // Add error message
         const errorMessage: ChatMessage = {
           id: generateId(),
@@ -638,7 +638,7 @@ export function useIncidentWorkspace(
 
       alert("Draft saved successfully!");
     } catch (error) {
-      console.error("Failed to save draft:", error);
+      
       alert("Failed to save draft. Please try again.");
     }
   }, [incident]);
@@ -686,7 +686,7 @@ export function useIncidentWorkspace(
 
       alert("Successfully submitted to police!");
     } catch (error) {
-      console.error("Failed to submit to police:", error);
+      
       alert("Failed to submit. Please try again.");
     }
   }, [incident]);

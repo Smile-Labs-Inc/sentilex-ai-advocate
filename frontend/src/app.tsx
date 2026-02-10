@@ -54,7 +54,6 @@ function AppContent() {
   }
 
   const handleNavigate = (item: NavItem) => {
-    console.log("Navigate to:", item.href);
     route(item.href);
   };
 
@@ -72,7 +71,6 @@ function AppContent() {
   };
 
   const handleWizardComplete = (data: WizardData) => {
-    console.log("Wizard completed with data:", data);
     setWizardData(data);
     route("/incident-workspace");
   };

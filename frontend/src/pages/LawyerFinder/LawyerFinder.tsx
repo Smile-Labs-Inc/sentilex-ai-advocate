@@ -67,7 +67,6 @@ export function LawyerFinderPage({
         setError(
           err instanceof Error ? err.message : "Failed to fetch lawyers",
         );
-        console.error("Error fetching lawyers:", err);
       } finally {
         setLoading(false);
       }
@@ -140,9 +139,9 @@ export function LawyerFinderPage({
                   setSelectedSpecialization(spec === "All" ? null : spec)
                 }
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${(spec === "All" && !selectedSpecialization) ||
-                    selectedSpecialization === spec
-                    ? "bg-foreground text-background"
-                    : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-muted"
+                  selectedSpecialization === spec
+                  ? "bg-foreground text-background"
+                  : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-muted"
                   }`}
               >
                 {spec}

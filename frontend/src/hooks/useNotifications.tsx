@@ -35,14 +35,14 @@ export function useNotifications(): UseNotificationsReturn {
                 notificationService.getUnreadCount(),
             ]);
 
-            console.log('Loaded notifications:', notificationsData);
-            console.log('Unread count:', unreadCountData);
+            
+            
             setNotifications(notificationsData);
             setUnreadCount(unreadCountData);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to load notifications';
             setError(errorMessage);
-            console.error('Error loading notifications:', err);
+            
         } finally {
             setIsLoading(false);
         }
@@ -70,7 +70,7 @@ export function useNotifications(): UseNotificationsReturn {
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to mark notification as read';
             setError(errorMessage);
-            console.error('Error marking notification as read:', err);
+            
         }
     }, []);
 
@@ -90,7 +90,7 @@ export function useNotifications(): UseNotificationsReturn {
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to mark all notifications as read';
             setError(errorMessage);
-            console.error('Error marking all notifications as read:', err);
+            
         }
     }, []);
 
@@ -157,7 +157,7 @@ export function useNotifications(): UseNotificationsReturn {
 
             // Listen for connection events
             const handleConnected = () => {
-                console.log('WebSocket notifications connected');
+                
                 setError(null);
             };
 

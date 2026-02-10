@@ -98,7 +98,6 @@ class ApiClient {
 
             if (!response.ok) {
                 // Refresh token is invalid or expired
-                console.error('Token refresh failed:', response.status);
                 return null;
             }
 
@@ -108,10 +107,8 @@ class ApiClient {
             // Update token in localStorage
             localStorage.setItem(APP_CONFIG.TOKEN_STORAGE_KEY, newAccessToken);
 
-            console.log('Token refreshed successfully');
             return newAccessToken;
         } catch (error) {
-            console.error('Token refresh error:', error);
             return null;
         }
     }
@@ -120,8 +117,6 @@ class ApiClient {
      * Handle authentication failure (logout user)
      */
     private handleAuthFailure(): void {
-        console.warn('Authentication failed - logging out user');
-
         // Clear tokens
         authService.clearTokens();
 

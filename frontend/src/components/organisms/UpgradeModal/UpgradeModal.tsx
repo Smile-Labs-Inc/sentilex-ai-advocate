@@ -13,7 +13,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const handlePaymentSuccess = async (details: any) => {
-    console.log("Payment completed:", details);
+    
     setPaymentSuccess(true);
 
     // TODO: Send payment details to your backend to upgrade the user
@@ -35,7 +35,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   };
 
   const handlePaymentError = (error: any) => {
-    console.error("Payment error:", error);
+    
     setPaymentError("Payment failed. Please try again.");
   };
 

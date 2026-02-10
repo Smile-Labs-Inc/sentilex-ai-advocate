@@ -51,14 +51,11 @@ export function EvidenceUploadModal({
         try {
             setIsUploading(true);
             setUploadError(null);
-            console.log('Modal upload started:', { fileCount: selectedFiles.length, incidentId: selectedIncidentId, fileNames: selectedFiles.map(f => f.name) });
             await onUpload(selectedFiles, selectedIncidentId);
-            console.log('Modal upload completed successfully');
             setSelectedFiles([]);
             onClose();
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to upload evidence';
-            console.error('Modal upload error:', message, err);
             setUploadError(message);
         } finally {
             setIsUploading(false);
