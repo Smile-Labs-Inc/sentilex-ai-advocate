@@ -1,0 +1,49 @@
+Walkthrough: Intent-Based Routing Architecture
+Summary
+Refactored 
+case_agent_graph.py
+ with smart intent-based routing that routes messages to appropriate agents based on user intent.
+
+Architecture
+GREETING/SMALL_TALK
+EMERGENCY
+CASE_STATUS/LEGAL/EVIDENCE
+CASE_STATUS
+LEGAL_TRIAGE/EVIDENCE
+User Message
+Load Memories
+Router Node
+Conversational
+Emergency Node
+DB Context
+Synthesizer
+Legal Reasoning
+Save Memories
+END
+Routing Paths
+User Says	Intent	Path
+"Hello"	GREETING	Router → Conversational → Synthesizer
+"I'm being hacked NOW"	EMERGENCY	Router → Emergency → Synthesizer
+"What's my case status?"	CASE_STATUS	Router → DB Context → Synthesizer
+"What laws apply?"	LEGAL_TRIAGE	Router → DB Context → Legal → Synthesizer
+"How do I upload evidence?"	EVIDENCE	Router → DB Context → Legal → Synthesizer
+Key Components
+Intent Classification (Pydantic)
+python
+class IntentClassification(BaseModel):
+    intent: UserIntent
+    confidence: float
+    urgency_level: Literal["high", "normal"]
+Specialized Nodes
+conversational_node: Lightweight chat (no DB)
+emergency_node: Immediate safety advice + SL CERT contacts
+db_context_node: Queries user profile + incident details
+legal_reasoning_node: Full legal chain with context
+synthesizer_node: Trauma-informed response formatting
+Testing
+Try these messages:
+
+"Hello" → Should respond warmly, no SQL logs
+"I'm being attacked right now" → Should show emergency contacts
+"What laws apply to my cyberbullying case?" → Full legal analysis
+"What's the status of my case?" → Case details from DB

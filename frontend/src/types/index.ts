@@ -3,32 +3,45 @@
 // =============================================================================
 
 // Re-export auth types
-export * from './auth';
+export * from "./auth";
+
+// =============================================================================
+// Notification Types
+// =============================================================================
+
+export interface Notification {
+  id: string;
+  title?: string;
+  message: string;
+  timestamp: string;
+  isRead: boolean;
+  type?: 'system' | 'case' | 'legal' | 'account';
+}
 
 export type IncidentType =
-  | 'cyberbullying'
-  | 'harassment'
-  | 'stalking'
-  | 'non-consensual-leak'
-  | 'identity-theft'
-  | 'online-fraud'
-  | 'other';
+  | "cyberbullying"
+  | "harassment"
+  | "stalking"
+  | "non-consensual-leak"
+  | "identity-theft"
+  | "online-fraud"
+  | "other";
 
 export type IncidentStatus =
-  | 'pending'
-  | 'in-progress'
-  | 'resolved'
-  | 'submitted-to-police';
+  | "pending"
+  | "in-progress"
+  | "resolved"
+  | "submitted-to-police";
 
-export type QuickLinkType = 'hotline' | 'resource' | 'finder';
+export type QuickLinkType = "hotline" | "resource" | "finder";
 
 export type ActivityType =
-  | 'update'
-  | 'law-identified'
-  | 'evidence-uploaded'
-  | 'report-submitted'
-  | 'case-opened'
-  | 'case-resolved';
+  | "update"
+  | "law-identified"
+  | "evidence-uploaded"
+  | "report-submitted"
+  | "case-opened"
+  | "case-resolved";
 
 // =============================================================================
 // Incident Types
@@ -117,7 +130,13 @@ export interface NavSection {
 // Evidence Types
 // =============================================================================
 
-export type EvidenceType = 'image' | 'video' | 'document' | 'audio' | 'screenshot' | 'other';
+export type EvidenceType =
+  | "image"
+  | "video"
+  | "document"
+  | "audio"
+  | "screenshot"
+  | "other";
 
 export interface Evidence {
   id: string;
@@ -137,7 +156,14 @@ export interface Evidence {
 
 export interface TimelineEventEditable {
   id: string;
-  type: 'incident' | 'evidence' | 'communication' | 'threat' | 'report' | 'ai-suggestion' | 'custom';
+  type:
+  | "incident"
+  | "evidence"
+  | "communication"
+  | "threat"
+  | "report"
+  | "ai-suggestion"
+  | "custom";
   title: string;
   description: string;
   timestamp: Date;
@@ -161,7 +187,7 @@ export interface IncidentDraft {
   timeline: TimelineEventEditable[];
   evidence: Evidence[];
   identifiedLaws: LawViolation[];
-  status: 'draft' | 'analyzing' | 'ready' | 'submitted';
+  status: "draft" | "analyzing" | "ready" | "submitted";
   createdAt: Date;
   updatedAt: Date;
 }
@@ -170,7 +196,7 @@ export interface IncidentDraft {
 // Law Violation Types
 // =============================================================================
 
-export type ViolationSeverity = 'critical' | 'high' | 'medium' | 'low';
+export type ViolationSeverity = "critical" | "high" | "medium" | "low";
 
 export interface LawViolation {
   id: string;
@@ -189,7 +215,13 @@ export interface LawViolation {
 // Wizard Types
 // =============================================================================
 
-export type WizardQuestionType = 'radio' | 'checkbox' | 'text' | 'textarea' | 'date' | 'multiselect';
+export type WizardQuestionType =
+  | "radio"
+  | "checkbox"
+  | "text"
+  | "textarea"
+  | "date"
+  | "multiselect";
 
 export interface WizardQuestionOption {
   value: string;
@@ -214,7 +246,7 @@ export interface WizardQuestion {
 
 export interface ChatMessage {
   id: string;
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
   timestamp: Date;
 }

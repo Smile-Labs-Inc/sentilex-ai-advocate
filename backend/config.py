@@ -22,12 +22,12 @@ class Settings:
     DB_NAME: str = os.getenv("DB_NAME", "sentilex")
     SQL_ECHO: bool = os.getenv("SQL_ECHO", "false").lower() in ("1", "true", "yes")
     
-    # S3/MinIO Document Storage Configuration
-    S3_ENDPOINT_URL: str = os.getenv("S3_ENDPOINT_URL", "https://s3.amazonaws.com")
-    S3_ACCESS_KEY: str = os.getenv("S3_ACCESS_KEY", "")
-    S3_SECRET_KEY: str = os.getenv("S3_SECRET_KEY", "")
-    S3_REGION_NAME: str = os.getenv("S3_REGION_NAME", "us-east-1")
-    S3_BUCKET_NAME: str = os.getenv("S3_BUCKET_NAME", "sentilex-lawyer-verification")
+    # AWS S3 Evidence Storage Configuration
+    AWS_ACCESS_KEY_ID: str = os.getenv("AWS_ACCESS_KEY_ID", "")
+    AWS_SECRET_ACCESS_KEY: str = os.getenv("AWS_SECRET_ACCESS_KEY", "")
+    AWS_REGION: str = os.getenv("AWS_REGION", "ap-southeast-2")
+    S3_BUCKET_NAME: str = os.getenv("S3_BUCKET_NAME", "sentilex-evidence-vault-2026")
+    S3_SIGNATURE_VERSION: str = "s3v4"  # Use AWS Signature Version 4
     
     # API Configuration
     API_HOST: str = os.getenv("API_HOST", "0.0.0.0")

@@ -14,6 +14,7 @@ from .incident import Incident, IncidentStatusEnum, IncidentTypeEnum
 from .incident_chat import IncidentChatMessage, IncidentChatRoleEnum
 from .session_chat import SessionChatMessage, ChatSession
 from .evidence import Evidence
+from .notification import Notification, RecipientTypeEnum, NotificationTypeEnum
 
 __all__ = [
     # User Models
@@ -24,6 +25,7 @@ __all__ = [
     "SessionChatMessage",
     "ChatSession",
     "Evidence",
+    "Notification",
     
     # Enums
     "AvailabilityEnum",
@@ -32,6 +34,8 @@ __all__ = [
     "IncidentStatusEnum",
     "IncidentTypeEnum",
     "IncidentChatRoleEnum",
+    "RecipientTypeEnum",
+    "NotificationTypeEnum",
     
     # Security Models
     "TokenBlacklist",

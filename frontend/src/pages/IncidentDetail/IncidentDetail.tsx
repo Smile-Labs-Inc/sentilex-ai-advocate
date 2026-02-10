@@ -3,12 +3,12 @@
 // Detailed view of a specific incident with AI chat, laws, timeline
 // =============================================================================
 
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import { DashboardLayout } from '../../components/templates/DashboardLayout/DashboardLayout';
 import { IncidentHeader } from '../../components/organisms/IncidentHeader/IncidentHeader';
 import { AIChatSection, type ChatMessage } from '../../components/organisms/AIChatSection/AIChatSection';
-import { LawsSection, type IdentifiedLaw } from '../../components/organisms/LawsSection/LawsSection';
-import { TimelineSection, type TimelineEvent } from '../../components/organisms/TimelineSection/TimelineSection';
+import { LawsSection } from '../../components/organisms/LawsSection/LawsSection';
+import { TimelineSection } from '../../components/organisms/TimelineSection/TimelineSection';
 import { Card, CardHeader, CardTitle } from '../../components/atoms/Card/Card';
 import { Icon } from '../../components/atoms/Icon/Icon';
 import type { NavItem, Incident } from '../../types';
@@ -21,80 +21,6 @@ export interface IncidentDetailPageProps {
     onBack: () => void;
 }
 
-// Mock data for demo
-const mockLaws: IdentifiedLaw[] = [
-    {
-        id: '1',
-        name: 'Computer Crimes Act No. 24 of 2007',
-        section: 'Section 6',
-        description: 'Illegal interception of data - Whoever intentionally and without lawful authority intercepts by technical means, any non-public transmission of computer data.',
-        relevance: 'high',
-        jurisdiction: 'Sri Lanka',
-    },
-    {
-        id: '2',
-        name: 'Penal Code of Sri Lanka',
-        section: 'Section 345',
-        description: 'Criminal intimidation - Threatening another with injury to person, reputation, or property with intent to cause alarm.',
-        relevance: 'high',
-        jurisdiction: 'Sri Lanka',
-    },
-    {
-        id: '3',
-        name: 'Prevention of Domestic Violence Act No. 34 of 2005',
-        section: 'Section 2',
-        description: 'Definition of domestic violence includes emotional abuse, harassment, and intimidation through any means including electronic communication.',
-        relevance: 'medium',
-        jurisdiction: 'Sri Lanka',
-    },
-];
-
-const mockTimeline: TimelineEvent[] = [
-    {
-        id: '1',
-        type: 'created',
-        title: 'Case Created',
-        description: 'You created this incident report',
-        timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-    },
-    {
-        id: '2',
-        type: 'ai-analysis',
-        title: 'AI Analysis Complete',
-        description: '3 applicable laws identified',
-        timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
-    },
-    {
-        id: '3',
-        type: 'law-identified',
-        title: 'New Law Added',
-        description: 'IT Act Section 66A added to case',
-        timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-    },
-    {
-        id: '4',
-        type: 'evidence-added',
-        title: 'Evidence Uploaded',
-        description: '3 screenshots added',
-        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
-    },
-    {
-        id: '5',
-        type: 'status-change',
-        title: 'Status Updated',
-        description: 'Case marked as In Progress',
-        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-    },
-];
-
-const initialMessages: ChatMessage[] = [
-    {
-        id: '1',
-        role: 'assistant',
-        content: "Hello! I've analyzed your case and identified 3 applicable laws. Based on the nature of the cyberbullying incident, I recommend documenting all evidence with timestamps. Would you like me to explain the legal remedies available to you?",
-        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-    },
-];
 
 export function IncidentDetailPage({
     user,
@@ -102,11 +28,44 @@ export function IncidentDetailPage({
     onNavigate,
     onBack,
 }: IncidentDetailPageProps) {
-    const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [isAILoading, setIsAILoading] = useState(false);
+    const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSendMessage = (content: string) => {
-        // Add user message
+    // Extract numeric ID from incident.id (format: "inc_123")
+    const numericIncidentId = parseInt(incident.id.replace('inc_', ''), 10);
+
+    // Load chat history on mount
+    useEffect(() => {
+        const loadChatHistory = async () => {
+            try {
+                setIsLoadingHistory(true);
+                const { getIncidentChatMessages } = await import('../../services/incident');
+                const chatMessages = await getIncidentChatMessages(numericIncidentId);
+
+                // Convert API messages to ChatMessage format
+                const formattedMessages: ChatMessage[] = chatMessages.map(msg => ({
+                    id: msg.id.toString(),
+                    role: msg.role as 'user' | 'assistant',
+                    content: msg.content,
+                    timestamp: new Date(msg.created_at),
+                }));
+
+                setMessages(formattedMessages);
+            } catch (err) {
+                console.error('Failed to load chat history:', err);
+                setError('Failed to load chat history');
+            } finally {
+                setIsLoadingHistory(false);
+            }
+        };
+
+        loadChatHistory();
+    }, [incident.id]);
+
+    const handleSendMessage = async (content: string) => {
+        // Add user message optimistically
         const userMessage: ChatMessage = {
             id: Date.now().toString(),
             role: 'user',
@@ -114,33 +73,43 @@ export function IncidentDetailPage({
             timestamp: new Date(),
         };
         setMessages((prev) => [...prev, userMessage]);
+        setError(null);
 
-        // Simulate AI response
+        // Call real API
         setIsAILoading(true);
-        setTimeout(() => {
-            const aiResponses: Record<string, string> = {
-                default: "I understand your concern. Based on the evidence you've provided, the strongest case can be made under Section 6 of the Computer Crimes Act No. 24 of 2007. This provision specifically addresses illegal interception and unauthorized access. Would you like me to help you prepare a formal complaint?",
-                legal: "In Sri Lanka, you can report cyber crimes to the Computer Crimes Division of the CID. I can help you draft the complaint, gather necessary evidence, and identify the right authorities to approach. Shall I outline the step-by-step process?",
-                evidence: "For building a strong case, I recommend collecting: 1) Screenshots with timestamps, 2) URLs of offensive content, 3) Any direct messages or communications, 4) Witness statements if available. Would you like guidance on preserving digital evidence?",
-            };
+        try {
+            const { sendIncidentChatMessage } = await import('../../services/incident');
+            const response = await sendIncidentChatMessage(numericIncidentId, content);
 
-            const keywords = content.toLowerCase();
-            let response = aiResponses.default;
-            if (keywords.includes('legal') || keywords.includes('process') || keywords.includes('police')) {
-                response = aiResponses.legal;
-            } else if (keywords.includes('evidence') || keywords.includes('screenshot') || keywords.includes('proof')) {
-                response = aiResponses.evidence;
-            }
-
+            // Add AI response
             const aiMessage: ChatMessage = {
-                id: (Date.now() + 1).toString(),
+                id: response.assistant_message.id.toString(),
                 role: 'assistant',
-                content: response,
-                timestamp: new Date(),
+                content: response.assistant_message.content,
+                timestamp: new Date(response.assistant_message.created_at),
             };
-            setMessages((prev) => [...prev, aiMessage]);
+
+            // Update user message with actual ID from server
+            setMessages((prev) => {
+                const updated = [...prev];
+                const userMsgIndex = updated.findIndex(m => m.id === userMessage.id);
+                if (userMsgIndex !== -1) {
+                    updated[userMsgIndex] = {
+                        ...updated[userMsgIndex],
+                        id: response.user_message.id.toString(),
+                    };
+                }
+                return [...updated, aiMessage];
+            });
+        } catch (err) {
+            console.error('Failed to send message:', err);
+            setError(err instanceof Error ? err.message : 'Failed to send message');
+
+            // Remove optimistic user message on error
+            setMessages((prev) => prev.filter(m => m.id !== userMessage.id));
+        } finally {
             setIsAILoading(false);
-        }, 1500);
+        }
     };
 
     return (
@@ -166,7 +135,7 @@ export function IncidentDetailPage({
 
                     {/* Right column - Laws & Timeline */}
                     <div className="space-y-6">
-                        <LawsSection laws={mockLaws} />
+                        <LawsSection laws={[]} />
 
                         {/* Case Summary */}
                         <Card variant="default" padding="lg" className="animate-slide-up">
@@ -197,7 +166,7 @@ export function IncidentDetailPage({
 
                 {/* Timeline - Full width */}
                 <div className="mt-6">
-                    <TimelineSection events={mockTimeline} />
+                    <TimelineSection events={[]} />
                 </div>
             </div>
         </DashboardLayout>

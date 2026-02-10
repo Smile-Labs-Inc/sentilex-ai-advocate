@@ -102,7 +102,7 @@ export function Sidebar({
 
         {/* Upgrade CTA & Theme Toggle */}
         <div className="p-4 border-t border-border">
-          <div className="bg-gradient-to-br from-secondary to-background border border-border rounded-xl p-4 mb-4">
+          <div className="bg-linear-to-br from-secondary to-background border border-border rounded-xl p-4 mb-4">
             <div className="flex items-center gap-2 text-foreground mb-2">
               <Icon name="Crown" size="sm" className="text-yellow-500" />
               <span className="text-xs font-bold">Upgrade to Pro</span>
@@ -125,7 +125,7 @@ export function Sidebar({
               theme={resolvedTheme}
               onToggle={toggleTheme}
               size="sm"
-              className="flex-shrink-0"
+              className="shrink-0"
             />
             <span className="text-xs text-muted-foreground">
               {resolvedTheme === "dark" ? "Dark" : "Light"} mode

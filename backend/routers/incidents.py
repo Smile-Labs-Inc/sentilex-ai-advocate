@@ -39,9 +39,13 @@ async def create_incident(
     """
     
     # Create incident with user association
+    # Get the enum value string (lowercase) and use it to get the model enum
+    incident_type_value = incident_data.incident_type.value  # This gives us "cyberbullying" etc.
+    model_incident_type = ModelIncidentType(incident_type_value)
+    
     new_incident = Incident(
         user_id=current_user.id,
-        incident_type=ModelIncidentType(incident_data.incident_type.value),
+        incident_type=model_incident_type,
         title=incident_data.title,
         description=incident_data.description,
         date_occurred=incident_data.date_occurred,
@@ -204,8 +208,7 @@ from schemas.incident import (
     IncidentChatMessageResponse,
     IncidentChatExchangeResponse
 )
-from schemas.messages import UserQuery
-from chains import invoke_chain
+
 
 
 @router.post("/{incident_id}/messages", response_model=IncidentChatExchangeResponse)
@@ -249,43 +252,26 @@ async def send_incident_message(
     db.commit()
     db.refresh(user_message)
     
-    # Get AI response using the legal reasoning chain
+    
+    # Get AI response using the case agent graph (with memory + context)
     try:
-        # Create context from incident details
-        case_context = f"""
-Incident Type: {incident.incident_type.value}
-Title: {incident.title}
-Description: {incident.description}
-Date Occurred: {incident.date_occurred}
-Location: {incident.location or 'Not specified'}
-Jurisdiction: {incident.jurisdiction or 'Sri Lanka'}
-Platforms Involved: {incident.platforms_involved or 'Not specified'}
-"""
+        from agents.case_agent_graph import invoke_case_agent
         
-        # Create UserQuery for the chain
-        user_query = UserQuery(
-            question=message_data.content,
-            case_context=case_context
+        # Invoke the case agent with full context
+        agent_result = invoke_case_agent(
+            incident_id=incident_id,
+            user_id=current_user.id,
+            message=message_data.content
         )
         
-        # Invoke the AI chain
-        ai_response = invoke_chain(user_query)
-        
-        # Extract response text
-        if hasattr(ai_response, 'response'):
-            assistant_content = ai_response.response
-        elif hasattr(ai_response, 'answer'):
-            assistant_content = ai_response.answer
-        elif hasattr(ai_response, 'reason'):
-            assistant_content = ai_response.reason
-        else:
-            assistant_content = str(ai_response)
+        assistant_content = agent_result.get("response", "I apologize, but I couldn't generate a response.")
             
     except Exception as e:
         # Fallback response if AI fails
         assistant_content = "I apologize, but I'm having trouble processing your request right now. Please try rephrasing your question or contact support if the issue persists."
         import logging
-        logging.error(f"AI chain error for incident {incident_id}: {str(e)}")
+        logging.error(f"Case agent error for incident {incident_id}: {str(e)}")
+    
     
     # Save assistant message
     assistant_message = IncidentChatMessage(
@@ -343,27 +329,23 @@ async def get_incident_messages(
 from fastapi import UploadFile, File
 from models.evidence import Evidence
 from schemas.incident import EvidenceResponse, EvidenceListResponse
-from pathlib import Path
-import os
 import uuid
-
-
-# Evidence storage directory
-EVIDENCE_DIR = Path("uploaded_evidence")
-EVIDENCE_DIR.mkdir(exist_ok=True)
+from services.s3_service import upload_file_to_s3
 
 
 @router.post("/{incident_id}/evidence", response_model=list[EvidenceResponse])
 async def upload_evidence(
     incident_id: int,
     files: list[UploadFile] = File(...),
+    occurrence_id: Optional[int] = None,
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
 ):
     """
-    Upload evidence files for an incident.
+    Upload evidence files for an incident to S3.
     
-    Accepts multiple files and stores them securely.
+    Files are streamed to S3 with AES-256 encryption and SHA-256 hashing.
+    Optionally link evidence to a specific occurrence.
     Returns metadata for all uploaded files.
     """
     
@@ -379,30 +361,45 @@ async def upload_evidence(
             detail="Incident not found"
         )
     
+    # If occurrence_id provided, verify it belongs to this incident
+    if occurrence_id:
+        from models.occurrence import Occurrence
+        occurrence = db.query(Occurrence).filter(
+            Occurrence.id == occurrence_id,
+            Occurrence.incident_id == incident_id
+        ).first()
+        
+        if not occurrence:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Occurrence not found"
+            )
+    
     uploaded_evidence = []
     
     for file in files:
-        # Generate unique filename
-        file_extension = Path(file.filename).suffix
-        unique_filename = f"{uuid.uuid4()}{file_extension}"
-        
-        # Create incident-specific directory
-        incident_dir = EVIDENCE_DIR / f"incident_{incident_id}"
-        incident_dir.mkdir(exist_ok=True)
-        
-        # Save file to disk
-        file_path = incident_dir / unique_filename
+        # Generate S3 key with pattern: incidents/{incident_id}/evidence/{uuid}_{filename}
+        file_uuid = str(uuid.uuid4())
+        file_key = f"incidents/{incident_id}/evidence/{file_uuid}_{file.filename}"
         
         try:
+            # Read file content
             contents = await file.read()
-            with open(file_path, "wb") as f:
-                f.write(contents)
             
-            # Create evidence record
+            # Upload to S3 and get SHA-256 hash
+            file_hash = upload_file_to_s3(
+                file_content=contents,
+                file_key=file_key,
+                content_type=file.content_type
+            )
+            
+            # Create evidence record with S3 metadata
             evidence = Evidence(
                 incident_id=incident_id,
+                occurrence_id=occurrence_id,
                 file_name=file.filename,
-                file_path=str(file_path),
+                file_key=file_key,
+                file_hash=file_hash,
                 file_type=file.content_type,
                 file_size=len(contents)
             )
@@ -414,9 +411,8 @@ async def upload_evidence(
             uploaded_evidence.append(evidence)
             
         except Exception as e:
-            # Clean up file if database operation fails
-            if file_path.exists():
-                file_path.unlink()
+            # Rollback database if S3 upload succeeded but DB failed
+            db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Failed to upload {file.filename}: {str(e)}"
@@ -468,9 +464,9 @@ async def delete_evidence(
     db: Session = Depends(get_db)
 ):
     """
-    Delete an evidence file.
+    Delete an evidence file from S3 and database.
     
-    Removes both the file from disk and the database record.
+    Removes both the file from S3 and the database record.
     """
     
     # Verify incident exists and belongs to user
@@ -497,14 +493,14 @@ async def delete_evidence(
             detail="Evidence not found"
         )
     
-    # Delete file from disk
-    file_path = Path(evidence.file_path)
-    if file_path.exists():
-        try:
-            file_path.unlink()
-        except Exception as e:
-            import logging
-            logging.error(f"Failed to delete file {file_path}: {str(e)}")
+    # Delete file from S3
+    try:
+        from services.s3_service import delete_file_from_s3
+        delete_file_from_s3(evidence.file_key)
+    except Exception as e:
+        import logging
+        logging.error(f"Failed to delete file from S3: {evidence.file_key} - {str(e)}")
+        # Continue with database deletion even if S3 deletion fails
     
     # Delete database record
     db.delete(evidence)

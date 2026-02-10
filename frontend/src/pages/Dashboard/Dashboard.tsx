@@ -5,8 +5,9 @@
 
 import { useDashboardData } from "../../hooks/useDashboardData";
 import { DashboardLayout } from "../../components/templates/DashboardLayout/DashboardLayout";
-import { DashboardHeader } from "../../components/organisms/DashboardHeader/DashboardHeader";
+import { DashboardHeader } from "../../components/organisms/DashboardHeader/DashboardHeaderEnhanced";
 import { StatsGrid } from "../../components/organisms/StatsGrid/StatsGrid";
+import { useNotifications } from "../../hooks/useNotifications";
 import { NewIncidentCTA } from "../../components/organisms/NewIncidentCTA/NewIncidentCTA";
 import { IncidentsList } from "../../components/organisms/IncidentsList/IncidentsList";
 import { QuickLinksPanel } from "../../components/organisms/QuickLinksPanel/QuickLinksPanel";
@@ -30,6 +31,13 @@ export function Dashboard({
 }: DashboardProps) {
   const [showActivityModal, setShowActivityModal] = useState(false);
   const { user } = useAuth();
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    loadNotifications,
+  } = useNotifications();
 
   // Toggle this to see new user view
   const showNewUserView = false;
@@ -79,6 +87,23 @@ export function Dashboard({
     }
   };
 
+  const handleMarkNotificationAsRead = (id: string) => {
+    markAsRead(id);
+  };
+
+  const handleMarkAllNotificationsAsRead = () => {
+    markAllAsRead();
+  };
+
+  const handleViewAllNotifications = () => {
+    onNavigate?.({
+      id: "notifications",
+      label: "Notifications",
+      icon: "Bell",
+      href: "/notifications",
+    });
+  };
+
   return (
     <DashboardLayout
       user={user}
@@ -88,8 +113,11 @@ export function Dashboard({
       {/* Header */}
       <DashboardHeader
         user={user}
+        notifications={notifications}
         onNewIncident={handleNewIncident}
-        onOpenActivity={() => setShowActivityModal(true)}
+        onMarkNotificationAsRead={handleMarkNotificationAsRead}
+        onMarkAllNotificationsAsRead={handleMarkAllNotificationsAsRead}
+        onViewAllNotifications={handleViewAllNotifications}
       />
 
       {/* New User: Prominent CTA */}

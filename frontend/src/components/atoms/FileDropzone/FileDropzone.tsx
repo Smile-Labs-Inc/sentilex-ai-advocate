@@ -165,6 +165,7 @@ export function FileDropzone({
 
                 {/* Browse button */}
                 <Button
+                    type="button"
                     variant="secondary"
                     size="sm"
                     onClick={handleButtonClick}
