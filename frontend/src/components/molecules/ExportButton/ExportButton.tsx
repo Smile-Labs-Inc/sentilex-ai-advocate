@@ -13,11 +13,12 @@ export interface ExportButtonProps {
     incidentId: number;
     className?: string;
     variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
+    size?: 'sm' | 'md' | 'lg';
 }
 
 type ExportType = 'police' | 'cert' | 'manifest' | 'case-file';
 
-export function ExportButton({ incidentId, className, variant = 'primary' }: ExportButtonProps) {
+export function ExportButton({ incidentId, className, variant = 'primary', size = 'sm' }: ExportButtonProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
     const [exportingType, setExportingType] = useState<ExportType | null>(null);
@@ -55,19 +56,20 @@ export function ExportButton({ incidentId, className, variant = 'primary' }: Exp
         <div className={cn('relative', className)}>
             <Button
                 variant={variant}
-                className="gap-2"
+                size={size}
+                className="gap-1.5 text-xs"
                 onClick={() => setIsOpen(!isOpen)}
                 disabled={isExporting}
             >
                 {isExporting ? (
                     <>
-                        <Icon name="Loader" size="sm" className="animate-spin" />
+                        <Icon name="Loader" size="xs" className="animate-spin" />
                         Exporting...
                     </>
                 ) : (
                     <>
-                        <Icon name="Download" size="sm" />
-                        Export Documents
+                        <Icon name="Download" size="xs" />
+                        Export
                         <Icon name="ChevronDown" size="xs" className={cn(
                             'transition-transform',
                             isOpen && 'rotate-180'

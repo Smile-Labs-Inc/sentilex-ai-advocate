@@ -15,14 +15,20 @@ import type { Incident } from '../../../types';
 export interface IncidentsListProps {
     incidents: Incident[];
     onIncidentClick?: (incident: Incident) => void;
+    onDeleteIncident?: (incident: Incident) => void;
     onNewIncident?: () => void;
+    onViewAllIncidents?: () => void;
+    onFilterClick?: () => void;
     className?: string;
 }
 
 export function IncidentsList({
     incidents,
     onIncidentClick,
+    onDeleteIncident,
     onNewIncident,
+    onViewAllIncidents,
+    onFilterClick,
     className
 }: IncidentsListProps) {
     const [searchQuery, setSearchQuery] = useState('');
@@ -79,7 +85,7 @@ export function IncidentsList({
                         className="w-48"
                     />
 
-                    <Button variant="secondary" size="sm" className="gap-2">
+                    <Button variant="secondary" size="sm" className="gap-2" onClick={onFilterClick}>
                         <Icon name="Filter" size="xs" />
                         Filter
                     </Button>
@@ -94,6 +100,7 @@ export function IncidentsList({
                             key={incident.id}
                             incident={incident}
                             onClick={onIncidentClick}
+                            onDelete={onDeleteIncident}
                             className="animate-fade-in"
                             style={{ animationDelay: `${index * 0.05}s` }}
                         />
@@ -108,7 +115,7 @@ export function IncidentsList({
             {/* View all link */}
             {filteredIncidents.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-border flex justify-center">
-                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1">
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground gap-1" onClick={onViewAllIncidents}>
                         View all incidents
                         <Icon name="ArrowRight" size="xs" />
                     </Button>
