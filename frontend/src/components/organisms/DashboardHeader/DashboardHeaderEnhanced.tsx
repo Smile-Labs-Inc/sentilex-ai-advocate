@@ -5,7 +5,6 @@
 
 import { cn } from '../../../lib/utils';
 import { Button } from '../../atoms/Button/Button';
-import { Avatar } from '../../atoms/Avatar/Avatar';
 import { Icon } from '../../atoms/Icon/Icon';
 import { NotificationBell } from '../../molecules/NotificationBell/NotificationBell';
 import type { UserProfile, Notification } from '../../../types';
@@ -14,6 +13,7 @@ export interface DashboardHeaderProps {
     user: UserProfile;
     notifications?: Notification[];
     onNewIncident?: () => void;
+    onOpenActivity?: () => void;
     onMarkNotificationAsRead?: (id: string) => void;
     onMarkAllNotificationsAsRead?: () => void;
     onViewAllNotifications?: () => void;
@@ -24,6 +24,7 @@ export function DashboardHeader({
     user,
     notifications = [],
     onNewIncident,
+    onOpenActivity,
     onMarkNotificationAsRead = () => { },
     onMarkAllNotificationsAsRead = () => { },
     onViewAllNotifications = () => { },
@@ -48,25 +49,14 @@ export function DashboardHeader({
 
             {/* Right side - Actions */}
             <div className="flex items-center gap-4 animate-fade-in" style={{ animationDelay: '0.1s' }}>
-                {/* Avatar stack - Legal team indicators */}
-                <div className="flex -space-x-2">
-                    {['Legal Team', 'Support', 'Advisor'].map((name, i) => (
-                        <div
-                            key={i}
-                            className="relative"
-                            style={{ zIndex: 3 - i }}
-                        >
-                            <Avatar
-                                name={name}
-                                size="sm"
-                                className="border-2 border-background"
-                            />
-                        </div>
-                    ))}
-                    <div className="w-8 h-8 rounded-full border-2 border-background bg-secondary text-xs flex items-center justify-center text-foreground font-medium">
-                        5+
-                    </div>
-                </div>
+                {/* Recent Activity Button */}
+                <button
+                    onClick={() => onOpenActivity?.()}
+                    className="w-9 h-9 flex items-center justify-center rounded-lg bg-secondary hover:bg-accent transition-colors"
+                    aria-label="Open recent activity"
+                >
+                    <Icon name="Activity" size="sm" className="text-foreground" />
+                </button>
 
                 {/* Professional Notification Bell */}
                 <NotificationBell
