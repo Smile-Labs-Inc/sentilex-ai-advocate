@@ -39,7 +39,6 @@ from schemas.messages import (
     SynthesizerOutput,
     RefusalOutput
 )
-from audit_logging.audit import get_audit_logger
 
 
 def create_main_chain() -> Runnable:

@@ -60,8 +60,8 @@ async def lifespan(app: FastAPI):
     print("Checking database connection...")
     if check_db_connection():
         # Create tables if they don't exist
-        Base.metadata.create_all(bind=engine)
-        print("Database is online and tables verified.")
+        # Base.metadata.create_all(bind=engine, checkfirst=True)
+        print("Database is online.")
     else:
         print("CRITICAL: Database connection failed.")
         
