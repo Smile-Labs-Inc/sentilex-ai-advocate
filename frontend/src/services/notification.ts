@@ -3,7 +3,7 @@
 // API interactions for notification management
 // =============================================================================
 
-import { API_CONFIG } from '../config';
+import { API_CONFIG, APP_CONFIG } from '../config';
 import type { Notification } from '../types';
 
 export interface NotificationResponse {
@@ -23,7 +23,7 @@ export interface UnreadCountResponse {
 
 class NotificationService {
     private getHeaders(): HeadersInit {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
         return {
             'Content-Type': 'application/json',
             ...(token && { Authorization: `Bearer ${token}` }),
@@ -33,7 +33,7 @@ class NotificationService {
     // Get all notifications for the current user
     async getNotifications(): Promise<Notification[]> {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/notifications/`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/notifications/my`, {
                 headers: this.getHeaders(),
             });
 
@@ -42,7 +42,8 @@ class NotificationService {
             }
 
             const data = await response.json();
-            return this.transformNotifications(data.notifications || []);
+            const notifications = this.transformNotifications(data.notifications || []);
+            return notifications;
         } catch (error) {
             console.error('Failed to fetch notifications:', error);
             return [];
@@ -52,7 +53,7 @@ class NotificationService {
     // Get unread notifications count
     async getUnreadCount(): Promise<number> {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/notifications/unread-count`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/notifications/my/count`, {
                 headers: this.getHeaders(),
             });
 
@@ -71,7 +72,7 @@ class NotificationService {
     // Mark a notification as read
     async markAsRead(notificationId: string): Promise<boolean> {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/notifications/mark-read`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/notifications/my/mark-read`, {
                 method: 'POST',
                 headers: this.getHeaders(),
                 body: JSON.stringify({
@@ -89,7 +90,7 @@ class NotificationService {
     // Mark all notifications as read
     async markAllAsRead(): Promise<boolean> {
         try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/notifications/mark-all-read`, {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/api/notifications/my/mark-all-read`, {
                 method: 'POST',
                 headers: this.getHeaders(),
             });

@@ -10,6 +10,7 @@ import { IncidentDetailPage } from "./pages/IncidentDetail/IncidentDetail";
 import { IncidentWorkspacePage } from "./pages/IncidentWorkspace/IncidentWorkspace";
 import { LawyerFinderPage } from "./pages/LawyerFinder/LawyerFinder";
 import { EvidenceVaultPage } from "./pages/EvidenceVault/EvidenceVault";
+import { EvidencePreview } from "./pages/EvidencePreview/EvidencePreview";
 import { LawbookPage } from "./pages/Lawbook/Lawbook";
 import { AuthPage } from "./pages/Auth/Auth";
 import { Settings } from "./pages/Settings/Settings";
@@ -118,6 +119,7 @@ function AppContent() {
         onBack={handleBackToDashboard}
       />
       <EvidenceVaultPage path="/evidence" onNavigate={handleNavigate} />
+      <EvidencePreview path="/evidence-preview/:id" />
       <LawbookPage path="/lawbook" onNavigate={handleNavigate} />
       <AIChatPage path="/ai-chat" onNavigate={handleNavigate} />
       <VerifyEmailPage path="/verify-email" />

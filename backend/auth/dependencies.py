@@ -80,42 +80,59 @@ def log_login_attempt(email, success, ip_address, user_agent, failure_reason, db
     db.add(attempt)
     db.commit()
 
-async def get_current_lawyer(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)):
+async def get_current_lawyer(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security), db: Session = Depends(get_db)):
     """
     Get the current authenticated lawyer from the JWT token.
+    Returns None if not a lawyer token or not authenticated.
     """
     from models.lawyers import Lawyer
+    
+    if not credentials:
+        return None
+        
     token = credentials.credentials
     
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    
-    payload = decode_token(token)
+    payload = decode_token(token, db)
     if payload is None:
-        raise credentials_exception
+        return None
     
     # Check if this is a lawyer token
     role = payload.get("role")
     if role != "lawyer":
-        raise HTTPException(status_code=403, detail="Not authorized as a lawyer")
+        return None
         
     lawyer_id: str = payload.get("sub")
     if lawyer_id is None:
-        raise credentials_exception
+        return None
         
     lawyer = db.query(Lawyer).filter(Lawyer.id == int(lawyer_id)).first()
-    if lawyer is None:
-        raise credentials_exception
-        
     return lawyer
 
-async def get_current_admin(current_user: User = Depends(get_current_user)):
+async def get_optional_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security), db: Session = Depends(get_db)) -> Optional[User]:
+    """
+    Get the current authenticated user from the JWT token.
+    Returns None if not authenticated.
+    """
+    if not credentials:
+        return None
+        
+    token = credentials.credentials
+    payload = decode_token(token, db)
+    if payload is None:
+        return None
+        
+    user_id: str = payload.get("sub")
+    if user_id is None:
+        return None
+        
+    user = db.query(User).filter(User.id == int(user_id)).first()
+    return user
+
+async def get_current_admin(current_user: Optional[User] = Depends(get_optional_current_user)) -> Optional[User]:
     """
     Verify the current user is an admin.
+    Returns None if not an admin or not authenticated.
     """
-    if current_user.role != "admin" and current_user.role != "superadmin":
-        raise HTTPException(status_code=403, detail="Not authorized as an admin")
-    return current_user
+    if current_user and (current_user.role == "admin" or current_user.role == "superadmin"):
+        return current_user
+    return None

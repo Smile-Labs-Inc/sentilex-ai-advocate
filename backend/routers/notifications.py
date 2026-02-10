@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 from typing import List, Optional, Union
 import logging
+import json
 
 from database.config import get_db
 from models.notification import RecipientTypeEnum, NotificationTypeEnum
@@ -11,7 +12,10 @@ from schemas.notification import (
     SendNotificationResponse, MarkAsReadRequest, NotificationQueryParams
 )
 from services.notification_service import create_notification_service
+from services.websocket_manager import get_notification_manager
 from auth.dependencies import get_current_user, get_current_lawyer, get_current_admin
+import jwt
+import os
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -340,3 +344,175 @@ def notify_case_update(
     except Exception as e:
         logger.error(f"Failed to send case update notification: {str(e)}")
         raise HTTPException(status_code=400, detail=str(e))
+
+
+# Test endpoint for development
+@router.post("/test/send", response_model=SendNotificationResponse)
+def send_test_notification(
+    message: str = "Test notification from backend",
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+    current_lawyer = Depends(get_current_lawyer),
+    current_admin = Depends(get_current_admin)
+):
+    """Send a test notification to the current user (for development/testing)"""
+    try:
+        user_id, user_type = get_user_info(current_user, current_lawyer, current_admin)
+        service = create_notification_service(user_type, db)
+        
+        notification = service.send(
+            recipient_id=user_id,
+            message=message,
+            title="Test Notification",
+            notification_type=NotificationTypeEnum.SYSTEM,
+            priority=2
+        )
+        
+        return SendNotificationResponse(
+            id=notification.id,
+            notification=NotificationResponse.from_orm(notification)
+        )
+        
+    except Exception as e:
+        logger.error(f"Failed to send test notification: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# Alias endpoints for frontend compatibility
+@router.get("/", response_model=NotificationListResponse)
+def get_notifications_alias(
+    page: int = Query(default=1, ge=1, description="Page number"),
+    page_size: int = Query(default=20, ge=1, le=100, description="Items per page"),
+    type: Optional[NotificationTypeEnum] = Query(None, description="Filter by notification type"),
+    include_read: bool = Query(default=True, description="Include read notifications"),
+    priority_min: Optional[int] = Query(None, ge=1, le=3, description="Minimum priority level"),
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+    current_lawyer = Depends(get_current_lawyer),
+    current_admin = Depends(get_current_admin)
+):
+    """Alias for /my endpoint - Get current user's notifications"""
+    return get_my_notifications(page, page_size, type, include_read, priority_min, db, current_user, current_lawyer, current_admin)
+
+
+@router.get("/unread-count", response_model=UnreadCountResponse)
+def get_unread_count_alias(
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+    current_lawyer = Depends(get_current_lawyer),
+    current_admin = Depends(get_current_admin)
+):
+    """Alias for /my/count endpoint - Get count of unread notifications"""
+    return get_unread_count(db, current_user, current_lawyer, current_admin)
+
+
+@router.post("/mark-read", response_model=BulkActionResponse)
+def mark_notifications_read_alias(
+    request: MarkAsReadRequest,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+    current_lawyer = Depends(get_current_lawyer),
+    current_admin = Depends(get_current_admin)
+):
+    """Alias for /my/mark-read endpoint - Mark specific notifications as read"""
+    return mark_notifications_read(request, db, current_user, current_lawyer, current_admin)
+
+
+@router.post("/mark-all-read", response_model=BulkActionResponse)
+def mark_all_notifications_read_alias(
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user),
+    current_lawyer = Depends(get_current_lawyer),
+    current_admin = Depends(get_current_admin)
+):
+    """Alias for /my/mark-all-read endpoint - Mark all notifications as read"""
+    return mark_all_notifications_read(db, current_user, current_lawyer, current_admin)
+
+
+# WebSocket endpoint for real-time notifications
+@router.websocket("/ws")
+async def websocket_endpoint(
+    websocket: WebSocket, 
+    token: str,
+    db: Session = Depends(get_db)
+):
+    """
+    WebSocket endpoint for real-time notifications.
+    
+    Usage:
+    - Connect to: ws://localhost:8000/api/notifications/ws?token=<jwt_token>
+    - The token should be the same JWT token used for API authentication
+    """
+    manager = get_notification_manager()
+    
+    # Verify JWT token and extract user info
+    try:
+        SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production-min-32-chars")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        
+        user_id = payload.get("sub")
+        user_type_raw = payload.get("user_type", "user")
+        
+        # Map user type from JWT to our enum format
+        user_type_mapping = {
+            "user": "user",
+            "lawyer": "lawyer", 
+            "admin": "admin"
+        }
+        user_type = user_type_mapping.get(user_type_raw, "user")
+        
+        if not user_id:
+            await websocket.close(code=4001, reason="Invalid token")
+            return
+            
+        # Connect to WebSocket manager
+        await manager.connect(websocket, user_type, int(user_id))
+        
+        try:
+            while True:
+                # Keep the connection alive and handle any incoming messages
+                data = await websocket.receive_text()
+                
+                # Parse incoming message (for potential future features like marking as read)
+                try:
+                    message = json.loads(data)
+                    
+                    # Handle ping/pong for connection health
+                    if message.get("type") == "ping":
+                        await websocket.send_text(json.dumps({"type": "pong"}))
+                    
+                    # Handle mark as read requests
+                    elif message.get("type") == "mark_as_read":
+                        notification_id = message.get("notification_id")
+                        if notification_id:
+                            # Create service and mark as read
+                            recipient_type = {
+                                "user": RecipientTypeEnum.USER,
+                                "lawyer": RecipientTypeEnum.LAWYER,
+                                "admin": RecipientTypeEnum.ADMIN
+                            }.get(user_type, RecipientTypeEnum.USER)
+                            
+                            service = create_notification_service(recipient_type, db)
+                            success = service.mark_as_read(int(notification_id), int(user_id))
+                            
+                            await websocket.send_text(json.dumps({
+                                "type": "mark_as_read_response",
+                                "success": success,
+                                "notification_id": notification_id
+                            }))
+                    
+                except json.JSONDecodeError:
+                    # Invalid JSON, ignore
+                    pass
+                    
+        except WebSocketDisconnect:
+            manager.disconnect(user_type, int(user_id))
+            
+    except jwt.PyJWTError:
+        await websocket.close(code=4001, reason="Invalid token")
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}")
+        try:
+            await websocket.close(code=4000, reason="Internal error")
+        except:
+            pass

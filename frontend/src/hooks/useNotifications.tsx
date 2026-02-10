@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback } from 'preact/hooks';
 import { notificationService } from '../services/notification';
+import { webSocketNotificationService, type WebSocketNotification } from '../services/websocket-notification';
 import type { Notification } from '../types';
 
 export interface UseNotificationsReturn {
@@ -34,6 +35,8 @@ export function useNotifications(): UseNotificationsReturn {
                 notificationService.getUnreadCount(),
             ]);
 
+            console.log('Loaded notifications:', notificationsData);
+            console.log('Unread count:', unreadCountData);
             setNotifications(notificationsData);
             setUnreadCount(unreadCountData);
         } catch (err) {
@@ -101,23 +104,109 @@ export function useNotifications(): UseNotificationsReturn {
         loadNotifications();
     }, [loadNotifications]);
 
-    // Auto-refresh every 5 minutes
+    // WebSocket setup and real-time notifications
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (!isLoading) {
+        // Connect to WebSocket for real-time notifications
+        const token = localStorage.getItem('token');
+        if (token) {
+            webSocketNotificationService.connect();
+
+            // Listen for new notifications
+            const handleNewNotification = (wsNotification: WebSocketNotification) => {
+                // Convert WebSocket notification to our Notification type
+                const notification: Notification = {
+                    id: wsNotification.id,
+                    title: wsNotification.title,
+                    message: wsNotification.message,
+                    timestamp: wsNotification.created_at,
+                    isRead: wsNotification.is_read,
+                    type: wsNotification.notification_type as any,
+                };
+
+                // Add to notifications list
+                setNotifications(prev => [notification, ...prev]);
+
+                // Update unread count if notification is unread
+                if (!wsNotification.is_read) {
+                    setUnreadCount(prev => prev + 1);
+                }
+
+                // Show browser notification if supported and permission granted
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification(wsNotification.title || 'New Notification', {
+                        body: wsNotification.message,
+                        icon: '/favicon.ico',
+                        tag: wsNotification.id, // Prevent duplicate notifications
+                    });
+                }
+            };
+
+            // Listen for mark as read responses
+            const handleMarkAsReadResponse = (data: { success: boolean; notification_id: string }) => {
+                if (data.success) {
+                    setNotifications(prev =>
+                        prev.map(notification =>
+                            notification.id === data.notification_id
+                                ? { ...notification, isRead: true }
+                                : notification
+                        )
+                    );
+                    setUnreadCount(prev => Math.max(0, prev - 1));
+                }
+            };
+
+            // Listen for connection events
+            const handleConnected = () => {
+                console.log('WebSocket notifications connected');
+                setError(null);
+            };
+
+            webSocketNotificationService.on('notification', handleNewNotification);
+            webSocketNotificationService.on('mark_as_read_response', handleMarkAsReadResponse);
+            webSocketNotificationService.on('connected', handleConnected);
+
+            // Cleanup on unmount
+            return () => {
+                webSocketNotificationService.off('notification', handleNewNotification);
+                webSocketNotificationService.off('mark_as_read_response', handleMarkAsReadResponse);
+                webSocketNotificationService.off('connected', handleConnected);
+                webSocketNotificationService.disconnect();
+            };
+        }
+
+        // Fallback: refresh every 2 minutes if WebSocket is not connected
+        const fallbackInterval = setInterval(() => {
+            if (!webSocketNotificationService.isConnected() && !isLoading) {
                 loadNotifications();
             }
-        }, 5 * 60 * 1000); // 5 minutes
+        }, 2 * 60 * 1000); // 2 minutes
 
-        return () => clearInterval(interval);
+        return () => clearInterval(fallbackInterval);
     }, [loadNotifications, isLoading]);
+
+    // Enhanced mark as read that uses WebSocket when available
+    const markAsReadEnhanced = useCallback(async (id: string) => {
+        try {
+            // Try WebSocket first for instant feedback
+            if (webSocketNotificationService.isConnected()) {
+                webSocketNotificationService.markAsRead(id);
+                // The response will be handled by the WebSocket listener
+            } else {
+                // Fallback to API call
+                await markAsRead(id);
+            }
+        } catch (err) {
+            // If WebSocket fails, try API call
+            await markAsRead(id);
+        }
+    }, [markAsRead]);
 
     return {
         notifications,
         unreadCount,
         isLoading,
         error,
-        markAsRead,
+        markAsRead: markAsReadEnhanced,
         markAllAsRead,
         refresh,
     };

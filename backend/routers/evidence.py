@@ -206,6 +206,45 @@ async def download_evidence(
     )
 
 
+@router.get("/{evidence_id}/preview", response_model=EvidenceDownloadResponse)
+async def preview_evidence(
+    evidence_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Generate a presigned URL for previewing evidence.
+    
+    Returns a temporary preview URL that expires in 1 hour.
+    Same as download but with a longer expiration for previewing.
+    """
+    
+    evidence = db.query(Evidence).join(Incident).filter(
+        Evidence.id == evidence_id,
+        Incident.user_id == current_user.id
+    ).first()
+    
+    if not evidence:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Evidence not found or you do not have permission to access it"
+        )
+    
+    # Generate presigned URL (expires in 1 hour = 3600 seconds)
+    from services.s3_service import generate_presigned_url
+    from datetime import timedelta
+    
+    preview_url = generate_presigned_url(evidence.file_key, expiration=3600)
+    expires_at = datetime.utcnow() + timedelta(seconds=3600)
+    
+    return EvidenceDownloadResponse(
+        download_url=preview_url,
+        expires_at=expires_at,
+        file_name=evidence.file_name,
+        file_size=evidence.file_size
+    )
+
+
 @router.delete("/{evidence_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_evidence(
     evidence_id: int,

@@ -3,6 +3,7 @@ from typing import List, Optional, Dict, Any, Union
 from sqlalchemy.orm import Session
 from datetime import datetime
 import json
+import asyncio
 
 from models.notification import Notification, RecipientTypeEnum, NotificationTypeEnum
 
@@ -72,6 +73,32 @@ class NotificationService(ABC):
         
         # Hook for subclasses to implement additional logic
         self._post_send_hook(notification)
+        
+        # Send WebSocket notification asynchronously
+        try:
+            # Import here to avoid circular imports
+            from services.websocket_manager import get_notification_manager
+            manager = get_notification_manager()
+            
+            # Schedule the WebSocket notification to be sent
+            import threading
+            def send_websocket():
+                try:
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    loop.run_until_complete(manager.send_notification(notification))
+                    loop.close()
+                except Exception as e:
+                    print(f"WebSocket send error: {e}")
+            
+            # Run in background thread to avoid blocking
+            thread = threading.Thread(target=send_websocket)
+            thread.daemon = True
+            thread.start()
+            
+        except Exception as e:
+            # Don't let WebSocket errors break the notification creation
+            print(f"Warning: Failed to send WebSocket notification: {e}")
         
         return notification
     
