@@ -1,9 +1,13 @@
 import { DashboardLayout } from '../../components/templates/DashboardLayout/DashboardLayout';
 import { EvidenceVaultGrid } from '../../components/organisms/EvidenceVaultGrid/EvidenceVaultGrid';
+import { EvidenceUploadModal } from '../../components/organisms/EvidenceUploadModal/EvidenceUploadModal';
 import { Button } from '../../components/atoms/Button/Button';
 import { Icon } from '../../components/atoms/Icon/Icon';
 import { useAuth } from '../../hooks/useAuth';
 import { useEvidenceVault } from '../../hooks/useEvidenceVault';
+import { downloadEvidence } from '../../services/evidence';
+import { useState, useEffect } from 'preact/hooks';
+import { getIncidents } from '../../services/incident';
 import type { NavItem } from '../../types';
 import type { Evidence } from '../../types';
 
@@ -19,7 +23,39 @@ export function EvidenceVaultPage({ onNavigate }: EvidenceVaultPageProps) {
         error,
         totalCount,
         deleteEvidence: deleteEvidenceById,
+        uploadEvidence: uploadEvidenceFiles,
     } = useEvidenceVault();
+
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    const [incidents, setIncidents] = useState<Array<{ id: number; title: string }>>([]);
+    const [incidentsLoading, setIncidentsLoading] = useState(true);
+
+    // Load incidents for the upload modal
+    useEffect(() => {
+        const loadIncidents = async () => {
+            try {
+                setIncidentsLoading(true);
+                const response = await getIncidents();
+                if (response && response.incidents) {
+                    setIncidents(
+                        response.incidents.map((incident: any) => ({
+                            id: incident.id,
+                            title: incident.title,
+                        }))
+                    );
+                }
+            } catch (err) {
+                console.error('Failed to load incidents:', err);
+                setIncidents([]);
+            } finally {
+                setIncidentsLoading(false);
+            }
+        };
+
+        if (user) {
+            loadIncidents();
+        }
+    }, [user]);
 
     if (!user) {
         return null;
@@ -32,6 +68,55 @@ export function EvidenceVaultPage({ onNavigate }: EvidenceVaultPageProps) {
             } catch (err) {
                 alert(err instanceof Error ? err.message : 'Failed to delete evidence');
             }
+        }
+    };
+
+    const handleView = (id: string) => {
+        const item = evidence.find(e => e.id.toString() === id);
+        if (!item) return;
+
+        // Open in new window/tab for preview
+        const previewUrl = `${window.location.origin}/evidence-preview/${id}`;
+        window.open(previewUrl, '_blank');
+    };
+
+    const handleDownload = async (id: string) => {
+        try {
+            const item = evidence.find(e => e.id.toString() === id);
+            if (!item) {
+                alert('Evidence not found');
+                return;
+            }
+
+            console.log('[EvidenceVault] Downloading evidence:', { id, fileName: item.file_name });
+            await downloadEvidence(parseInt(id));
+            console.log('[EvidenceVault] Download completed');
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to download evidence';
+            console.error('[EvidenceVault] Download failed:', errorMessage, err);
+            alert(`Download failed: ${errorMessage}`);
+        }
+    };
+
+    const handleUpload = async (files: File[], incidentId: number) => {
+        console.log('Starting upload:', { fileCount: files.length, incidentId, fileNames: files.map(f => f.name) });
+
+        // Debug: Check token
+        const token = localStorage.getItem('sentilex_auth_token');
+        console.log('[EvidenceVault] Token present:', !!token, 'Token length:', token?.length || 0);
+        if (token) {
+            console.log('[EvidenceVault] Token (first 20 chars):', token.substring(0, 20) + '...');
+        }
+
+        try {
+            await uploadEvidenceFiles(incidentId, files);
+            console.log('Upload successful');
+            alert('Evidence uploaded successfully!');
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to upload evidence';
+            console.error('Upload failed:', errorMessage, err);
+            alert(`Upload failed: ${errorMessage}`);
+            throw err;
         }
     };
 
@@ -75,7 +160,11 @@ export function EvidenceVaultPage({ onNavigate }: EvidenceVaultPageProps) {
                             Secure storage for all your case-related files and documentation.
                         </p>
                     </div>
-                    <Button className="gap-2 shadow-lg shadow-primary/20">
+                    <Button
+                        className="gap-2 shadow-lg shadow-primary/20"
+                        onClick={() => setIsUploadModalOpen(true)}
+                        disabled={incidentsLoading || incidents.length === 0}
+                    >
                         <Icon name="Upload" size="sm" />
                         Upload New Evidence
                     </Button>
@@ -137,10 +226,21 @@ export function EvidenceVaultPage({ onNavigate }: EvidenceVaultPageProps) {
                         <EvidenceVaultGrid
                             items={evidenceItems}
                             onDeleteItem={handleDelete}
+                            onViewItem={handleView}
+                            onDownloadItem={handleDownload}
                         />
                     )}
                 </div>
             </div>
+
+            {/* Upload Modal */}
+            <EvidenceUploadModal
+                isOpen={isUploadModalOpen}
+                onClose={() => setIsUploadModalOpen(false)}
+                onUpload={handleUpload}
+                incidents={incidents}
+                isLoading={incidentsLoading}
+            />
         </DashboardLayout>
     );
 }

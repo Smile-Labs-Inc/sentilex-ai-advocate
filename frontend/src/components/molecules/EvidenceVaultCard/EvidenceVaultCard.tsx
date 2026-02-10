@@ -6,10 +6,12 @@ import type { Evidence } from '../../../types';
 export interface EvidenceVaultCardProps {
     evidence: Evidence;
     onDelete?: (id: string) => void;
+    onView?: (id: string) => void;
+    onDownload?: (id: string) => void;
     className?: string;
 }
 
-export function EvidenceVaultCard({ evidence, onDelete, className }: EvidenceVaultCardProps) {
+export function EvidenceVaultCard({ evidence, onDelete, onView, onDownload, className }: EvidenceVaultCardProps) {
     const formatDate = (date: Date) => {
         return new Intl.DateTimeFormat('en-US', {
             month: 'short',
@@ -54,10 +56,22 @@ export function EvidenceVaultCard({ evidence, onDelete, className }: EvidenceVau
 
                 {/* Overlay actions */}
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
-                    <Button size="icon" variant="ghost" className="text-white hover:bg-white/20">
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="text-white hover:bg-white/20"
+                        onClick={() => onView?.(evidence.id)}
+                        title="View Evidence"
+                    >
                         <Icon name="Eye" size="sm" />
                     </Button>
-                    <Button size="icon" variant="ghost" className="text-white hover:bg-white/20">
+                    <Button
+                        size="icon"
+                        variant="ghost"
+                        className="text-white hover:bg-white/20"
+                        onClick={() => onDownload?.(evidence.id)}
+                        title="Download Evidence"
+                    >
                         <Icon name="Download" size="sm" />
                     </Button>
                 </div>

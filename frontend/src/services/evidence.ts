@@ -154,3 +154,117 @@ export function getEvidenceDownloadUrl(evidenceId: number): string {
   const token = getAuthToken();
   return `${API_BASE_URL}/evidence/${evidenceId}/download?token=${token}`;
 }
+
+/**
+ * Get preview URL for evidence file.
+ */
+export function getEvidencePreviewUrl(evidenceId: number): string {
+  const token = getAuthToken();
+  return `${API_BASE_URL}/evidence/${evidenceId}/preview?token=${token}`;
+}
+
+/**
+ * Download evidence file directly - gets presigned URL from API then redirects to S3.
+ */
+export async function downloadEvidence(evidenceId: number): Promise<void> {
+  const token = getAuthToken();
+
+  if (!token) {
+    throw new Error("User is not authenticated");
+  }
+
+  console.log('[evidence.downloadEvidence] Requesting download URL for evidence:', evidenceId);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/evidence/${evidenceId}/download`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.detail || `Failed to get download URL: ${response.status}`,
+      );
+    }
+
+    const data: { download_url: string } = await response.json();
+    console.log('[evidence.downloadEvidence] Received download URL, redirecting...');
+
+    // Redirect to the presigned S3 URL
+    window.location.href = data.download_url;
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Failed to download evidence';
+    console.error('[evidence.downloadEvidence] Error:', errorMessage);
+    throw new Error(errorMessage);
+  }
+}
+
+/**
+ * Upload evidence files for a specific incident.
+ */
+export async function uploadEvidenceToIncident(
+  incidentId: number,
+  files: File[],
+): Promise<any> {
+  const token = getAuthToken();
+
+  console.log('uploadEvidenceToIncident called:', {
+    incidentId,
+    fileCount: files.length,
+    tokenPresent: !!token,
+    tokenLength: token?.length,
+    TOKEN_STORAGE_KEY: APP_CONFIG.TOKEN_STORAGE_KEY,
+  });
+
+  if (!token) {
+    const storedToken = localStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
+    console.error('No token found!', {
+      getAuthTokenResult: token,
+      directStorageResult: storedToken,
+      allStorageKeys: Object.keys(localStorage),
+    });
+    throw new Error("User is not authenticated");
+  }
+
+  const formData = new FormData();
+  files.forEach((file) => {
+    formData.append("files", file);
+  });
+
+  const endpoint = `${API_BASE_URL}/incidents/${incidentId}/evidence`;
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  console.log('Uploading to API:', {
+    endpoint,
+    fileCount: files.length,
+    fileNames: files.map(f => f.name),
+    totalSize: files.reduce((sum, f) => sum + f.size, 0),
+    headers: { Authorization: `Bearer ${token.substring(0, 20)}...` },
+  });
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+
+  console.log('API response:', { status: response.status, statusText: response.statusText });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    console.error('API error response:', errorData);
+    throw new Error(
+      errorData.detail || `Failed to upload evidence: ${response.status}`,
+    );
+  }
+
+  const result = await response.json();
+  console.log('Upload result:', result);
+  return result;
+}

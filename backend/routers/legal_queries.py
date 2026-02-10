@@ -15,7 +15,7 @@ from chains import invoke_chain
 from mcp_server.mcp_client import get_mcp_client
 
 
-router = APIRouter(prefix="/api/legal", tags=["Legal Queries"])
+router = APIRouter(prefix="/legal", tags=["Legal Queries"])
 
 
 # Request/Response models

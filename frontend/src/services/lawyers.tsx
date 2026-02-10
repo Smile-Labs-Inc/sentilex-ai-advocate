@@ -105,7 +105,7 @@ class LawyerService {
    */
   async searchLawyers(params?: LawyerSearchParams): Promise<Lawyer[]> {
     try {
-      const url = new URL(`${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.LIST}`);
+      const url = new URL(`${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.LIST}`, window.location.origin);
 
       if (params?.district) {
         url.searchParams.append('district', params.district);

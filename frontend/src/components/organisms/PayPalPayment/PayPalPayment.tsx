@@ -34,20 +34,22 @@ export function PayPalPayment({
             shape: "rect",
             label: "paypal",
           }}
-          createOrder={(data, actions) => {
+          createOrder={(_data, actions) => {
             setIsPaying(true);
             return actions.order.create({
+              intent: "CAPTURE",
               purchase_units: [
                 {
                   description: planName,
                   amount: {
+                    currency_code: "USD",
                     value: amount,
                   },
                 },
               ],
             });
           }}
-          onApprove={async (data, actions) => {
+          onApprove={async (_data, actions) => {
             try {
               const details = await actions.order!.capture();
               console.log("Payment successful:", details);

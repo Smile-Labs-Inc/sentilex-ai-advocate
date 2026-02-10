@@ -24,7 +24,7 @@ from services.chat_service import ChatService
 # Import your AI chain/agent here
 from chains import invoke_chain
 
-router = APIRouter(prefix="/api/chat", tags=["chat"])
+router = APIRouter(prefix="/chat", tags=["chat"])
 
 # ============================================================================
 # Main Chat Endpoint (Auto-saves history like ChatGPT)
