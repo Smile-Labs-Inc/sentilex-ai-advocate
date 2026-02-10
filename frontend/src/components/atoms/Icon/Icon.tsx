@@ -42,7 +42,7 @@ export function Icon({
         <LucideIcon
             size={sizeMap[size]}
             strokeWidth={strokeWidth}
-            className={cn('flex-shrink-0', className)}
+            className={cn('shrink-0', className)}
             {...props}
         />
     );

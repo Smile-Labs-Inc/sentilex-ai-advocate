@@ -11,6 +11,7 @@ import {
   type EvidenceItem,
   type EvidenceFilters,
 } from "../services/evidence";
+import { uploadEvidence as uploadEvidenceAPI } from "../services/incident";
 
 export interface UseEvidenceVaultReturn {
   evidence: EvidenceItem[];
@@ -21,6 +22,7 @@ export interface UseEvidenceVaultReturn {
   setFilters: (filters: EvidenceFilters) => void;
   deleteEvidence: (id: number) => Promise<void>;
   refreshEvidence: () => Promise<void>;
+  uploadEvidence: (incidentId: number, files: File[]) => Promise<void>;
 }
 
 export function useEvidenceVault(): UseEvidenceVaultReturn {
@@ -65,6 +67,18 @@ export function useEvidenceVault(): UseEvidenceVaultReturn {
     await fetchEvidence();
   };
 
+  const uploadEvidenceFiles = async (incidentId: number, files: File[]) => {
+    try {
+      await uploadEvidenceAPI(incidentId, files);
+      // Refresh the list after upload
+      await fetchEvidence();
+    } catch (err) {
+      throw new Error(
+        err instanceof Error ? err.message : "Failed to upload evidence",
+      );
+    }
+  };
+
   return {
     evidence,
     isLoading,
@@ -74,5 +88,6 @@ export function useEvidenceVault(): UseEvidenceVaultReturn {
     setFilters,
     deleteEvidence,
     refreshEvidence,
+    uploadEvidence: uploadEvidenceFiles,
   };
 }

@@ -9,13 +9,15 @@ import type { Evidence } from '../../../types';
 export interface EvidenceVaultGridProps {
     items: Evidence[];
     onDeleteItem: (id: string) => void;
+    onViewItem?: (id: string) => void;
+    onDownloadItem?: (id: string) => void;
     className?: string;
 }
 
 type SortOption = 'date-desc' | 'date-asc' | 'size-desc' | 'name-asc';
 type FilterType = 'all' | 'image' | 'video' | 'document' | 'audio';
 
-export function EvidenceVaultGrid({ items, onDeleteItem, className }: EvidenceVaultGridProps) {
+export function EvidenceVaultGrid({ items, onDeleteItem, onViewItem, onDownloadItem, className }: EvidenceVaultGridProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [sortOption] = useState<SortOption>('date-desc');
     const [filterType, setFilterType] = useState<FilterType>('all');
@@ -123,6 +125,8 @@ export function EvidenceVaultGrid({ items, onDeleteItem, className }: EvidenceVa
                             key={item.id}
                             evidence={item}
                             onDelete={onDeleteItem}
+                            onView={onViewItem}
+                            onDownload={onDownloadItem}
                             className={isViewModeList ? 'flex-row h-24' : ''} // basic handling for list view adaptation if card supports it, else grid
                         />
                     ))}

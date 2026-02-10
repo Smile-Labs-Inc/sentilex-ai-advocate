@@ -5,6 +5,19 @@
 // Re-export auth types
 export * from "./auth";
 
+// =============================================================================
+// Notification Types
+// =============================================================================
+
+export interface Notification {
+  id: string;
+  title?: string;
+  message: string;
+  timestamp: string;
+  isRead: boolean;
+  type?: 'system' | 'case' | 'legal' | 'account';
+}
+
 export type IncidentType =
   | "cyberbullying"
   | "harassment"
@@ -144,13 +157,13 @@ export interface Evidence {
 export interface TimelineEventEditable {
   id: string;
   type:
-    | "incident"
-    | "evidence"
-    | "communication"
-    | "threat"
-    | "report"
-    | "ai-suggestion"
-    | "custom";
+  | "incident"
+  | "evidence"
+  | "communication"
+  | "threat"
+  | "report"
+  | "ai-suggestion"
+  | "custom";
   title: string;
   description: string;
   timestamp: Date;

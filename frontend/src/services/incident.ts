@@ -275,6 +275,7 @@ export async function uploadEvidence(
   files: File[],
 ): Promise<EvidenceResponse[]> {
   const token = getAuthToken();
+  console.log('[incident.uploadEvidence] Token retrieved:', !!token, token?.length || 0);
 
   if (!token) {
     throw new Error("User is not authenticated");
@@ -284,6 +285,9 @@ export async function uploadEvidence(
   files.forEach((file) => {
     formData.append("files", file);
   });
+
+  console.log('[incident.uploadEvidence] Making request to:', `${API_BASE_URL}/incidents/${incidentId}/evidence`);
+  console.log('[incident.uploadEvidence] Token (first 20 chars):', token.substring(0, 20) + '...');
 
   const response = await fetch(
     `${API_BASE_URL}/incidents/${incidentId}/evidence`,
@@ -295,6 +299,8 @@ export async function uploadEvidence(
       body: formData,
     },
   );
+
+  console.log('[incident.uploadEvidence] Response status:', response.status);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
