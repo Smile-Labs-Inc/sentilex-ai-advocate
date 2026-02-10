@@ -170,8 +170,8 @@ Next Steps:environment (.env):
 
 4. Run the system:
    - Start server: python app.py
-   - API docs: http://localhost:8000/docs
-   - ReDoc: http://localhost:8000/redoc
+   - API docs: http://localhost:8001/docs
+   - ReDoc: http://localhost:8001/redoc
 
 5. Read the documentation:
    - Database Setup: DATABASE_SETUP.md
@@ -181,7 +181,7 @@ Next Steps:environment (.env):
    - README: README.md
    - System diagram: SYSTEM_DIAGRAM.md
 
-For help, visit: http://localhost:8000/docs
+For help, visit: http://localhost:8001/docs
     """)
 
 
