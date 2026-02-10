@@ -23,7 +23,7 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
         {
             id: 'msg_welcome',
             role: 'assistant',
-            content: 'Hello! I am your legal assistant. I can help explain complex terms or guide you to the right section. What information are you looking for today?',
+            content: 'Hello! I know every page of the Lawbook. Don\'t scroll just tell me what you\'re looking for, and I\'ll take you there.',
             timestamp: new Date()
         }
     ]);

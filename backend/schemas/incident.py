@@ -122,8 +122,10 @@ class EvidenceResponse(BaseModel):
     """Schema for evidence responses."""
     id: int
     incident_id: int
+    occurrence_id: Optional[int] = None
     file_name: str
-    file_path: str
+    file_key: Optional[str] = None
+    file_hash: Optional[str] = None
     file_type: Optional[str]
     file_size: Optional[int]
     uploaded_at: datetime

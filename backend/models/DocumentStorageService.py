@@ -5,6 +5,7 @@ from typing import Tuple
 from fastapi import UploadFile, HTTPException
 import boto3
 from botocore.exceptions import ClientError
+from services.s3_service import get_s3_client
 
 # Import settings from config
 import sys
@@ -13,7 +14,7 @@ from config import settings
 
 class DocumentStorageService:
     """
-    Handles secure document storage with S3/MinIO.
+    Handles secure document storage with S3.
     Legal requirements:
     - Private storage only
     - SHA-256 hashing for integrity
@@ -21,13 +22,7 @@ class DocumentStorageService:
     - Signed URLs for temporary access
     """
     def __init__(self):
-        self.s3_client = boto3.client(
-            's3',
-            endpoint_url=settings.S3_ENDPOINT_URL,
-            aws_access_key_id=settings.S3_ACCESS_KEY,
-            aws_secret_access_key=settings.S3_SECRET_KEY,
-            region_name=settings.S3_REGION_NAME
-        )
+        self.s3_client = get_s3_client()
         self.bucket_name = settings.S3_BUCKET_NAME
         self.max_file_size = 10*1024*1024 # 10 MB
         self.allowed_extensions = {'.pdf', '.jpg', '.jpeg', '.png'}

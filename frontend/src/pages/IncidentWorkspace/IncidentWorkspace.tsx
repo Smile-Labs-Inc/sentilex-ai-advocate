@@ -10,20 +10,23 @@ import { EvidenceSection } from '../../components/organisms/EvidenceSection/Evid
 import { EnhancedLawsSection } from '../../components/organisms/EnhancedLawsSection/EnhancedLawsSection';
 import { AIChatSection } from '../../components/organisms/AIChatSection/AIChatSection';
 import { SubmitConfirmationModal } from '../../components/organisms/SubmitConfirmationModal/SubmitConfirmationModal';
+import { OccurrenceModal } from '../../components/organisms/OccurrenceModal/OccurrenceModal';
 import { SubmitToPoliceButton } from '../../components/molecules/SubmitToPoliceButton/SubmitToPoliceButton';
 import { FindLawyersButton } from '../../components/molecules/FindLawyersButton/FindLawyersButton';
+import { ExportButton } from '../../components/molecules/ExportButton/ExportButton';
 import { Card, CardHeader, CardTitle } from '../../components/atoms/Card/Card';
 import { Button } from '../../components/atoms/Button/Button';
 import { Icon } from '../../components/atoms/Icon/Icon';
 import { Badge, getStatusVariant, getStatusLabel } from '../../components/atoms/Badge/Badge';
 import { useIncidentWorkspace } from '../../hooks/useIncidentWorkspace';
-import type { NavItem } from '../../types';
+import type { NavItem, Incident } from '../../types';
 import type { UserProfile } from '../../types/auth';
 import type { WizardData } from '../../components/organisms/OnboardingWizard/OnboardingWizard';
 
 export interface IncidentWorkspacePageProps {
     user: UserProfile;
     wizardData?: WizardData;
+    incident?: Incident;  // For loading existing incidents
     onNavigate: (item: NavItem) => void;
     onBack: () => void;
     onFindLawyers: () => void;
@@ -32,6 +35,7 @@ export interface IncidentWorkspacePageProps {
 export function IncidentWorkspacePage({
     user,
     wizardData,
+    incident: existingIncident,
     onNavigate,
     onBack,
     onFindLawyers,
@@ -52,9 +56,11 @@ export function IncidentWorkspacePage({
         sendMessage,
         chatMessages,
         isChatLoading,
-    } = useIncidentWorkspace(wizardData);
+        refreshIncident,
+    } = useIncidentWorkspace(wizardData, existingIncident);
 
     const [showSubmitModal, setShowSubmitModal] = useState(false);
+    const [showOccurrenceModal, setShowOccurrenceModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -129,10 +135,18 @@ export function IncidentWorkspacePage({
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <Button variant="outline" size="sm">
-                            <Icon name="Download" size="xs" />
-                            Export
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowOccurrenceModal(true)}
+                        >
+                            <Icon name="Plus" size="xs" />
+                            Record Occurrence
                         </Button>
+                        <ExportButton
+                            incidentId={parseInt(incident.id.replace('inc_', ''))}
+                            variant="outline"
+                        />
                         <Button
                             variant="secondary"
                             size="sm"
@@ -264,7 +278,19 @@ export function IncidentWorkspacePage({
                 onCancel={() => setShowSubmitModal(false)}
                 isSubmitting={isSubmitting}
             />
-        </DashboardLayout>
+
+            {/* Occurrence modal */}
+            <OccurrenceModal
+                incidentId={parseInt(incident.id.replace('inc_', ''))}
+                isOpen={showOccurrenceModal}
+                onClose={() => setShowOccurrenceModal(false)}
+                onOccurrenceCreated={async () => {
+                    setShowOccurrenceModal(false);
+                    await refreshIncident();
+                    console.log('Occurrence created successfully description timeline refreshed');
+                }}
+            />
+        </DashboardLayout >
     );
 }
 

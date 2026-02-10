@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Police Statement - {{ incident.title }}</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 2cm;
+        @top-center {
+          content: "Police Statement - Cybercrime Report";
+          font-size: 10pt;
+          color: #666;
+        }
+        @bottom-center {
+          content: "Page " counter(page) " of " counter(pages);
+          font-size: 9pt;
+          color: #666;
+        }
+      }
+
+      body {
+        font-family: "Times New Roman", serif;
+        font-size: 12pt;
+        line-height: 1.6;
+        color: #000;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 15px;
+      }
+
+      .header h1 {
+        margin: 0;
+        font-size: 18pt;
+        font-weight: bold;
+      }
+
+      .header .subtitle {
+        font-size: 11pt;
+        color: #333;
+        margin-top: 5px;
+      }
+
+      .section {
+        margin-bottom: 25px;
+        page-break-inside: avoid;
+      }
+
+      .section-title {
+        font-size: 14pt;
+        font-weight: bold;
+        border-bottom: 1px solid #333;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+      }
+
+      .field {
+        margin-bottom: 10px;
+      }
+
+      .field-label {
+        font-weight: bold;
+        display: inline-block;
+        width: 180px;
+      }
+
+      .field-value {
+        display: inline;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background-color: #f0f0f0;
+        font-weight: bold;
+      }
+
+      .timeline-event {
+        margin-bottom: 15px;
+        padding-left: 20px;
+        border-left: 3px solid #666;
+      }
+
+      .timeline-date {
+        font-weight: bold;
+        color: #000;
+      }
+
+      .signature-section {
+        margin-top: 50px;
+        page-break-inside: avoid;
+      }
+
+      .signature-line {
+        margin-top: 40px;
+        border-top: 1px solid #000;
+        width: 300px;
+        padding-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>POLICE STATEMENT</h1>
+      <div class="subtitle">Cybercrime Incident Report</div>
+      <div class="subtitle">Sri Lanka Police - Cybercrime Division</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Report Information</div>
+      <div class="field">
+        <span class="field-label">Report Number:</span>
+        <span class="field-value">{{ incident.id }}</span>
+      </div>
+      <div class="field">
+        <span class="field-label">Date Filed:</span>
+        <span class="field-value"
+          >{{ incident.created_at.strftime('%d %B %Y, %I:%M %p') }}</span
+        >
+      </div>
+      <div class="field">
+        <span class="field-label">Status:</span>
+        <span class="field-value">{{ incident.status|upper }}</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Complainant Information</div>
+      <div class="field">
+        <span class="field-label">Name:</span>
+        <span class="field-value">{{ user.full_name }}</span>
+      </div>
+      <div class="field">
+        <span class="field-label">Email:</span>
+        <span class="field-value">{{ user.email }}</span>
+      </div>
+      <div class="field">
+        <span class="field-label">Phone:</span>
+        <span class="field-value"
+          >{{ user.phone_number or 'Not provided' }}</span
+        >
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Incident Details</div>
+      <div class="field">
+        <span class="field-label">Incident Type:</span>
+        <span class="field-value"
+          >{{ incident.incident_type|replace('_', ' ')|title }}</span
+        >
+      </div>
+      <div class="field">
+        <span class="field-label">Title:</span>
+        <span class="field-value">{{ incident.title }}</span>
+      </div>
+      <div class="field">
+        <span class="field-label">Date Occurred:</span>
+        <span class="field-value"
+          >{{ incident.date_occurred or 'Not specified' }}</span
+        >
+      </div>
+      <div class="field">
+        <span class="field-label">Location:</span>
+        <span class="field-value"
+          >{{ incident.location or 'Not specified' }}</span
+        >
+      </div>
+      <div class="field">
+        <span class="field-label">Jurisdiction:</span>
+        <span class="field-value"
+          >{{ incident.jurisdiction or 'Not specified' }}</span
+        >
+      </div>
+      <div class="field">
+        <span class="field-label">Platforms Involved:</span>
+        <span class="field-value"
+          >{{ incident.platforms_involved or 'Not specified' }}</span
+        >
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Detailed Description</div>
+      <p>{{ incident.description }}</p>
+
+      {% if incident.perpetrator_info %}
+      <div style="margin-top: 15px">
+        <strong>Perpetrator Information:</strong><br />
+        {{ incident.perpetrator_info }}
+      </div>
+      {% endif %}
+    </div>
+
+    {% if evidence_list %}
+    <div class="section">
+      <div class="section-title">Evidence Summary</div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>File Name</th>
+            <th>Type</th>
+            <th>Size</th>
+            <th>Upload Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for evidence in evidence_list %}
+          <tr>
+            <td>{{ evidence.id }}</td>
+            <td>{{ evidence.file_name }}</td>
+            <td>{{ evidence.file_type or 'Unknown' }}</td>
+            <td>
+              {{ (evidence.file_size / 1024)|round(2) if evidence.file_size else
+              'N/A' }} KB
+            </td>
+            <td>{{ evidence.uploaded_at.strftime('%d %B %Y') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p style="margin-top: 10px; font-size: 10pt; color: #666">
+        Total Evidence Files: {{ evidence_list|length }}
+      </p>
+    </div>
+    {% endif %} {% if occurrences %}
+    <div class="section">
+      <div class="section-title">Timeline of Events</div>
+      {% for occurrence in occurrences %}
+      <div class="timeline-event">
+        <div class="timeline-date">
+          {{ occurrence.date_occurred }} - {{ occurrence.title }}
+        </div>
+        <p>{{ occurrence.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="section">
+      <div class="section-title">Statement</div>
+      <p>
+        I, {{ user.full_name }}, hereby declare that the information provided in
+        this statement is true and accurate to the best of my knowledge. I
+        understand that providing false information to law enforcement is a
+        criminal offense.
+      </p>
+      <p>
+        I request the Sri Lanka Police to investigate this matter and take
+        appropriate legal action against the perpetrator(s) involved in this
+        cybercrime incident.
+      </p>
+    </div>
+
+    <div class="signature-section">
+      <div class="field">
+        <span class="field-label">Complainant Signature:</span>
+      </div>
+      <div class="signature-line">{{ user.full_name }}</div>
+
+      <div class="field" style="margin-top: 30px">
+        <span class="field-label">Date:</span>
+        <span class="field-value">{{ now.strftime('%d %B %Y') }}</span>
+      </div>
+    </div>
+
+    <div
+      style="margin-top: 50px; font-size: 9pt; color: #666; text-align: center"
+    >
+      <p>
+        This document was generated electronically by the Sentilex AI Advocate
+        System
+      </p>
+      <p>
+        For verification, please contact the Sri Lanka Police Cybercrime
+        Division
+      </p>
+    </div>
+  </body>
+</html>

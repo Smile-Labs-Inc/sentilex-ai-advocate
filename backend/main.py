@@ -14,10 +14,12 @@ from database.config import check_db_connection, Base, engine
 from models.user import User
 from models.lawyers import Lawyer
 from models.admin import Admin
+
 from models.session_chat import SessionChatMessage, ChatSession
 from models.token_blacklist import TokenBlacklist
 from models.login_attempt import LoginAttempt
 from models.active_session import ActiveSession
+from models.occurrence import Occurrence
 
 from schemas.messages import UserQuery, SynthesizerOutput, RefusalOutput
 from chains import invoke_chain
@@ -31,6 +33,9 @@ from routers import lawyer_verification
 from routers import payments
 from routers import legal_queries
 from routers import incidents
+from routers import occurrences
+from routers import evidence
+# from routers import documents
 from routers import case_agent
 from routers import chat
 from mcp_server.mcp_client import get_mcp_client
@@ -82,24 +87,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-app.include_router(lawyers.router)
-app.include_router(auth.router)
-app.include_router(admin_auth.router)
-app.include_router(google_oauth.router)
-app.include_router(lawbook.router)
-app.include_router(lawyer_verification.router)
-app.include_router(legal_queries.router)
-app.include_router(incidents.router)
-app.include_router(case_agent.router)
-app.include_router(chat.router)
-app.include_router(payments.router)
-
-
-# Session Middleware for OAuth (must be added before CORS)
-SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production-min-32-chars")
-app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
-
-# CORS Configuration
+# CORS Configuration (MUST be added BEFORE routers)
 origins = [
     "http://localhost:3000",
     "http://localhost:5173",
@@ -113,6 +101,27 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Session Middleware for OAuth (added after CORS)
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production-min-32-chars")
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+
+# Include all routers AFTER middleware
+app.include_router(lawyers.router)
+app.include_router(auth.router)
+app.include_router(admin_auth.router)
+app.include_router(google_oauth.router)
+app.include_router(lawbook.router)
+app.include_router(lawyer_verification.router)
+app.include_router(legal_queries.router)
+app.include_router(incidents.router)
+app.include_router(occurrences.router)
+app.include_router(evidence.router)
+# app.include_router(documents.router)
+app.include_router(case_agent.router)
+app.include_router(chat.router)
+app.include_router(payments.router)
+
 
 
 @app.get("/")
@@ -136,7 +145,12 @@ async def health_check():
     }
 
 def main():
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run(
+        "main:app", 
+        host="127.0.0.1", 
+        port=8000, 
+        reload=True
+    )
 
 
 if __name__ == "__main__":

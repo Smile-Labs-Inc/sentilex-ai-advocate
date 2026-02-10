@@ -22,9 +22,9 @@ class IncidentChatHistory(BaseChatMessageHistory):
     @property
     def messages(self) -> List[BaseMessage]:
         rows = (
-            self.session.query(ChatMessage)
-            .filter(ChatMessage.incident_id == self.incident_id)
-            .order_by(ChatMessage.created_at.asc())
+            self.session.query(IncidentChatMessage)
+            .filter(IncidentChatMessage.incident_id == self.incident_id)
+            .order_by(IncidentChatMessage.created_at.asc())
             .all()
         )
         return [
@@ -35,7 +35,7 @@ class IncidentChatHistory(BaseChatMessageHistory):
 
     def add_message(self, message: BaseMessage) -> None:
         role = "user" if isinstance(message, HumanMessage) else "assistant"
-        row = ChatMessage(
+        row = IncidentChatMessage(
             incident_id=self.incident_id, 
             role=role, 
             content=message.content
@@ -45,8 +45,8 @@ class IncidentChatHistory(BaseChatMessageHistory):
 
     def clear(self) -> None:
         """Clear all messages for this incident."""
-        self.session.query(ChatMessage).filter(
-            ChatMessage.incident_id == self.incident_id
+        self.session.query(IncidentChatMessage).filter(
+            IncidentChatMessage.incident_id == self.incident_id
         ).delete()
         self.session.commit()
 
@@ -61,9 +61,9 @@ class UserGlobalChatHistory(BaseChatMessageHistory):
     @property
     def messages(self) -> List[BaseMessage]:
         rows = (
-            self.session.query(ChatMessage)
-            .filter(ChatMessage.user_id == self.user_id)
-            .order_by(ChatMessage.created_at.asc())
+            self.session.query(IncidentChatMessage)
+            .filter(IncidentChatMessage.user_id == self.user_id)
+            .order_by(IncidentChatMessage.created_at.asc())
             .all()
         )
         return [
@@ -74,7 +74,7 @@ class UserGlobalChatHistory(BaseChatMessageHistory):
 
     def add_message(self, message: BaseMessage) -> None:
         role = "user" if isinstance(message, HumanMessage) else "assistant"
-        row = ChatMessage(
+        row = IncidentChatMessage(
             user_id=self.user_id, 
             role=role, 
             content=message.content
@@ -84,7 +84,7 @@ class UserGlobalChatHistory(BaseChatMessageHistory):
 
     def clear(self) -> None:
         """Clear all messages for this user."""
-        self.session.query(ChatMessage).filter(
-            ChatMessage.user_id == self.user_id
+        self.session.query(IncidentChatMessage).filter(
+            IncidentChatMessage.user_id == self.user_id
         ).delete()
         self.session.commit()
