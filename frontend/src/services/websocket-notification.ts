@@ -7,10 +7,10 @@ import { API_CONFIG, APP_CONFIG } from "../config";
 
 export interface WebSocketMessage {
   type:
-    | "notification"
-    | "connection_established"
-    | "pong"
-    | "mark_as_read_response";
+  | "notification"
+  | "connection_established"
+  | "pong"
+  | "mark_as_read_response";
   data?: any;
   message?: string;
   notification_id?: string;
@@ -41,10 +41,6 @@ class WebSocketNotificationService {
 
   connect(): void {
     const token = localStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
-    if (!token) {
-      console.warn("No auth token available for WebSocket connection");
-      return;
-    }
 
     try {
       // Convert HTTP URL to WebSocket URL

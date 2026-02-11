@@ -7,6 +7,7 @@ import { cn } from '../../../lib/utils';
 import { Badge, getStatusVariant, getStatusLabel } from '../../atoms/Badge/Badge';
 import { Icon, type IconName } from '../../atoms/Icon/Icon';
 import { StatusDot } from '../../atoms/StatusDot/StatusDot';
+import { Button } from '../../atoms/Button/Button';
 import type { Incident, IncidentType } from '../../../types';
 import { getRelativeTime } from '../../../data/mockData';
 import type { JSX } from 'preact';
@@ -14,6 +15,7 @@ import type { JSX } from 'preact';
 export interface IncidentRowProps {
     incident: Incident;
     onClick?: (incident: Incident) => void;
+    onDelete?: (incident: Incident) => void;
     className?: string;
     style?: JSX.CSSProperties;
 }
@@ -48,8 +50,13 @@ const statusToDot: Record<string, 'pending' | 'progress' | 'resolved' | 'submitt
     'submitted-to-police': 'submitted',
 };
 
-export function IncidentRow({ incident, onClick, className, style }: IncidentRowProps) {
+export function IncidentRow({ incident, onClick, onDelete, className, style }: IncidentRowProps) {
     const iconName = typeIconMap[incident.type] || 'FileText';
+
+    const handleDelete = (e: Event) => {
+        e.stopPropagation(); // Prevent row click
+        onDelete?.(incident);
+    };
 
     return (
         <div
@@ -85,7 +92,7 @@ export function IncidentRow({ incident, onClick, className, style }: IncidentRow
             </div>
 
             {/* Status Badge */}
-            <Badge variant={getStatusVariant(incident.status)}>
+            <Badge variant={getStatusVariant(incident.status)} size="sm">
                 <StatusDot
                     status={statusToDot[incident.status]}
                     size="sm"
@@ -98,6 +105,19 @@ export function IncidentRow({ incident, onClick, className, style }: IncidentRow
             <div className="text-xs text-muted-foreground text-right min-w-[80px]">
                 {getRelativeTime(incident.updatedAt)}
             </div>
+
+            {/* Delete Button */}
+            {onDelete && (
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleDelete}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
+                    title="Delete incident"
+                >
+                    <Icon name="Trash2" size="sm" />
+                </Button>
+            )}
 
             {/* Arrow */}
             <Icon

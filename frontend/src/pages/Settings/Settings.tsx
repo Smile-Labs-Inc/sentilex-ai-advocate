@@ -145,7 +145,7 @@ export function Settings() {
             const status = await authService.getMFAStatus();
             setMfaStatus(status);
         } catch (error) {
-            console.error('Failed to load MFA status:', error);
+            // Failed to load MFA status
         }
     };
 
@@ -214,7 +214,7 @@ export function Settings() {
             const data = await authService.getActiveSessions();
             setSessions(data.sessions);
         } catch (error) {
-            console.error('Failed to load sessions:', error);
+            // Failed to load sessions
         }
     };
 

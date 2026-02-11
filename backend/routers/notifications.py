@@ -20,7 +20,7 @@ import os
 # Set up logging
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/notifications", tags=["Notifications"])
+router = APIRouter(prefix="/api/notifications", tags=["Notifications"])
 
 
 # Helper functions for getting current user info

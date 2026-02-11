@@ -5,6 +5,7 @@
 import { useState } from "preact/hooks";
 import Router, { route } from "preact-router";
 import { Dashboard } from "./pages/Dashboard/Dashboard";
+import { IncidentsPage } from "./pages/Incidents/Incidents";
 import { NewIncidentPage } from "./pages/NewIncident/NewIncident";
 import { IncidentDetailPage } from "./pages/IncidentDetail/IncidentDetail";
 import { IncidentWorkspacePage } from "./pages/IncidentWorkspace/IncidentWorkspace";
@@ -16,6 +17,7 @@ import { AuthPage } from "./pages/Auth/Auth";
 import { Settings } from "./pages/Settings/Settings";
 import { AIChatPage } from "./pages/AIChat/AIChat";
 import { VerifyEmailPage } from "./pages/VerifyEmail/VerifyEmail";
+import { ResetPasswordPage } from "./pages/ResetPassword/ResetPassword";
 import { ThemeProvider } from "./hooks/useTheme";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import type { Incident, NavItem } from "./types";
@@ -41,18 +43,26 @@ function AppContent() {
     );
   }
 
-  // Show auth page if not authenticated or no user data
-  if (!isAuthenticated || !user) {
+  // Public routes accessible without authentication
+  const currentPath = window.location.pathname;
+  const publicRoutes = ['/verify-email', '/reset-password'];
+  const isPublicRoute = publicRoutes.some(route => currentPath.startsWith(route));
+
+  // Show auth page if not authenticated or no user data (except for public routes)
+  if ((!isAuthenticated || !user) && !isPublicRoute) {
     return <AuthPage onSuccess={() => route("/dashboard")} />;
   }
 
   const handleNavigate = (item: NavItem) => {
-    console.log("Navigate to:", item.href);
     route(item.href);
   };
 
   const handleNewIncident = () => {
     route("/new-incident");
+  };
+
+  const handleViewAllIncidents = () => {
+    route("/dashboard");
   };
 
   const handleViewIncident = (incident: Incident) => {
@@ -61,7 +71,6 @@ function AppContent() {
   };
 
   const handleWizardComplete = (data: WizardData) => {
-    console.log("Wizard completed with data:", data);
     setWizardData(data);
     route("/incident-workspace");
   };
@@ -80,6 +89,11 @@ function AppContent() {
     route("/lawyers");
   };
 
+  const handleIncidentsUpdated = () => {
+    // Force re-render by navigating to the current route
+    window.location.reload();
+  };
+
   return (
     <Router>
       <Dashboard
@@ -88,6 +102,14 @@ function AppContent() {
         onNavigate={handleNavigate}
         onNewIncident={handleNewIncident}
         onViewIncident={handleViewIncident}
+        onIncidentsUpdated={handleIncidentsUpdated}
+      />
+      <IncidentsPage
+        path="/incidents"
+        onNavigate={handleNavigate}
+        onNewIncident={handleNewIncident}
+        onViewIncident={handleViewIncident}
+        onIncidentsUpdated={handleIncidentsUpdated}
       />
       <NewIncidentPage
         path="/new-incident"
@@ -123,6 +145,7 @@ function AppContent() {
       <LawbookPage path="/lawbook" onNavigate={handleNavigate} />
       <AIChatPage path="/ai-chat" onNavigate={handleNavigate} />
       <VerifyEmailPage path="/verify-email" />
+      <ResetPasswordPage path="/reset-password" />
       <Settings path="/settings" />
     </Router>
   );

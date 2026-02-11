@@ -72,7 +72,7 @@ export function OccurrenceModal({
             setDateOccurred(new Date().toISOString().split('T')[0]);
             setEvidenceFiles([]);
         } catch (err) {
-            console.error('Failed to create occurrence:', err);
+            
             setError(err instanceof Error ? err.message : 'Failed to record occurrence. Please try again.');
         } finally {
             setIsSubmitting(false);

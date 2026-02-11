@@ -84,7 +84,7 @@ export function IncidentHeader({ incident, onBack, className }: IncidentHeaderPr
 
                 {/* Status and actions */}
                 <div className="flex items-center gap-3">
-                    <Badge variant={getStatusVariant(incident.status)}>
+                    <Badge variant={getStatusVariant(incident.status)} size="sm">
                         <StatusDot
                             status={statusToDot[incident.status]}
                             size="sm"

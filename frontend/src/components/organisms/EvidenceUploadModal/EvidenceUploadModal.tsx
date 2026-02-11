@@ -1,5 +1,4 @@
 import { useState } from 'preact/hooks';
-import { cn } from '../../../lib/utils';
 import { Button } from '../../atoms/Button/Button';
 import { Icon } from '../../atoms/Icon/Icon';
 import { FileDropzone } from '../../atoms/FileDropzone/FileDropzone';
@@ -18,8 +17,7 @@ export function EvidenceUploadModal({
     isOpen,
     onClose,
     onUpload,
-    incidents = [],
-    isLoading = false,
+    incidents = []
 }: EvidenceUploadModalProps) {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(
@@ -51,14 +49,11 @@ export function EvidenceUploadModal({
         try {
             setIsUploading(true);
             setUploadError(null);
-            console.log('Modal upload started:', { fileCount: selectedFiles.length, incidentId: selectedIncidentId, fileNames: selectedFiles.map(f => f.name) });
             await onUpload(selectedFiles, selectedIncidentId);
-            console.log('Modal upload completed successfully');
             setSelectedFiles([]);
             onClose();
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Failed to upload evidence';
-            console.error('Modal upload error:', message, err);
             setUploadError(message);
         } finally {
             setIsUploading(false);

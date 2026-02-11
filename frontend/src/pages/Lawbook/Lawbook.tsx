@@ -46,7 +46,7 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
                     setActiveLawId(lawsData[0].id);
                 }
             } catch (error) {
-                console.error('Error fetching laws:', error);
+                // Error fetching laws
             } finally {
                 setIsLoading(false);
             }
@@ -65,7 +65,6 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
                 const content = await fetchLawContent(activeLawId);
                 setLawContent(content);
             } catch (error) {
-                console.error('Error fetching law content:', error);
                 setLawContent('Error loading content. Please try again.');
             } finally {
                 setIsContentLoading(false);
@@ -120,7 +119,6 @@ export function LawbookPage({ onNavigate }: LawbookPageProps) {
                 throw new Error('Query refused or failed');
             }
         } catch (error) {
-            console.error('Chat error:', error);
             const errorMsg: ChatMessage = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
