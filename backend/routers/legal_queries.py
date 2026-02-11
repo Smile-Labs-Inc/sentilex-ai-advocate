@@ -12,11 +12,10 @@ from pydantic import BaseModel, Field
 
 from schemas.messages import UserQuery, SynthesizerOutput, RefusalOutput
 from chains import invoke_chain
-from audit_logging.audit import get_audit_logger, configure_audit_logger
 from mcp_server.mcp_client import get_mcp_client
 
 
-router = APIRouter(prefix="/api/legal", tags=["Legal Queries"])
+router = APIRouter(prefix="/legal", tags=["Legal Queries"])
 
 
 # Request/Response models
@@ -33,12 +32,6 @@ class QueryResponse(BaseModel):
     session_id: str = Field(..., description="Session ID for audit trail")
     timestamp: str = Field(..., description="Response timestamp")
 
-
-# Initialize audit logger
-audit_logger = configure_audit_logger(
-    log_dir=os.getenv("AUDIT_LOG_DIR", "logs"),
-    log_to_file=True
-)
 
 
 # @router.post("/query", response_model=QueryResponse)

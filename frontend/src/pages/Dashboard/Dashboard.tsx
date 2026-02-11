@@ -44,7 +44,6 @@ export function Dashboard({
     unreadCount,
     markAsRead,
     markAllAsRead,
-    loadNotifications,
   } = useNotifications();
 
   // Toggle this to see new user view

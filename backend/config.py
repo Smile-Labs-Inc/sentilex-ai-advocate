@@ -31,7 +31,7 @@ class Settings:
     
     # API Configuration
     API_HOST: str = os.getenv("API_HOST", "0.0.0.0")
-    API_PORT: int = int(os.getenv("API_PORT", "8000"))
+    API_PORT: int = int(os.getenv("API_PORT", "8001"))
     API_RELOAD: bool = os.getenv("API_RELOAD", "true").lower() in ("1", "true", "yes")
     
     # Audit Logging
@@ -86,7 +86,7 @@ class Settings:
     # Security Settings
     ALLOWED_HOSTS: list = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
     ENABLE_HTTPS_REDIRECT: bool = os.getenv("ENABLE_HTTPS_REDIRECT", "false").lower() in ("1", "true", "yes")
-    CORS_ORIGINS: list = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173").split(",")
+    CORS_ORIGINS: list = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:5173,http://localhost:8080,http://127.0.0.1:8080").split(",")
     ENABLE_RATE_LIMITING: bool = os.getenv("ENABLE_RATE_LIMITING", "true").lower() in ("1", "true", "yes")
     RATE_LIMIT_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "60"))
 

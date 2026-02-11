@@ -236,6 +236,8 @@ export async function uploadEvidence(
     }
   );
 
+  console.log("[incident.uploadEvidence] Response status:", response.status);
+
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     throw new Error(

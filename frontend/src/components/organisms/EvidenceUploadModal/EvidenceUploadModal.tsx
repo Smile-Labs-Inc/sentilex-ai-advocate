@@ -1,5 +1,4 @@
 import { useState } from 'preact/hooks';
-import { cn } from '../../../lib/utils';
 import { Button } from '../../atoms/Button/Button';
 import { Icon } from '../../atoms/Icon/Icon';
 import { FileDropzone } from '../../atoms/FileDropzone/FileDropzone';
@@ -18,8 +17,7 @@ export function EvidenceUploadModal({
     isOpen,
     onClose,
     onUpload,
-    incidents = [],
-    isLoading = false,
+    incidents = []
 }: EvidenceUploadModalProps) {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(

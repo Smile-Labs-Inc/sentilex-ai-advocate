@@ -3,132 +3,149 @@
 // API interactions for notification management
 // =============================================================================
 
-import { API_CONFIG, APP_CONFIG } from '../config';
-import type { Notification } from '../types';
+import { API_CONFIG, APP_CONFIG } from "../config";
+import type { Notification } from "../types";
 
 export interface NotificationResponse {
-    id: string;
-    title?: string;
-    message: string;
-    notification_type: string;
-    created_at: string;
-    read_at?: string;
-    recipient_id: string;
-    recipient_type: string;
+  id: string;
+  title?: string;
+  message: string;
+  notification_type: string;
+  created_at: string;
+  read_at?: string;
+  recipient_id: string;
+  recipient_type: string;
 }
 
 export interface UnreadCountResponse {
-    unread_count: number;
+  unread_count: number;
 }
 
 class NotificationService {
-    private getHeaders(): HeadersInit {
-        const token = localStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
-        return {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` }),
-        };
+  private getHeaders(): HeadersInit {
+    const token = localStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
+    return {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    };
+  }
+
+  // Get all notifications for the current user
+  async getNotifications(): Promise<Notification[]> {
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/notifications/my`, {
+        headers: this.getHeaders(),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const notifications = this.transformNotifications(
+        data.notifications || [],
+      );
+      return notifications;
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+      return [];
     }
+  }
 
-    // Get all notifications for the current user
-    async getNotifications(): Promise<Notification[]> {
-        try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/notifications/my`, {
-                headers: this.getHeaders(),
-            });
+  // Get unread notifications count
+  async getUnreadCount(): Promise<number> {
+    try {
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}/notifications/my/count`,
+        {
+          headers: this.getHeaders(),
+        },
+      );
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-            const data = await response.json();
-            const notifications = this.transformNotifications(data.notifications || []);
-            return notifications;
-        } catch (error) {
-            return [];
-        }
+      const data: UnreadCountResponse = await response.json();
+      return data.unread_count;
+    } catch (error) {
+      console.error("Failed to fetch unread count:", error);
+      return 0;
     }
+  }
 
-    // Get unread notifications count
-    async getUnreadCount(): Promise<number> {
-        try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/notifications/my/count`, {
-                headers: this.getHeaders(),
-            });
+  // Mark a notification as read
+  async markAsRead(notificationId: string): Promise<boolean> {
+    try {
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}/notifications/my/mark-read`,
+        {
+          method: "POST",
+          headers: this.getHeaders(),
+          body: JSON.stringify({
+            notification_ids: [notificationId],
+          }),
+        },
+      );
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data: UnreadCountResponse = await response.json();
-            return data.unread_count;
-        } catch (error) {
-            return 0;
-        }
+      return response.ok;
+    } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+      return false;
     }
+  }
 
-    // Mark a notification as read
-    async markAsRead(notificationId: string): Promise<boolean> {
-        try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/notifications/my/mark-read`, {
-                method: 'POST',
-                headers: this.getHeaders(),
-                body: JSON.stringify({
-                    notification_ids: [notificationId]
-                }),
-            });
+  // Mark all notifications as read
+  async markAllAsRead(): Promise<boolean> {
+    try {
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}/notifications/my/mark-all-read`,
+        {
+          method: "POST",
+          headers: this.getHeaders(),
+        },
+      );
 
-            return response.ok;
-        } catch (error) {
-            return false;
-        }
+      return response.ok;
+    } catch (error) {
+      console.error("Failed to mark all notifications as read:", error);
+      return false;
     }
+  }
 
-    // Mark all notifications as read
-    async markAllAsRead(): Promise<boolean> {
-        try {
-            const response = await fetch(`${API_CONFIG.BASE_URL}/api/notifications/my/mark-all-read`, {
-                method: 'POST',
-                headers: this.getHeaders(),
-            });
+  // Transform backend response to frontend format
+  private transformNotifications(
+    backendNotifications: NotificationResponse[],
+  ): Notification[] {
+    return backendNotifications.map((notification) => ({
+      id: notification.id,
+      title: notification.title,
+      message: notification.message,
+      timestamp: notification.created_at,
+      isRead: !!notification.read_at,
+      type: this.mapNotificationType(notification.notification_type),
+    }));
+  }
 
-            return response.ok;
-        } catch (error) {
-            return false;
-        }
+  // Map backend notification types to frontend types
+  private mapNotificationType(backendType: string): Notification["type"] {
+    switch (backendType) {
+      case "CASE_UPDATE":
+      case "CASE_STATUS_CHANGE":
+        return "case";
+      case "LEGAL_CONSULTATION":
+      case "COURT_DATE":
+        return "legal";
+      case "ACCOUNT_UPDATE":
+      case "PROFILE_UPDATE":
+        return "account";
+      case "SYSTEM_MAINTENANCE":
+      case "SYSTEM_UPDATE":
+        return "system";
+      default:
+        return "system";
     }
-
-    // Transform backend response to frontend format
-    private transformNotifications(backendNotifications: NotificationResponse[]): Notification[] {
-        return backendNotifications.map(notification => ({
-            id: notification.id,
-            title: notification.title,
-            message: notification.message,
-            timestamp: notification.created_at,
-            isRead: !!notification.read_at,
-            type: this.mapNotificationType(notification.notification_type),
-        }));
-    }
-
-    // Map backend notification types to frontend types
-    private mapNotificationType(backendType: string): Notification['type'] {
-        switch (backendType) {
-            case 'CASE_UPDATE':
-            case 'CASE_STATUS_CHANGE':
-                return 'case';
-            case 'LEGAL_CONSULTATION':
-            case 'COURT_DATE':
-                return 'legal';
-            case 'ACCOUNT_UPDATE':
-            case 'PROFILE_UPDATE':
-                return 'account';
-            case 'SYSTEM_MAINTENANCE':
-            case 'SYSTEM_UPDATE':
-                return 'system';
-            default:
-                return 'system';
-        }
-    }
+  }
 }
 
 // Export singleton instance

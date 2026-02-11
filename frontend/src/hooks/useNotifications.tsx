@@ -35,14 +35,14 @@ export function useNotifications(): UseNotificationsReturn {
                 notificationService.getUnreadCount(),
             ]);
 
-            
-            
+
+
             setNotifications(notificationsData);
             setUnreadCount(unreadCountData);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to load notifications';
             setError(errorMessage);
-            
+
         } finally {
             setIsLoading(false);
         }
@@ -70,7 +70,7 @@ export function useNotifications(): UseNotificationsReturn {
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to mark notification as read';
             setError(errorMessage);
-            
+
         }
     }, []);
 
@@ -90,7 +90,7 @@ export function useNotifications(): UseNotificationsReturn {
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to mark all notifications as read';
             setError(errorMessage);
-            
+
         }
     }, []);
 
@@ -157,7 +157,7 @@ export function useNotifications(): UseNotificationsReturn {
 
             // Listen for connection events
             const handleConnected = () => {
-                
+
                 setError(null);
             };
 

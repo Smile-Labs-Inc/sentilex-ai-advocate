@@ -62,8 +62,8 @@ async def lifespan(app: FastAPI):
     print("Checking database connection...")
     if check_db_connection():
         # Create tables if they don't exist
-        Base.metadata.create_all(bind=engine)
-        print("Database is online and tables verified.")
+        # Base.metadata.create_all(bind=engine, checkfirst=True)
+        print("Database is online.")
     else:
         print("CRITICAL: Database connection failed.")
         
@@ -93,7 +93,10 @@ app = FastAPI(
 origins = [
     "http://localhost:3000",
     "http://localhost:5173",
-    "*"
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://142.93.221.245:8080",  # Remote frontend
+    "http://142.93.221.245:8001",  # Remote backend (for same-origin requests)
 ]
 
 app.add_middleware(
@@ -152,7 +155,7 @@ def main():
     uvicorn.run(
         "main:app", 
         host="127.0.0.1", 
-        port=8000, 
+        port=8001, 
         reload=True
     )
 

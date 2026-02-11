@@ -1,7 +1,7 @@
 """Test script for GET /lawyers/ listing endpoint"""
 import requests
 
-BASE_URL = "http://127.0.0.1:8000"
+BASE_URL = "http://127.0.0.1:8001"
 
 print("=" * 60)
 print("Testing Lawyer Listing Endpoint")

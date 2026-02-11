@@ -14,7 +14,6 @@ from pydantic import BaseModel, Field
 
 from schemas.messages import UserQuery, SynthesizerOutput, RefusalOutput
 from chains import invoke_chain
-from audit_logging.audit import get_audit_logger, configure_audit_logger
 
 # Request/Response models
 class QueryRequest(BaseModel):
@@ -30,12 +29,6 @@ class QueryResponse(BaseModel):
     session_id: str = Field(..., description="Session ID for audit trail")
     timestamp: str = Field(..., description="Response timestamp")
 
-
-# Initialize audit logger
-audit_logger = configure_audit_logger(
-    log_dir=os.getenv("AUDIT_LOG_DIR", "logs"),
-    log_to_file=True
-)
 
 
 @router.get("/")

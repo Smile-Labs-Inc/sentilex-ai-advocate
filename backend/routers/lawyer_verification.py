@@ -14,7 +14,7 @@ from models.DocumentStorageService import document_storage
 from auth.dependencies import get_current_lawyer, get_current_admin
 from services.notification_service import LawyerNotificationService
 
-router = APIRouter(prefix="/api/lawyer/verification", tags=["Lawyer Verification"])
+router = APIRouter(prefix="/lawyer/verification", tags=["Lawyer Verification"])
 
 def log_audit(db: Session, lawyer_id: int, action: str, step: int = None, 
               performed_by: str = "lawyer", ip: str = None, details: str = None):
