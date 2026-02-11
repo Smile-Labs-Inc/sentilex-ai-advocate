@@ -74,9 +74,9 @@ export function IncidentsPage({
   };
 
   const handleFilterIncidents = () => {
-    // Filter functionality
+    // Filter functionality can be implemented based on requirements
   };
-  // Filter functionality can be implemented based on requirements
+
   return (
   <DashboardLayout
     user={user}
