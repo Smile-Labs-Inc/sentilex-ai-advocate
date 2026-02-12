@@ -112,7 +112,15 @@ export async function submitQuery(request: QueryRequest): Promise<QueryResponse>
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.detail || `Failed to submit query: ${response.statusText}`);
+            console.error('Lawbook Query Error:', errorData);
+
+            // Format validation errors if available
+            let errorMessage = errorData.detail || `Failed to submit query: ${response.statusText}`;
+            if (Array.isArray(errorData.detail)) {
+                errorMessage = errorData.detail.map((err: any) => `${err.loc.join('.')}: ${err.msg}`).join(', ');
+            }
+
+            throw new Error(errorMessage);
         }
 
         return await response.json();

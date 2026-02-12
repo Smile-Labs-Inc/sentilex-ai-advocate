@@ -8,7 +8,7 @@ router = APIRouter(prefix="/lawbook", tags=["lawbook"])
 # Path to markdown laws directory
 MARKDOWN_LAWS_DIR = Path(__file__).parent.parent / "data" / "markdown-laws"
 
-from typing import Union, Dict, Any
+from typing import Union, Dict, Any, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
 
@@ -18,8 +18,8 @@ from chains import invoke_chain
 # Request/Response models
 class QueryRequest(BaseModel):
     """API request model for legal queries."""
-    question: str = Field(..., min_length=10, description="Legal question")
-    case_context: str = Field(None, description="Optional case context")
+    question: str = Field(..., min_length=4, description="Legal question")
+    case_context: Optional[str] = Field(None, description="Optional case context")
 
 
 class QueryResponse(BaseModel):
@@ -163,13 +163,13 @@ async def submit_query(request: QueryRequest):
         return QueryResponse(
             status=status,
             data=data,
-            session_id=audit_logger.session_id,
+            session_id="anonymous", # Audit logging removed
             timestamp=datetime.utcnow().isoformat()
         )
 
     except Exception as e:
         # Log the error
-        audit_logger.logger.error(f"Query processing failed: {str(e)}")
+        # audit_logger.logger.error(f"Query processing failed: {str(e)}")
 
         # Return error response
         raise HTTPException(

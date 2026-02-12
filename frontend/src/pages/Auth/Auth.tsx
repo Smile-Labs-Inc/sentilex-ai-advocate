@@ -248,11 +248,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
                         {/* Error/Success Messages */}
                         {displayError && (
-<<<<<<< HEAD
-                            <div className="p-3.5 rounded-lg bg-white/5 border border-white/20 backdrop-blur-sm">
-=======
                             <div className="p-3 rounded-lg bg-white/5 border border-white/20 backdrop-blur-sm">
->>>>>>> origin/production
                                 <div className="flex items-start gap-2.5">
                                     <Icon name="Info" className="text-white/60 mt-0.5 flex-shrink-0" size="sm" />
                                     <div className="flex-1">
@@ -264,11 +260,7 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                             </div>
                         )}
                         {success && (
-<<<<<<< HEAD
-                            <div className="p-3.5 rounded-lg bg-white/5 border border-white/20 backdrop-blur-sm">
-=======
                             <div className="p-3 rounded-lg bg-white/5 border border-white/20 backdrop-blur-sm">
->>>>>>> origin/production
                                 <div className="flex items-start gap-2.5">
                                     <Icon name="CheckCircle" className="text-white/60 mt-0.5 flex-shrink-0" size="sm" />
                                     <p className="text-sm text-white/80 leading-relaxed">{success}</p>
@@ -441,66 +433,38 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
                                 </div>
                                 {/* Live Password Validation */}
                                 {registerData.password && (
-<<<<<<< HEAD
-                                    <div className="bg-muted/20 border border-border/50 rounded px-2.5 py-2.5 -mt-1">
-=======
                                     <div className="bg-muted/20 border border-border/50 rounded px-2 py-2 -mt-1">
->>>>>>> origin/production
                                         <p className="text-xs font-medium text-foreground/70 mb-1.5">Password must have:</p>
                                         <div className="space-y-0.5">
                                             <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.minLength ? 'text-green-500' : 'text-muted-foreground'
                                                 }`}>
-<<<<<<< HEAD
-                                                <Icon name={passwordValidation.minLength ? 'CheckCircle' : 'Circle'} size="sm" className="w-3.5 h-3.5" />
-=======
                                                 <Icon name={passwordValidation.minLength ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
->>>>>>> origin/production
                                                 <span>At least 8 characters</span>
                                             </div>
                                             <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.hasUppercase ? 'text-green-500' : 'text-muted-foreground'
                                                 }`}>
-<<<<<<< HEAD
-                                                <Icon name={passwordValidation.hasUppercase ? 'CheckCircle' : 'Circle'} size="sm" className="w-3.5 h-3.5" />
-=======
                                                 <Icon name={passwordValidation.hasUppercase ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
->>>>>>> origin/production
                                                 <span>One uppercase letter</span>
                                             </div>
                                             <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.hasLowercase ? 'text-green-500' : 'text-muted-foreground'
                                                 }`}>
-<<<<<<< HEAD
-                                                <Icon name={passwordValidation.hasLowercase ? 'CheckCircle' : 'Circle'} size="sm" className="w-3.5 h-3.5" />
-=======
                                                 <Icon name={passwordValidation.hasLowercase ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
->>>>>>> origin/production
                                                 <span>One lowercase letter</span>
                                             </div>
                                             <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.hasDigit ? 'text-green-500' : 'text-muted-foreground'
                                                 }`}>
-<<<<<<< HEAD
-                                                <Icon name={passwordValidation.hasDigit ? 'CheckCircle' : 'Circle'} size="sm" className="w-3.5 h-3.5" />
-=======
                                                 <Icon name={passwordValidation.hasDigit ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
->>>>>>> origin/production
                                                 <span>One digit</span>
                                             </div>
                                             <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.hasSpecial ? 'text-green-500' : 'text-muted-foreground'
                                                 }`}>
-<<<<<<< HEAD
-                                                <Icon name={passwordValidation.hasSpecial ? 'CheckCircle' : 'Circle'} size="sm" className="w-3.5 h-3.5" />
-=======
                                                 <Icon name={passwordValidation.hasSpecial ? 'CheckCircle' : 'Circle'} size="sm" className="w-3 h-3" />
->>>>>>> origin/production
                                                 <span>One special character (!@#$%...)</span>
                                             </div>
                                             {registerData.confirmPassword && (
                                                 <div className={`flex items-center gap-1.5 text-xs ${passwordValidation.passwordsMatch ? 'text-green-500' : 'text-destructive'
                                                     }`}>
-<<<<<<< HEAD
-                                                    <Icon name={passwordValidation.passwordsMatch ? 'CheckCircle' : 'XCircle'} size="sm" className="w-3.5 h-3.5" />
-=======
                                                     <Icon name={passwordValidation.passwordsMatch ? 'CheckCircle' : 'XCircle'} size="sm" className="w-3 h-3" />
->>>>>>> origin/production
                                                     <span>Passwords match</span>
                                                 </div>
                                             )}

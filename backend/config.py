@@ -39,6 +39,10 @@ class Settings:
     
     # OpenAI Configuration
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+
+    # Gemini Configuration
+    USE_GEMINI: bool = os.getenv("USE_GEMINI", "false").lower() in ("1", "true", "yes")
+    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
     
     # MCP Service
     MCP_HOST: str = os.getenv("MCP_HOST", "localhost")
