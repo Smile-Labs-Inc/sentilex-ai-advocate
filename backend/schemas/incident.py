@@ -12,21 +12,21 @@ from enum import Enum
 
 class IncidentStatusEnum(str, Enum):
     """Status of an incident report."""
-    DRAFT = "DRAFT"
-    SUBMITTED = "SUBMITTED"
-    UNDER_REVIEW = "UNDER_REVIEW"
-    RESOLVED = "RESOLVED"
+    DRAFT = "draft"
+    SUBMITTED = "submitted"
+    UNDER_REVIEW = "under_review"
+    RESOLVED = "resolved"
 
 
 class IncidentTypeEnum(str, Enum):
     """Types of incidents that can be reported."""
-    CYBERBULLYING = "CYBERBULLYING"
-    HARASSMENT = "HARASSMENT"
-    STALKING = "STALKING"
-    NON_CONSENSUAL_LEAK = "NON_CONSENSUAL_LEAK"
-    IDENTITY_THEFT = "IDENTITY_THEFT"
-    ONLINE_FRAUD = "ONLINE_FRAUD"
-    OTHER = "OTHER"
+    CYBERBULLYING = "cyberbullying"
+    HARASSMENT = "harassment"
+    STALKING = "stalking"
+    NON_CONSENSUAL_LEAK = "non-consensual-leak"
+    IDENTITY_THEFT = "identity-theft"
+    ONLINE_FRAUD = "online-fraud"
+    OTHER = "other"
 
 
 class IncidentBase(BaseModel):

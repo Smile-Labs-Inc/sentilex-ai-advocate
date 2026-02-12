@@ -16,4 +16,4 @@ class LawyerVerificationAudit(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     # Relationship
-    lawyer = relationship("Lawyer", back_populates="audit_logs")
+    lawyer = relationship("Lawyer", backref="audit_logs")
