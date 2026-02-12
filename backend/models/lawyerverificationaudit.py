@@ -1,16 +1,19 @@
-﻿from sqlalchemy import Column, Integer, String, TIMESTAMP, Text, ForeignKey
-from sqlalchemy.sql import func
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy.orm import relationship
+from datetime import datetime
 from database.config import Base
 
 class LawyerVerificationAudit(Base):
-    '''Immutable audit log for all verification actions'''
-    __tablename__ = "lawyer_verification_audit"
+    __tablename__ = "lawyer_verification_audits"
 
     id = Column(Integer, primary_key=True, index=True)
-    lawyer_id = Column(Integer, ForeignKey("lawyers.id"), nullable=False, index=True)
-    action = Column(String(50), nullable=False)
+    lawyer_id = Column(Integer, ForeignKey("lawyers.id"), nullable=False)
+    action = Column(String, nullable=False)
     step_number = Column(Integer, nullable=True)
-    performed_by = Column(String(50), nullable=False)
-    ip_address = Column(String(45), nullable=True)
-    details = Column(Text, nullable=True)
-    created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
+    performed_by = Column(String, default="lawyer")  # "lawyer" or "admin:{id}"
+    ip_address = Column(String, nullable=True)
+    details = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    # Relationship
+    lawyer = relationship("Lawyer", back_populates="audit_logs")

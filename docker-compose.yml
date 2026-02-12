@@ -48,6 +48,7 @@ services:
       - S3_BUCKET_NAME=${S3_BUCKET_NAME}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - USE_GEMINI=${USE_GEMINI}
     depends_on:
       postgres:
         condition: service_healthy

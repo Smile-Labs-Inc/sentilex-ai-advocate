@@ -58,7 +58,7 @@ def create_main_chain() -> Runnable:
     Returns:
         Runnable chain that takes UserQuery and returns SynthesizerOutput or RefusalOutput
     """
-    audit_logger = get_audit_logger()
+    # audit_logger = get_audit_logger() # Removed per user request
 
     # Get all agent runnables
     planner = get_planner()
@@ -77,11 +77,12 @@ def create_main_chain() -> Runnable:
         planner_output = planner.invoke(user_query)
 
         # Audit log
-        audit_logger.log_agent_execution(
-            agent="planner",
-            input_data=user_query.dict(),
-            output_data=planner_output.dict()
-        )
+        # Audit log removed
+        # audit_logger.log_agent_execution(
+        #     agent="planner",
+        #     input_data=user_query.dict(),
+        #     output_data=planner_output.dict()
+        # )
 
         return {
             "user_query": user_query,
@@ -94,11 +95,12 @@ def create_main_chain() -> Runnable:
         research_output = research.invoke(planner_output)
 
         # Audit log
-        audit_logger.log_agent_execution(
-            agent="research",
-            input_data=planner_output.dict(),
-            output_data=research_output.dict()
-        )
+        # Audit log removed
+        # audit_logger.log_agent_execution(
+        #     agent="research",
+        #     input_data=planner_output.dict(),
+        #     output_data=research_output.dict()
+        # )
 
         return {
             **state,
@@ -111,11 +113,12 @@ def create_main_chain() -> Runnable:
         reasoning_output = reasoning.invoke(research_output)
 
         # Audit log
-        audit_logger.log_agent_execution(
-            agent="reasoning",
-            input_data=research_output.dict(),
-            output_data=reasoning_output.dict()
-        )
+        # Audit log removed
+        # audit_logger.log_agent_execution(
+        #     agent="reasoning",
+        #     input_data=research_output.dict(),
+        #     output_data=reasoning_output.dict()
+        # )
 
         return {
             **state,
@@ -131,14 +134,15 @@ def create_main_chain() -> Runnable:
             (research_output, reasoning_output))
 
         # Audit log
-        audit_logger.log_agent_execution(
-            agent="validation",
-            input_data={
-                "research": research_output.dict(),
-                "reasoning": reasoning_output.dict()
-            },
-            output_data=validation_output.dict()
-        )
+        # Audit log removed
+        # audit_logger.log_agent_execution(
+        #     agent="validation",
+        #     input_data={
+        #         "research": research_output.dict(),
+        #         "reasoning": reasoning_output.dict()
+        #     },
+        #     output_data=validation_output.dict()
+        # )
 
         return {
             **state,
@@ -156,15 +160,16 @@ def create_main_chain() -> Runnable:
         )
 
         # Audit log
-        audit_logger.log_agent_execution(
-            agent="synthesizer",
-            input_data={
-                "research": research_output.dict(),
-                "reasoning": reasoning_output.dict(),
-                "validation": validation_output.dict()
-            },
-            output_data=synthesizer_output.dict()
-        )
+        # Audit log removed
+        # audit_logger.log_agent_execution(
+        #     agent="synthesizer",
+        #     input_data={
+        #         "research": research_output.dict(),
+        #         "reasoning": reasoning_output.dict(),
+        #         "validation": validation_output.dict()
+        #     },
+        #     output_data=synthesizer_output.dict()
+        # )
 
         return synthesizer_output
 
@@ -175,11 +180,12 @@ def create_main_chain() -> Runnable:
         refusal_output = refusal.invoke(validation_output)
 
         # Audit log
-        audit_logger.log_agent_execution(
-            agent="refusal",
-            input_data=validation_output.dict(),
-            output_data=refusal_output.dict()
-        )
+        # Audit log removed
+        # audit_logger.log_agent_execution(
+        #     agent="refusal",
+        #     input_data=validation_output.dict(),
+        #     output_data=refusal_output.dict()
+        # )
 
         return refusal_output
 
