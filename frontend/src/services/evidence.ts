@@ -4,7 +4,7 @@
  * Handles communication with the backend evidence API for cross-incident evidence management.
  */
 
-import { API_BASE_URL, APP_CONFIG } from "../config";
+import { API_CONFIG, APP_CONFIG } from "../config";
 
 // Types matching backend schemas
 export interface EvidenceItem {
@@ -74,7 +74,7 @@ export async function getAllEvidence(
   }
 
   const queryString = params.toString();
-  const url = `${API_BASE_URL}/evidence/${queryString ? `?${queryString}` : ""}`;
+  const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EVIDENCE.LIST_ALL}${queryString ? `?${queryString}` : ""}`;
 
   const response = await fetch(url, {
     method: "GET",
@@ -105,12 +105,15 @@ export async function getEvidenceById(
     throw new Error("User is not authenticated");
   }
 
-  const response = await fetch(`${API_BASE_URL}/evidence/${evidenceId}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const response = await fetch(
+    `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EVIDENCE.GET(evidenceId)}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -132,12 +135,15 @@ export async function deleteEvidenceById(evidenceId: number): Promise<void> {
     throw new Error("User is not authenticated");
   }
 
-  const response = await fetch(`${API_BASE_URL}/evidence/${evidenceId}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
+  const response = await fetch(
+    `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EVIDENCE.DELETE(evidenceId)}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     },
-  });
+  );
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -152,7 +158,7 @@ export async function deleteEvidenceById(evidenceId: number): Promise<void> {
  */
 export function getEvidenceDownloadUrl(evidenceId: number): string {
   const token = getAuthToken();
-  return `${API_BASE_URL}/evidence/${evidenceId}/download?token=${token}`;
+  return `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EVIDENCE.DOWNLOAD(evidenceId)}?token=${token}`;
 }
 
 /**
@@ -160,7 +166,7 @@ export function getEvidenceDownloadUrl(evidenceId: number): string {
  */
 export function getEvidencePreviewUrl(evidenceId: number): string {
   const token = getAuthToken();
-  return `${API_BASE_URL}/evidence/${evidenceId}/preview?token=${token}`;
+  return `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EVIDENCE.PREVIEW(evidenceId)}?token=${token}`;
 }
 
 /**
@@ -174,13 +180,16 @@ export async function downloadEvidence(evidenceId: number): Promise<void> {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/evidence/${evidenceId}/download`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EVIDENCE.DOWNLOAD(evidenceId)}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -194,7 +203,8 @@ export async function downloadEvidence(evidenceId: number): Promise<void> {
     // Redirect to the presigned S3 URL
     window.location.href = data.download_url;
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to download evidence';
+    const errorMessage =
+      err instanceof Error ? err.message : "Failed to download evidence";
     throw new Error(errorMessage);
   }
 }
@@ -217,7 +227,7 @@ export async function uploadEvidenceToIncident(
     formData.append("files", file);
   });
 
-  const endpoint = `${API_BASE_URL}/incidents/${incidentId}/evidence`;
+  const endpoint = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.INCIDENTS.EVIDENCE.UPLOAD(incidentId)}`;
   const headers = {
     Authorization: `Bearer ${token}`,
   };

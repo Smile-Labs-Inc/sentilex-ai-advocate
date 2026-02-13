@@ -4,10 +4,7 @@
  * API service for generating and downloading case documents (PDFs, ZIPs).
  */
 
-import { APP_CONFIG } from "../config";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8001";
+import { APP_CONFIG, API_CONFIG } from "../config";
 
 /**
  * Get authentication token from localStorage.
@@ -41,7 +38,7 @@ export async function exportPoliceStatement(incidentId: number): Promise<void> {
   }
 
   const response = await fetch(
-    `${API_BASE_URL}/documents/incidents/${incidentId}/export/police-statement`,
+    `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DOCUMENTS.POLICE_STATEMENT(incidentId)}`,
     {
       method: "GET",
       headers: {
@@ -74,7 +71,7 @@ export async function exportCERTReport(incidentId: number): Promise<void> {
   }
 
   const response = await fetch(
-    `${API_BASE_URL}/documents/incidents/${incidentId}/export/cert-report`,
+    `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DOCUMENTS.CERT_REPORT(incidentId)}`,
     {
       method: "GET",
       headers: {
@@ -108,7 +105,7 @@ export async function exportEvidenceManifest(
   }
 
   const response = await fetch(
-    `${API_BASE_URL}/documents/incidents/${incidentId}/export/evidence-manifest`,
+    `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DOCUMENTS.EVIDENCE_MANIFEST(incidentId)}`,
     {
       method: "GET",
       headers: {
@@ -141,7 +138,7 @@ export async function exportCaseFile(incidentId: number): Promise<void> {
   }
 
   const response = await fetch(
-    `${API_BASE_URL}/documents/incidents/${incidentId}/export/case-file`,
+    `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.DOCUMENTS.CASE_FILE(incidentId)}`,
     {
       method: "GET",
       headers: {

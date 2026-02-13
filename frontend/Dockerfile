@@ -17,6 +17,10 @@ COPY . .
 # Build for production
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
+
+ARG VITE_PAYPAL_CLIENT_ID
+ENV VITE_PAYPAL_CLIENT_ID=${VITE_PAYPAL_CLIENT_ID}
+
 # Build for production (skip type checking for Docker build)
 RUN npx vite build
 

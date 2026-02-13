@@ -157,6 +157,21 @@ export const API_CONFIG = {
       UPGRADE: "/payments/upgrade",
       STATUS: "/payments/subscription",
     },
+
+    DOCUMENTS: {
+      POLICE_STATEMENT: (id: number) =>
+        `/documents/incidents/${id}/export/police-statement`,
+      CERT_REPORT: (id: number) =>
+        `/documents/incidents/${id}/export/cert-report`,
+      EVIDENCE_MANIFEST: (id: number) =>
+        `/documents/incidents/${id}/export/evidence-manifest`,
+      CASE_FILE: (id: number) => `/documents/incidents/${id}/export/case-file`,
+    },
+
+    STATS: {
+      USER: "/stats/user",
+      GLOBAL: "/stats/global",
+    },
   },
 };
 

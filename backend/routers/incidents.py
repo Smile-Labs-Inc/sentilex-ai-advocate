@@ -11,6 +11,7 @@ from typing import Optional
 from database.config import get_db
 from models.user import User
 from models.incident import Incident, IncidentStatusEnum as ModelIncidentStatus, IncidentTypeEnum as ModelIncidentType
+from agents.case_agent_graph import invoke_case_agent
 from schemas.incident import (
     IncidentCreate,
     IncidentUpdate,
@@ -60,6 +61,26 @@ async def create_incident(
     db.add(new_incident)
     db.commit()
     db.refresh(new_incident)
+    
+    # NEW: Trigger Case Agent to analyze the incident and send welcome message
+    try:
+        # Prompt acts as if the user just said "I submitted this" to trigger the agent's welcome/analysis
+        initial_prompt = (
+            f"I have just submitted a new incident report for {incident_data.incident_type.value}. "
+            f"Here are the details: {incident_data.description}"
+        )
+        
+        # We don't need to return the response here, just ensure it's generated and saved to chat history
+        # The frontend will fetch messages when loading the detail page
+        invoke_case_agent(
+            incident_id=new_incident.id,
+            user_id=current_user.id,
+            message=initial_prompt
+        )
+    except Exception as e:
+        # Log error but don't fail the request - the incident was created successfully
+        import logging
+        logging.error(f"Failed to auto-trigger Case Agent for incident {new_incident.id}: {str(e)}")
     
     return new_incident
 

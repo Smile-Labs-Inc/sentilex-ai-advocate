@@ -33,7 +33,7 @@ class NotificationService {
   // Get all notifications for the current user
   async getNotifications(): Promise<Notification[]> {
     try {
-      const response = await fetch(`${API_CONFIG.BASE_URL}/notifications/my`, {
+      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.NOTIFICATIONS.LIST}`, {
         headers: this.getHeaders(),
       });
 
@@ -56,7 +56,7 @@ class NotificationService {
   async getUnreadCount(): Promise<number> {
     try {
       const response = await fetch(
-        `${API_CONFIG.BASE_URL}/notifications/my/count`,
+        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.NOTIFICATIONS.COUNT}`,
         {
           headers: this.getHeaders(),
         },
@@ -78,7 +78,7 @@ class NotificationService {
   async markAsRead(notificationId: string): Promise<boolean> {
     try {
       const response = await fetch(
-        `${API_CONFIG.BASE_URL}/notifications/my/mark-read`,
+        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.NOTIFICATIONS.MARK_READ}`,
         {
           method: "POST",
           headers: this.getHeaders(),
@@ -99,7 +99,7 @@ class NotificationService {
   async markAllAsRead(): Promise<boolean> {
     try {
       const response = await fetch(
-        `${API_CONFIG.BASE_URL}/notifications/my/mark-all-read`,
+        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.NOTIFICATIONS.MARK_ALL_READ}`,
         {
           method: "POST",
           headers: this.getHeaders(),
@@ -111,7 +111,7 @@ class NotificationService {
       console.error("Failed to mark all notifications as read:", error);
       return false;
     }
-  }
+
 
   // Transform backend response to frontend format
   private transformNotifications(

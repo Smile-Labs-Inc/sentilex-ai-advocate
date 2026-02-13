@@ -4,8 +4,11 @@
  * Handles communication with the backend incidents API.
  */
 
-import { API_BASE_URL } from "../config";
+import { API_CONFIG } from "../config";
 import { apiClient } from "./apiClient";
+
+// Helper to construct full URL
+const getUrl = (endpoint: string) => `${API_CONFIG.BASE_URL}${endpoint}`;
 
 // Types matching backend schemas
 export type IncidentType =
@@ -63,7 +66,8 @@ export interface IncidentListResponse {
 export async function createIncident(
   data: IncidentCreate,
 ): Promise<IncidentResponse> {
-  const response = await apiClient.post(`${API_BASE_URL}/incidents/`, data);
+  const url = getUrl(API_CONFIG.ENDPOINTS.INCIDENTS.CREATE);
+  const response = await apiClient.post(url, data);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -81,12 +85,14 @@ export async function createIncident(
 export async function getIncidents(
   statusFilter?: IncidentStatus,
 ): Promise<IncidentListResponse> {
-  const url = new URL(`${API_BASE_URL}/incidents/`);
+  let url = getUrl(API_CONFIG.ENDPOINTS.INCIDENTS.LIST);
+
+  // Use string concatenation for query params to avoid "Invalid URL" with relative paths
   if (statusFilter) {
-    url.searchParams.append("status_filter", statusFilter);
+    url += `?status_filter=${encodeURIComponent(statusFilter)}`;
   }
 
-  const response = await apiClient.get(url.toString());
+  const response = await apiClient.get(url);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -104,7 +110,8 @@ export async function getIncidents(
 export async function getIncident(
   incidentId: number,
 ): Promise<IncidentResponse> {
-  const response = await apiClient.get(`${API_BASE_URL}/incidents/${incidentId}`);
+  const url = getUrl(API_CONFIG.ENDPOINTS.INCIDENTS.GET(incidentId));
+  const response = await apiClient.get(url);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -120,7 +127,8 @@ export async function getIncident(
  * Delete an incident (any status can be deleted).
  */
 export async function deleteIncident(incidentId: number): Promise<void> {
-  const response = await apiClient.delete(`${API_BASE_URL}/incidents/${incidentId}`);
+  const url = getUrl(API_CONFIG.ENDPOINTS.INCIDENTS.DELETE(incidentId));
+  const response = await apiClient.delete(url);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -161,10 +169,8 @@ export async function sendIncidentChatMessage(
   incidentId: number,
   content: string,
 ): Promise<IncidentChatExchangeResponse> {
-  const response = await apiClient.post(
-    `${API_BASE_URL}/incidents/${incidentId}/messages`,
-    { content }
-  );
+  const url = getUrl(API_CONFIG.ENDPOINTS.INCIDENTS.MESSAGES.SEND(incidentId));
+  const response = await apiClient.post(url, { content });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -182,9 +188,8 @@ export async function sendIncidentChatMessage(
 export async function getIncidentChatMessages(
   incidentId: number,
 ): Promise<IncidentChatMessageResponse[]> {
-  const response = await apiClient.get(
-    `${API_BASE_URL}/incidents/${incidentId}/messages`
-  );
+  const url = getUrl(API_CONFIG.ENDPOINTS.INCIDENTS.MESSAGES.LIST(incidentId));
+  const response = await apiClient.get(url);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -227,14 +232,14 @@ export async function uploadEvidence(
     formData.append("files", file);
   });
 
-  const response = await apiClient.fetch(
-    `${API_BASE_URL}/incidents/${incidentId}/evidence`,
-    {
-      method: "POST",
-      body: formData,
-      // Don't set Content-Type header for FormData - browser will set it with boundary
-    }
+  const url = getUrl(
+    API_CONFIG.ENDPOINTS.INCIDENTS.EVIDENCE.UPLOAD(incidentId),
   );
+  const response = await apiClient.fetch(url, {
+    method: "POST",
+    body: formData,
+    // Don't set Content-Type header for FormData - browser will set it with boundary
+  });
 
   console.log("[incident.uploadEvidence] Response status:", response.status);
 
@@ -254,9 +259,8 @@ export async function uploadEvidence(
 export async function getIncidentEvidence(
   incidentId: number,
 ): Promise<EvidenceListResponse> {
-  const response = await apiClient.get(
-    `${API_BASE_URL}/incidents/${incidentId}/evidence`
-  );
+  const url = getUrl(API_CONFIG.ENDPOINTS.INCIDENTS.EVIDENCE.LIST(incidentId));
+  const response = await apiClient.get(url);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -275,9 +279,10 @@ export async function deleteEvidence(
   incidentId: number,
   evidenceId: number,
 ): Promise<void> {
-  const response = await apiClient.delete(
-    `${API_BASE_URL}/incidents/${incidentId}/evidence/${evidenceId}`
+  const url = getUrl(
+    API_CONFIG.ENDPOINTS.INCIDENTS.EVIDENCE.DELETE(incidentId, evidenceId),
   );
+  const response = await apiClient.delete(url);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -325,10 +330,8 @@ export async function createOccurrence(
   incidentId: number,
   data: OccurrenceCreate,
 ): Promise<OccurrenceResponse> {
-  const response = await apiClient.post(
-    `${API_BASE_URL}/incidents/${incidentId}/occurrences`,
-    data
-  );
+  const url = getUrl(API_CONFIG.ENDPOINTS.OCCURRENCES.CREATE(incidentId));
+  const response = await apiClient.post(url, data);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -346,9 +349,8 @@ export async function createOccurrence(
 export async function getOccurrences(
   incidentId: number,
 ): Promise<OccurrenceListResponse> {
-  const response = await apiClient.get(
-    `${API_BASE_URL}/incidents/${incidentId}/occurrences`
-  );
+  const url = getUrl(API_CONFIG.ENDPOINTS.OCCURRENCES.LIST(incidentId));
+  const response = await apiClient.get(url);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -367,9 +369,10 @@ export async function getOccurrence(
   incidentId: number,
   occurrenceId: number,
 ): Promise<OccurrenceResponse> {
-  const response = await apiClient.get(
-    `${API_BASE_URL}/incidents/${incidentId}/occurrences/${occurrenceId}`
+  const url = getUrl(
+    API_CONFIG.ENDPOINTS.OCCURRENCES.GET(incidentId, occurrenceId),
   );
+  const response = await apiClient.get(url);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -394,13 +397,13 @@ export async function uploadEvidenceToOccurrence(
     formData.append("files", file);
   });
 
-  const response = await apiClient.fetch(
-    `${API_BASE_URL}/incidents/${incidentId}/evidence?occurrence_id=${occurrenceId}`,
-    {
-      method: "POST",
-      body: formData,
-    }
-  );
+  let url = getUrl(API_CONFIG.ENDPOINTS.INCIDENTS.EVIDENCE.UPLOAD(incidentId));
+  url += `?occurrence_id=${occurrenceId}`; // Append query param safely
+
+  const response = await apiClient.fetch(url, {
+    method: "POST",
+    body: formData,
+  });
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -419,9 +422,10 @@ export async function deleteOccurrence(
   incidentId: number,
   occurrenceId: number,
 ): Promise<void> {
-  const response = await apiClient.delete(
-    `${API_BASE_URL}/incidents/${incidentId}/occurrences/${occurrenceId}`
+  const url = getUrl(
+    API_CONFIG.ENDPOINTS.OCCURRENCES.DELETE(incidentId, occurrenceId),
   );
+  const response = await apiClient.delete(url);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
