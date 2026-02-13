@@ -201,7 +201,6 @@ export function Dashboard({
           {!isNewUser && (
             <IncidentsList
               incidents={incidents}
-              userStats={userStats}
               onIncidentClick={handleViewIncident}
               onDeleteIncident={handleDeleteIncident}
               onNewIncident={handleNewIncident}

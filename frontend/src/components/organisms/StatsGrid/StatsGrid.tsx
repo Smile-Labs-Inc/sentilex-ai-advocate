@@ -86,43 +86,6 @@ export function StatsGrid({ userStats, globalStats, isNewUser, className }: Stat
         );
     }
 
-    // Fallback: If userStats is null but we have globalStats, show those
-    // Fallback: If userStats is null but we have globalStats, show those
-    if (globalStats) {
-        return (
-            <div className={cn('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4', className)}>
-                <StatCard
-                    icon="CheckCircle"
-                    label="Cases Solved"
-                    value={globalStats.totalCasesSolved}
-                    status={{ type: 'resolved', label: 'Resolved' }}
-                    subtitle="Platform total"
-                />
-                <StatCard
-                    icon="Users"
-                    label="Active Users"
-                    value={globalStats.activeUsers}
-                    status={{ type: 'active', label: 'Online now' }}
-                    subtitle="Getting legal support"
-                />
-                <StatCard
-                    icon="Scale"
-                    label="Affiliated Lawyers"
-                    value={globalStats.affiliatedLawyers}
-                    status={{ type: 'progress', label: 'Available' }}
-                    subtitle="Ready to help"
-                />
-                <StatCard
-                    icon="Layers"
-                    label="Case Types"
-                    value={globalStats.caseTypesHandled}
-                    status={{ type: 'progress', label: 'Covered' }}
-                    subtitle="Legal categories"
-                />
-            </div>
-        );
-    }
-
     // Fallback empty state
     return null;
 }

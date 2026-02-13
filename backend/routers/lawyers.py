@@ -19,7 +19,6 @@ from utils.auth import (
 from auth.dependencies import get_current_user, get_current_lawyer, log_login_attempt, check_account_lockout
 from datetime import datetime, timedelta
 import config
-from user_agents import parse as parse_user_agent
 
 
 router = APIRouter(
@@ -182,16 +181,6 @@ async def login_lawyer(
     # Decode to get JTI
     refresh_payload = decode_token(refresh_token)
     
-    # Parse user agent for browser/OS info
-    ua = parse_user_agent(user_agent) if user_agent else None
-    browser = f"{ua.browser.family}" if ua else "Unknown"
-    if ua and ua.browser.version_string:
-        browser += f" {ua.browser.version_string}"
-    os_name = f"{ua.os.family}" if ua else "Unknown"
-    if ua and ua.os.version_string:
-        os_name += f" {ua.os.version_string}"
-    device_type = "mobile" if ua and ua.is_mobile else "tablet" if ua and ua.is_tablet else "desktop"
-
     # Store active session
     session = ActiveSession(
         user_id=lawyer.id,
@@ -199,9 +188,6 @@ async def login_lawyer(
         jti=refresh_payload["jti"],
         ip_address=ip_address,
         user_agent=user_agent,
-        browser=browser,
-        os=os_name,
-        device_type=device_type,
         expires_at=datetime.utcfromtimestamp(refresh_payload["exp"])
     )
     db.add(session)

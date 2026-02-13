@@ -98,24 +98,17 @@ export function useDashboardData(useNewUser = false): DashboardData {
                 if (!isNewUser) {
                     // Fetch user stats
                     const userStatsData = await getUserStats();
-                    const convertedUserStats = convertUserStats(userStatsData);
-                    setUserStats(convertedUserStats);
+                    setUserStats(convertUserStats(userStatsData));
 
-                    // Fetch user incidents - wrapped in try-catch to prevent stats from disappearing if this fails
-                    try {
-                        const incidentsData = await getIncidents();
-                        setIncidents(incidentsData.incidents.map(convertIncident));
-                    } catch (incidentsError) {
-                        console.error('Failed to fetch incidents:', incidentsError);
-                        setIncidents([]); // Set empty array but don't clear stats
-                    }
+                    // Fetch user incidents
+                    const incidentsData = await getIncidents();
+                    setIncidents(incidentsData.incidents.map(convertIncident));
                 } else {
                     setUserStats(null);
                     setIncidents([]);
                 }
             } catch (error) {
                 // Failed to fetch dashboard data
-                console.error('Failed to fetch dashboard data:', error);
                 setUserStats(null);
                 setGlobalStats(null);
                 setIncidents([]);

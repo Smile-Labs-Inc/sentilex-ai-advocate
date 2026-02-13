@@ -22,7 +22,6 @@ export interface SidebarProps {
   currentPath?: string;
   onNavigate?: (item: NavItemType) => void;
   onOpenActivity?: () => void;
-  onToggleSidebar?: () => void;
   className?: string;
 }
 
@@ -31,7 +30,6 @@ export function Sidebar({
   currentPath = "/",
   onNavigate,
   onOpenActivity,
-  onToggleSidebar,
   className,
 }: SidebarProps) {
   const [activeItem, setActiveItem] = useState(currentPath);
@@ -61,11 +59,7 @@ export function Sidebar({
             <span className="font-['Space_Grotesk']">VERITAS</span>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              className="p-1.5 hover:bg-secondary rounded-lg transition-colors"
-              onClick={onToggleSidebar}
-              aria-label="Collapse sidebar"
-            >
+            <button className="p-1.5 hover:bg-secondary rounded-lg transition-colors">
               <Icon
                 name="PanelLeftClose"
                 size="sm"

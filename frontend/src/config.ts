@@ -143,14 +143,14 @@ export const API_CONFIG = {
     },
 
     NOTIFICATIONS: {
-      LIST: "/api/notifications/my",
-      UNREAD: "/api/notifications/my/unread",
-      COUNT: "/api/notifications/my/count",
-      MARK_READ: "/api/notifications/my/mark-read",
-      MARK_ALL_READ: "/api/notifications/my/mark-all-read",
-      DELETE: (id: number) => `/api/notifications/my/${id}`,
-      STATS: "/api/notifications/my/stats",
-      WS: "/api/notifications/ws",
+      LIST: "/notifications/my",
+      UNREAD: "/notifications/my/unread",
+      COUNT: "/notifications/my/count",
+      MARK_READ: "/notifications/my/mark-read",
+      MARK_ALL_READ: "/notifications/my/mark-all-read",
+      DELETE: (id: number) => `/notifications/my/${id}`,
+      STATS: "/notifications/my/stats",
+      WS: "/notifications/ws",
     },
 
     PAYMENTS: {

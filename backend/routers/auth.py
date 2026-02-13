@@ -12,27 +12,6 @@ import pyotp
 import qrcode
 from io import BytesIO
 import base64
-from user_agents import parse as parse_user_agent
-
-
-def _parse_ua(ua_string: str | None):
-    """Parse a user-agent string and return browser, os, device_type."""
-    if not ua_string:
-        return "Unknown", "Unknown", "unknown"
-    ua = parse_user_agent(ua_string)
-    browser = f"{ua.browser.family}"
-    if ua.browser.version_string:
-        browser += f" {ua.browser.version_string}"
-    os_name = f"{ua.os.family}"
-    if ua.os.version_string:
-        os_name += f" {ua.os.version_string}"
-    if ua.is_mobile:
-        device_type = "mobile"
-    elif ua.is_tablet:
-        device_type = "tablet"
-    else:
-        device_type = "desktop"
-    return browser, os_name, device_type
 
 from schemas.auth import (
     UserRegister, UserLogin, TokenResponse, TokenRefresh,
@@ -190,9 +169,6 @@ async def login(
     # Decode to get JTI
     refresh_payload = decode_token(refresh_token)
     
-    # Parse user agent for browser/OS info
-    browser, os_name, device_type = _parse_ua(user_agent)
-
     # Store active session
     session = ActiveSession(
         user_id=user.id,
@@ -200,9 +176,6 @@ async def login(
         jti=refresh_payload["jti"],
         ip_address=ip_address,
         user_agent=user_agent,
-        browser=browser,
-        os=os_name,
-        device_type=device_type,
         expires_at=datetime.utcfromtimestamp(refresh_payload["exp"])
     )
     db.add(session)
@@ -684,20 +657,13 @@ async def verify_mfa(
     # Decode to get JTI
     refresh_payload = decode_token(refresh_token)
     
-    # Parse user agent for browser/OS info
-    mfa_user_agent = mfa_data.user_agent or "unknown"
-    mfa_browser, mfa_os_name, mfa_device_type = _parse_ua(mfa_user_agent)
-
     # Store active session
     session = ActiveSession(
         user_id=user.id,
         user_type="user",
         jti=refresh_payload["jti"],
         ip_address=mfa_data.ip_address or "unknown",
-        user_agent=mfa_user_agent,
-        browser=mfa_browser,
-        os=mfa_os_name,
-        device_type=mfa_device_type,
+        user_agent=mfa_data.user_agent or "unknown",
         expires_at=datetime.utcfromtimestamp(refresh_payload["exp"])
     )
     db.add(session)
