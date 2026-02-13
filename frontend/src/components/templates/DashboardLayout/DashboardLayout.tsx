@@ -3,8 +3,10 @@
 // Main layout with sidebar and scrollable content area
 // =============================================================================
 
+import { useState } from "preact/hooks";
 import { cn } from "../../../lib/utils";
 import { Sidebar } from "../../organisms/Sidebar/Sidebar";
+import { Icon } from "../../atoms/Icon/Icon";
 import { BackgroundGradientAnimation } from "../../atoms/BackgroundGradientAnimation/BackgroundGradientAnimation";
 import type { NavItem } from "../../../types";
 import type { UserProfile } from "../../../types/auth";
@@ -27,6 +29,12 @@ export function DashboardLayout({
   children,
   className,
 }: DashboardLayoutProps) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  const handleToggleSidebar = () => {
+    setSidebarCollapsed((prev) => !prev);
+  };
+
   return (
     <BackgroundGradientAnimation
       containerClassName="flex h-screen overflow-hidden"
@@ -42,15 +50,30 @@ export function DashboardLayout({
       interactive={false}
     >
       {/* Sidebar with Glass Effect */}
-      <div className="h-full relative z-20">
+      <div
+        className="h-full relative z-20 transition-all duration-300 ease-in-out overflow-hidden"
+        style={{ width: sidebarCollapsed ? '0px' : '16rem', minWidth: sidebarCollapsed ? '0px' : '16rem' }}
+      >
         <Sidebar
           user={user}
           currentPath={currentPath}
           onNavigate={onNavigate}
           onOpenActivity={onOpenActivity}
+          onToggleSidebar={handleToggleSidebar}
           className="bg-transparent/40 md:bg-black/20 backdrop-blur-xl border-r border-white/10"
         />
       </div>
+
+      {/* Expand button when sidebar is collapsed */}
+      {sidebarCollapsed && (
+        <button
+          onClick={handleToggleSidebar}
+          className="absolute top-4 left-4 z-30 p-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-lg hover:bg-black/60 transition-colors"
+          aria-label="Expand sidebar"
+        >
+          <Icon name="PanelLeftOpen" size="sm" className="text-muted-foreground" />
+        </button>
+      )}
 
       {/* Main content area */}
       <main
@@ -59,7 +82,7 @@ export function DashboardLayout({
           className,
         )}
       >
-        <div className="p-8 min-h-full">{children}</div>
+        <div className={cn("p-8 min-h-full", sidebarCollapsed && "pl-16")}>{children}</div>
       </main>
     </BackgroundGradientAnimation>
   );

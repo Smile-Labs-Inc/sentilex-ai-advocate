@@ -81,12 +81,13 @@ export async function createIncident(
 export async function getIncidents(
   statusFilter?: IncidentStatus,
 ): Promise<IncidentListResponse> {
-  const url = new URL(`${API_BASE_URL}/incidents/`);
+  // Build URL with query params
+  let url = `${API_BASE_URL}/incidents/`;
   if (statusFilter) {
-    url.searchParams.append("status_filter", statusFilter);
+    url += `?status_filter=${encodeURIComponent(statusFilter)}`;
   }
 
-  const response = await apiClient.get(url.toString());
+  const response = await apiClient.get(url);
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
