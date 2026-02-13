@@ -10,10 +10,12 @@ import { Button } from '../../atoms/Button/Button';
 import { Icon } from '../../atoms/Icon/Icon';
 import { SearchInput } from '../../molecules/SearchInput/SearchInput';
 import { IncidentRow } from '../../molecules/IncidentRow/IncidentRow';
-import type { Incident } from '../../../types';
+import { StatsOverview } from '../../molecules/StatsOverview/StatsOverview';
+import type { Incident, UserStats } from '../../../types';
 
 export interface IncidentsListProps {
     incidents: Incident[];
+    userStats?: UserStats | null;
     onIncidentClick?: (incident: Incident) => void;
     onDeleteIncident?: (incident: Incident) => void;
     onNewIncident?: () => void;
@@ -24,6 +26,7 @@ export interface IncidentsListProps {
 
 export function IncidentsList({
     incidents,
+    userStats,
     onIncidentClick,
     onDeleteIncident,
     onNewIncident,
@@ -72,6 +75,9 @@ export function IncidentsList({
 
     return (
         <Card variant="default" padding="lg" className={cn('animate-slide-up', className)}>
+            {/* Stats Overview */}
+            <StatsOverview userStats={userStats} />
+
             <CardHeader>
                 <CardTitle>Recent Incidents</CardTitle>
 
