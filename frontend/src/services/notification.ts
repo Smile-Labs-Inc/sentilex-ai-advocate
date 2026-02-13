@@ -33,9 +33,12 @@ class NotificationService {
   // Get all notifications for the current user
   async getNotifications(): Promise<Notification[]> {
     try {
-      const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.NOTIFICATIONS.LIST}`, {
-        headers: this.getHeaders(),
-      });
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.NOTIFICATIONS.LIST}`,
+        {
+          headers: this.getHeaders(),
+        },
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -111,7 +114,7 @@ class NotificationService {
       console.error("Failed to mark all notifications as read:", error);
       return false;
     }
-
+  }
 
   // Transform backend response to frontend format
   private transformNotifications(
