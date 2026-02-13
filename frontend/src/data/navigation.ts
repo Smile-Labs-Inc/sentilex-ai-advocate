@@ -11,7 +11,6 @@ export const mainNavigation: NavSection[] = [
             { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', href: '/' },
             { id: 'incidents', label: 'My Incidents', icon: 'FileText', href: '/incidents' },
             { id: 'evidence', label: 'Evidence Vault', icon: 'Lock', href: '/evidence' },
-            { id: 'timeline', label: 'Case Timeline', icon: 'Clock', href: '/timeline' },
             { id: 'lawyers', label: 'Find Lawyers', icon: 'Scale', href: '/lawyers' },
         ],
     },

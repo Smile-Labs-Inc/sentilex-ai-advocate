@@ -13,6 +13,7 @@ import { Badge } from "../../components/atoms/Badge/Badge";
 import type { NavItem } from "../../types";
 import type { UserProfile } from "../../types/auth";
 import { fetchLawyers, type Lawyer } from "../../services/lawyers";
+import { MOCK_LAWYERS } from "../../data/mockLayers";
 
 export interface LawyerFinderPageProps {
   user: UserProfile;
@@ -62,7 +63,12 @@ export function LawyerFinderPage({
         setError(null);
 
         const data = await fetchLawyers(selectedSpecialization || undefined);
-        setLawyers(data);
+
+        if (data.length === 0) {
+          setLawyers(MOCK_LAWYERS);
+        } else {
+          setLawyers(data);
+        }
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Failed to fetch lawyers",
@@ -91,8 +97,15 @@ export function LawyerFinderPage({
     const matchesSearch =
       lawyer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       lawyer.specialties.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
-  });
+
+    // Filter by specialization if selected (for mock data or client-side filtering)
+    const matchesSpecialization =
+      !selectedSpecialization ||
+      selectedSpecialization === "All" ||
+      lawyer.specialties.includes(selectedSpecialization);
+
+    return matchesSearch && matchesSpecialization;
+  }).slice(0, 6);
 
   return (
     <DashboardLayout user={user} currentPath="/lawyers" onNavigate={onNavigate}>

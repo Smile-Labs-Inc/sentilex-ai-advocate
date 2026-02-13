@@ -56,7 +56,7 @@ export function Sidebar({
         <div className="p-6 flex items-center justify-between">
           <div className="flex items-center gap-2 text-foreground font-bold text-lg tracking-wider">
             <Icon name="Scale" size="md" />
-            <span className="font-['Space_Grotesk']">VERITAS</span>
+            <span className="font-['Space_Grotesk']">SENTILEX</span>
           </div>
           <div className="flex items-center gap-2">
             <button className="p-1.5 hover:bg-secondary rounded-lg transition-colors">

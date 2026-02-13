@@ -48,7 +48,7 @@ export interface QueryResponse {
     timestamp: string;
 }
 
-import { API_BASE_URL } from '../config';
+import { API_CONFIG } from '../config';
 
 /**
  * Fetches the list of available laws
@@ -56,7 +56,7 @@ import { API_BASE_URL } from '../config';
  */
 export async function fetchLaws(): Promise<Law[]> {
     try {
-        const response = await fetch(`${API_BASE_URL}/lawbook/`);
+        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.LAWBOOK.LAWS}`);
 
         if (!response.ok) {
             throw new Error(`Failed to fetch laws: ${response.statusText}`);
@@ -79,7 +79,7 @@ export async function fetchLaws(): Promise<Law[]> {
  */
 export async function fetchLawContent(lawId: string): Promise<string> {
     try {
-        const response = await fetch(`${API_BASE_URL}/lawbook/${lawId}`);
+        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.LAWBOOK.LAW_CONTENT(lawId)}`);
 
         if (!response.ok) {
             throw new Error(`Failed to fetch law content: ${response.statusText}`);
@@ -102,7 +102,7 @@ export async function fetchLawContent(lawId: string): Promise<string> {
  */
 export async function submitQuery(request: QueryRequest): Promise<QueryResponse> {
     try {
-        const response = await fetch(`${API_BASE_URL}/lawbook/query`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.LAWBOOK.QUERY}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -131,3 +131,5 @@ export async function submitQuery(request: QueryRequest): Promise<QueryResponse>
         throw new Error('Failed to submit query: Unknown error');
     }
 }
+
+

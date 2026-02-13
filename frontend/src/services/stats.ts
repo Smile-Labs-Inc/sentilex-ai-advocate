@@ -4,7 +4,7 @@
  * Handles communication with the backend statistics API.
  */
 
-import { API_BASE_URL } from "../config";
+import { API_CONFIG } from "../config";
 import { apiClient } from "./apiClient";
 
 // Types matching backend schemas
@@ -26,7 +26,9 @@ export interface GlobalStatsResponse {
  * Get statistics for the current user.
  */
 export async function getUserStats(): Promise<UserStatsResponse> {
-  const response = await apiClient.get(`${API_BASE_URL}/stats/user`);
+  const response = await apiClient.get(
+    `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.STATS.USER}`,
+  );
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
@@ -42,9 +44,12 @@ export async function getUserStats(): Promise<UserStatsResponse> {
  * Get platform-wide statistics.
  */
 export async function getGlobalStats(): Promise<GlobalStatsResponse> {
-  const response = await apiClient.get(`${API_BASE_URL}/stats/global`, {
-    skipAuth: true, // Global stats don't require authentication
-  });
+  const response = await apiClient.get(
+    `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.STATS.GLOBAL}`,
+    {
+      skipAuth: true, // Global stats don't require authentication
+    },
+  );
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));

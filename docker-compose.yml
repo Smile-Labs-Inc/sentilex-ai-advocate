@@ -49,6 +49,11 @@ services:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - USE_GEMINI=${USE_GEMINI}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_FROM=${SMTP_FROM}
     depends_on:
       postgres:
         condition: service_healthy
@@ -74,8 +79,10 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_URL: /api
+        VITE_PAYPAL_CLIENT_ID: ${VITE_PAYPAL_CLIENT_ID}
     environment:
       - VITE_API_URL=/api
+      - VITE_PAYPAL_CLIENT_ID=${VITE_PAYPAL_CLIENT_ID}
     container_name: sentilex_frontend
     restart: unless-stopped
     depends_on:

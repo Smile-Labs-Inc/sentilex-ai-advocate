@@ -7,10 +7,10 @@ import { API_CONFIG, APP_CONFIG } from "../config";
 
 export interface WebSocketMessage {
   type:
-  | "notification"
-  | "connection_established"
-  | "pong"
-  | "mark_as_read_response";
+    | "notification"
+    | "connection_established"
+    | "pong"
+    | "mark_as_read_response";
   data?: any;
   message?: string;
   notification_id?: string;
@@ -59,7 +59,12 @@ class WebSocketNotificationService {
         );
       }
 
-      const url = `${wsUrl}/notifications/ws?token=${encodeURIComponent(token)}`;
+      if (!token) {
+        console.warn("No authentication token found for WebSocket connection");
+        return;
+      }
+
+      const url = `${wsUrl}${API_CONFIG.ENDPOINTS.NOTIFICATIONS.WS}?token=${encodeURIComponent(token)}`;
 
       this.ws = new WebSocket(url);
 
