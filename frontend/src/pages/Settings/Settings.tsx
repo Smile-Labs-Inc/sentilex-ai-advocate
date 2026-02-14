@@ -22,8 +22,11 @@ interface MFAStatus {
 
 interface Session {
     id: number;
-    device_info: string;
     ip_address: string;
+    user_agent: string | null;
+    browser: string | null;
+    os: string | null;
+    device_type: string | null;
     last_activity: string;
     created_at: string;
 }
@@ -261,18 +264,14 @@ export function Settings() {
 
                     {/* Message banner */}
                     {message && (
-                        <div
-                            className={`mb-6 p-4 rounded-lg ${message.type === 'success'
-                                ? 'bg-green-500/20 border border-green-500/50 text-green-100'
-                                : 'bg-red-500/20 border border-red-500/50 text-red-100'
-                                }`}
-                        >
-                            <div className="flex items-center gap-2">
+                        <div className="mb-4 bg-white/5 border border-white/15 rounded-lg p-3">
+                            <div className="flex items-start gap-2.5">
                                 <Icon
                                     name={message.type === 'success' ? 'CheckCircle' : 'AlertCircle'}
                                     size="sm"
+                                    className="text-white/50 mt-0.5"
                                 />
-                                <span>{message.text}</span>
+                                <span className="text-white/70 text-xs leading-relaxed">{message.text}</span>
                             </div>
                         </div>
                     )}
@@ -696,40 +695,60 @@ export function Settings() {
                                         <p>No active sessions found</p>
                                     </div>
                                 ) : (
-                                    <div className="space-y-4">
-                                        {sessions.map((session) => (
-                                            <div
-                                                key={session.id}
-                                                className="bg-white/5 border border-white/20 rounded-lg p-4 flex items-center justify-between"
-                                            >
-                                                <div className="flex items-start gap-4">
-                                                    <Icon name="Monitor" className="text-blue-400 mt-1" />
-                                                    <div>
-                                                        <h3 className="text-white font-medium">
-                                                            {session.device_info || 'Unknown Device'}
-                                                        </h3>
-                                                        <p className="text-white/70 text-sm">
-                                                            IP: {session.ip_address}
-                                                        </p>
-                                                        <p className="text-white/50 text-xs mt-1">
-                                                            Last active:{' '}
-                                                            {new Date(session.last_activity).toLocaleString()}
-                                                        </p>
-                                                        <p className="text-white/50 text-xs">
-                                                            Created: {new Date(session.created_at).toLocaleString()}
-                                                        </p>
+                                    <div className="space-y-3">
+                                        {sessions.map((session) => {
+                                            const deviceIcon = session.device_type === 'mobile'
+                                                ? 'Smartphone' as const
+                                                : session.device_type === 'tablet'
+                                                    ? 'Tablet' as const
+                                                    : 'Monitor' as const;
+
+                                            return (
+                                                <div
+                                                    key={session.id}
+                                                    className="bg-white/5 border border-white/15 rounded-lg p-4"
+                                                >
+                                                    <div className="flex items-start justify-between gap-4">
+                                                        <div className="flex items-start gap-3 min-w-0 flex-1">
+                                                            <div className="p-2 rounded-lg bg-white/10 mt-0.5">
+                                                                <Icon name={deviceIcon} className="text-white/70" size="sm" />
+                                                            </div>
+                                                            <div className="min-w-0 flex-1">
+                                                                <h3 className="text-sm font-medium text-white truncate">
+                                                                    {session.browser || 'Unknown Browser'}
+                                                                </h3>
+                                                                <p className="text-white/50 text-xs mt-0.5">
+                                                                    {session.os || 'Unknown OS'}
+                                                                    {session.device_type && (
+                                                                        <span className="ml-1.5 text-white/40">
+                                                                            · {session.device_type}
+                                                                        </span>
+                                                                    )}
+                                                                </p>
+                                                                <div className="flex items-center gap-3 mt-2">
+                                                                    <span className="text-white/40 text-xs">
+                                                                        Last active: {new Date(session.last_activity).toLocaleString()}
+                                                                    </span>
+                                                                    <span className="text-white/20">·</span>
+                                                                    <span className="text-white/40 text-xs">
+                                                                        Created: {new Date(session.created_at).toLocaleString()}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => handleRevokeSession(session.id)}
+                                                            className="text-white/50 hover:text-white hover:bg-white/10 shrink-0"
+                                                        >
+                                                            <Icon name="LogOut" size="sm" className="mr-1.5" />
+                                                            Revoke
+                                                        </Button>
                                                     </div>
                                                 </div>
-                                                <Button
-                                                    variant="destructive"
-                                                    size="sm"
-                                                    onClick={() => handleRevokeSession(session.id)}
-                                                >
-                                                    <Icon name="Trash2" size="sm" className="mr-2" />
-                                                    Revoke
-                                                </Button>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 )}
                             </div>

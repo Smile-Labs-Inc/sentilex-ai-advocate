@@ -148,7 +148,6 @@ export function EvidenceVaultPage({ onNavigate }: EvidenceVaultPageProps) {
                     <Button
                         className="gap-2 shadow-lg shadow-primary/20"
                         onClick={() => setIsUploadModalOpen(true)}
-                        disabled={incidentsLoading || incidents.length === 0}
                     >
                         <Icon name="Upload" size="sm" />
                         Upload New Evidence

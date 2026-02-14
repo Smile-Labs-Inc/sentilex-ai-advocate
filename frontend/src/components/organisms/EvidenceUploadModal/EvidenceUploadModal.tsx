@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks';
+import { useState, useEffect } from 'preact/hooks';
 import { Button } from '../../atoms/Button/Button';
 import { Icon } from '../../atoms/Icon/Icon';
 import { FileDropzone } from '../../atoms/FileDropzone/FileDropzone';
@@ -17,7 +17,8 @@ export function EvidenceUploadModal({
     isOpen,
     onClose,
     onUpload,
-    incidents = []
+    incidents = [],
+    isLoading = false,
 }: EvidenceUploadModalProps) {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [selectedIncidentId, setSelectedIncidentId] = useState<number | null>(
@@ -25,6 +26,13 @@ export function EvidenceUploadModal({
     );
     const [uploadError, setUploadError] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+
+    // Auto-select first incident when incidents load
+    useEffect(() => {
+        if (incidents.length > 0 && selectedIncidentId === null) {
+            setSelectedIncidentId(incidents[0].id);
+        }
+    }, [incidents]);
 
     const handleFilesSelected = (files: File[]) => {
         setSelectedFiles([...selectedFiles, ...files]);
@@ -97,7 +105,12 @@ export function EvidenceUploadModal({
                             <label className="block text-sm font-medium text-foreground mb-2">
                                 Select Incident
                             </label>
-                            {incidents.length > 0 ? (
+                            {isLoading ? (
+                                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg">
+                                    <Icon name="Loader" size="sm" className="animate-spin" />
+                                    <span className="text-muted-foreground text-sm">Loading incidents...</span>
+                                </div>
+                            ) : incidents.length > 0 ? (
                                 <select
                                     value={selectedIncidentId || ''}
                                     onChange={(e: JSX.TargetedEvent<HTMLSelectElement>) =>

@@ -13,14 +13,14 @@ from schemas.notification import (
 )
 from services.notification_service import create_notification_service
 from services.websocket_manager import get_notification_manager
-from auth.dependencies import get_current_user, get_current_lawyer, get_current_admin
+from auth.dependencies import get_current_user, get_current_lawyer, get_current_admin, get_optional_current_user
 import jwt
 import os
 
 # Set up logging
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/notifications", tags=["Notifications"])
+router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
 
 # Helper functions for getting current user info
@@ -83,7 +83,7 @@ def get_my_notifications(
     include_read: bool = Query(default=True, description="Include read notifications"),
     priority_min: Optional[int] = Query(None, ge=1, le=3, description="Minimum priority level"),
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_optional_current_user),
     current_lawyer = Depends(get_current_lawyer),
     current_admin = Depends(get_current_admin)
 ):
@@ -131,7 +131,7 @@ def get_my_notifications(
 def get_unread_notifications(
     limit: Optional[int] = Query(default=50, ge=1, le=100, description="Maximum number of notifications"),
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_optional_current_user),
     current_lawyer = Depends(get_current_lawyer),
     current_admin = Depends(get_current_admin)
 ):
@@ -151,7 +151,7 @@ def get_unread_notifications(
 @router.get("/my/count", response_model=UnreadCountResponse)
 def get_unread_count(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_optional_current_user),
     current_lawyer = Depends(get_current_lawyer),
     current_admin = Depends(get_current_admin)
 ):
@@ -172,7 +172,7 @@ def get_unread_count(
 def mark_notifications_read(
     request: MarkAsReadRequest,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_optional_current_user),
     current_lawyer = Depends(get_current_lawyer),
     current_admin = Depends(get_current_admin)
 ):
@@ -200,7 +200,7 @@ def mark_notifications_read(
 @router.post("/my/mark-all-read", response_model=BulkActionResponse)
 def mark_all_notifications_read(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_optional_current_user),
     current_lawyer = Depends(get_current_lawyer),
     current_admin = Depends(get_current_admin)
 ):
@@ -226,7 +226,7 @@ def mark_all_notifications_read(
 def delete_notification(
     notification_id: int,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_optional_current_user),
     current_lawyer = Depends(get_current_lawyer),
     current_admin = Depends(get_current_admin)
 ):
@@ -254,7 +254,7 @@ def delete_notification(
 @router.get("/my/stats", response_model=NotificationStatsResponse)
 def get_notification_stats(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_optional_current_user),
     current_lawyer = Depends(get_current_lawyer),
     current_admin = Depends(get_current_admin)
 ):
@@ -351,7 +351,7 @@ def notify_case_update(
 def send_test_notification(
     message: str = "Test notification from backend",
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_optional_current_user),
     current_lawyer = Depends(get_current_lawyer),
     current_admin = Depends(get_current_admin)
 ):
@@ -387,7 +387,7 @@ def get_notifications_alias(
     include_read: bool = Query(default=True, description="Include read notifications"),
     priority_min: Optional[int] = Query(None, ge=1, le=3, description="Minimum priority level"),
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_optional_current_user),
     current_lawyer = Depends(get_current_lawyer),
     current_admin = Depends(get_current_admin)
 ):
@@ -398,7 +398,7 @@ def get_notifications_alias(
 @router.get("/unread-count", response_model=UnreadCountResponse)
 def get_unread_count_alias(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_optional_current_user),
     current_lawyer = Depends(get_current_lawyer),
     current_admin = Depends(get_current_admin)
 ):
@@ -410,7 +410,7 @@ def get_unread_count_alias(
 def mark_notifications_read_alias(
     request: MarkAsReadRequest,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_optional_current_user),
     current_lawyer = Depends(get_current_lawyer),
     current_admin = Depends(get_current_admin)
 ):
@@ -421,7 +421,7 @@ def mark_notifications_read_alias(
 @router.post("/mark-all-read", response_model=BulkActionResponse)
 def mark_all_notifications_read_alias(
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user),
+    current_user = Depends(get_optional_current_user),
     current_lawyer = Depends(get_current_lawyer),
     current_admin = Depends(get_current_admin)
 ):
