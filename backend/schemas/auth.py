@@ -216,6 +216,9 @@ class SessionInfo(BaseModel):
     id: int
     ip_address: Optional[str]
     user_agent: Optional[str]
+    browser: Optional[str] = None
+    os: Optional[str] = None
+    device_type: Optional[str] = None
     created_at: datetime
     last_activity: datetime
     
