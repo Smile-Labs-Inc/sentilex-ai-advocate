@@ -3,7 +3,7 @@
 // API calls for lawyer-related data
 // =============================================================================
 
-import { API_CONFIG, APP_CONFIG } from '../config';
+import { API_CONFIG, APP_CONFIG } from "../config";
 
 // ============================================================================
 // Types & Interfaces
@@ -54,7 +54,7 @@ export interface LawyerLoginResponse {
   refresh_token: string;
   token_type: string;
   expires_in: number;
-  user_type: 'lawyer';
+  user_type: "lawyer";
   requires_mfa: boolean;
   mfa_enabled: boolean;
   user_id: number;
@@ -66,6 +66,14 @@ export interface LawyerLoginResponse {
 export interface LawyerSearchParams {
   district?: string;
   specialty?: string;
+}
+
+export interface DistrictLawyers {
+  district: string;
+  latitude: number;
+  longitude: number;
+  lawyer_count: number;
+  lawyers: Lawyer[];
 }
 
 export interface LawyerSession {
@@ -91,7 +99,7 @@ class LawyerService {
   private getAuthHeaders(): HeadersInit {
     const token = localStorage.getItem(APP_CONFIG.TOKEN_STORAGE_KEY);
     return {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...(token && { Authorization: `Bearer ${token}` }),
     };
   }
@@ -117,12 +125,12 @@ class LawyerService {
       }
 
       if (queryParams.length > 0) {
-        url += `?${queryParams.join('&')}`;
+        url += `?${queryParams.join("&")}`;
       }
 
       const response = await fetch(url, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
       });
 
       if (!response.ok) {
@@ -131,7 +139,7 @@ class LawyerService {
 
       return response.json();
     } catch (error: any) {
-      throw new Error(error.message || 'Failed to fetch lawyers');
+      throw new Error(error.message || "Failed to fetch lawyers");
     }
   }
 
@@ -142,6 +150,36 @@ class LawyerService {
     return this.searchLawyers({ specialty });
   }
 
+  /**
+   * Get lawyers grouped by district with map coordinates
+   */
+  async getLawyersByDistrictMap(
+    specialty?: string,
+  ): Promise<DistrictLawyers[]> {
+    try {
+      let url = `${this.baseUrl}/lawyers/map`;
+
+      if (specialty) {
+        url += `?specialty=${encodeURIComponent(specialty)}`;
+      }
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch lawyer map data: ${response.statusText}`,
+        );
+      }
+
+      return response.json();
+    } catch (error: any) {
+      throw new Error(error.message || "Failed to fetch lawyer map data");
+    }
+  }
+
   // ============================================================================
   // Lawyer Authentication
   // ============================================================================
@@ -150,15 +188,18 @@ class LawyerService {
    * Register a new lawyer account
    */
   async register(data: LawyerRegisterRequest): Promise<Lawyer> {
-    const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.REGISTER}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.REGISTER}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      },
+    );
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || 'Registration failed');
+      throw new Error(error.detail || "Registration failed");
     }
 
     return response.json();
@@ -168,23 +209,29 @@ class LawyerService {
    * Login as a lawyer
    */
   async login(credentials: LawyerLoginRequest): Promise<LawyerLoginResponse> {
-    const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.LOGIN}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(credentials),
-    });
+    const response = await fetch(
+      `${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.LOGIN}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      },
+    );
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || 'Login failed');
+      throw new Error(error.detail || "Login failed");
     }
 
     const data: LawyerLoginResponse = await response.json();
 
     // Store tokens
     localStorage.setItem(APP_CONFIG.TOKEN_STORAGE_KEY, data.access_token);
-    localStorage.setItem(APP_CONFIG.REFRESH_TOKEN_STORAGE_KEY, data.refresh_token);
-    localStorage.setItem(APP_CONFIG.USER_TYPE_STORAGE_KEY, 'lawyer');
+    localStorage.setItem(
+      APP_CONFIG.REFRESH_TOKEN_STORAGE_KEY,
+      data.refresh_token,
+    );
+    localStorage.setItem(APP_CONFIG.USER_TYPE_STORAGE_KEY, "lawyer");
 
     return data;
   }
@@ -197,13 +244,16 @@ class LawyerService {
    * Get current lawyer profile
    */
   async getMyProfile(): Promise<LawyerProfile> {
-    const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.ME}`, {
-      method: 'GET',
-      headers: this.getAuthHeaders(),
-    });
+    const response = await fetch(
+      `${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.ME}`,
+      {
+        method: "GET",
+        headers: this.getAuthHeaders(),
+      },
+    );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch lawyer profile');
+      throw new Error("Failed to fetch lawyer profile");
     }
 
     return response.json();
@@ -213,15 +263,18 @@ class LawyerService {
    * Update lawyer profile
    */
   async updateProfile(data: Partial<LawyerProfile>): Promise<LawyerProfile> {
-    const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.UPDATE_PROFILE}`, {
-      method: 'PUT',
-      headers: this.getAuthHeaders(),
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.UPDATE_PROFILE}`,
+      {
+        method: "PUT",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify(data),
+      },
+    );
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || 'Profile update failed');
+      throw new Error(error.detail || "Profile update failed");
     }
 
     return response.json();
@@ -234,19 +287,25 @@ class LawyerService {
   /**
    * Change password
    */
-  async changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
-    const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.CHANGE_PASSWORD}`, {
-      method: 'POST',
-      headers: this.getAuthHeaders(),
-      body: JSON.stringify({
-        current_password: currentPassword,
-        new_password: newPassword,
-      }),
-    });
+  async changePassword(
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<{ message: string }> {
+    const response = await fetch(
+      `${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.CHANGE_PASSWORD}`,
+      {
+        method: "POST",
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({
+          current_password: currentPassword,
+          new_password: newPassword,
+        }),
+      },
+    );
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || 'Password change failed');
+      throw new Error(error.detail || "Password change failed");
     }
 
     return response.json();
@@ -256,15 +315,18 @@ class LawyerService {
    * Request password reset
    */
   async forgotPassword(email: string): Promise<{ message: string }> {
-    const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.FORGOT_PASSWORD}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
+    const response = await fetch(
+      `${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.FORGOT_PASSWORD}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      },
+    );
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || 'Password reset request failed');
+      throw new Error(error.detail || "Password reset request failed");
     }
 
     return response.json();
@@ -273,19 +335,25 @@ class LawyerService {
   /**
    * Reset password with token
    */
-  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
-    const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.RESET_PASSWORD}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token,
-        new_password: newPassword,
-      }),
-    });
+  async resetPassword(
+    token: string,
+    newPassword: string,
+  ): Promise<{ message: string }> {
+    const response = await fetch(
+      `${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.RESET_PASSWORD}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          new_password: newPassword,
+        }),
+      },
+    );
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || 'Password reset failed');
+      throw new Error(error.detail || "Password reset failed");
     }
 
     return response.json();
@@ -299,15 +367,18 @@ class LawyerService {
    * Verify email with token
    */
   async verifyEmail(token: string): Promise<{ message: string }> {
-    const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.VERIFY_EMAIL}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token }),
-    });
+    const response = await fetch(
+      `${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.VERIFY_EMAIL}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      },
+    );
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || 'Email verification failed');
+      throw new Error(error.detail || "Email verification failed");
     }
 
     return response.json();
@@ -321,13 +392,16 @@ class LawyerService {
    * Get active sessions
    */
   async getSessions(): Promise<LawyerSession[]> {
-    const response = await fetch(`${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.SESSIONS}`, {
-      method: 'GET',
-      headers: this.getAuthHeaders(),
-    });
+    const response = await fetch(
+      `${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.SESSIONS}`,
+      {
+        method: "GET",
+        headers: this.getAuthHeaders(),
+      },
+    );
 
     if (!response.ok) {
-      throw new Error('Failed to fetch sessions');
+      throw new Error("Failed to fetch sessions");
     }
 
     return response.json();
@@ -340,13 +414,13 @@ class LawyerService {
     const response = await fetch(
       `${this.baseUrl}${API_CONFIG.ENDPOINTS.LAWYERS.REVOKE_SESSION(sessionId)}`,
       {
-        method: 'DELETE',
+        method: "DELETE",
         headers: this.getAuthHeaders(),
-      }
+      },
     );
 
     if (!response.ok) {
-      throw new Error('Failed to revoke session');
+      throw new Error("Failed to revoke session");
     }
 
     return response.json();

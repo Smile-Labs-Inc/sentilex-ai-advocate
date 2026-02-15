@@ -98,6 +98,17 @@ class DocumentUploadResponse(BaseModel):
 class VerificationStep4(BaseModel):
     """Declaration acceptance"""
     declaration_accepted: Literal[True]  # Must be True
+
+class DistrictLawyersResponse(BaseModel):
+    """Response for lawyers grouped by district with coordinates"""
+    district: str
+    latitude: float
+    longitude: float
+    lawyer_count: int
+    lawyers: list[LawyerResponse]
+    
+    class Config:
+        from_attributes = True
     ip_address: str
 
 class VerificationStatusResponse(BaseModel):
