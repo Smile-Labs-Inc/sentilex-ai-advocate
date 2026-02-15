@@ -7,7 +7,7 @@ from models.token_blacklist import TokenBlacklist
 from schemas.lawyers import (
     LawyerResponse, LawyerRegister, LawyerLogin,
     LawyerProfileResponse, PasswordChange, PasswordResetRequest, PasswordReset,
-    EmailVerification, SessionResponse
+    EmailVerification, SessionResponse, DistrictLawyersResponse
 )
 from schemas.auth import LoginResponse, MessageResponse, TokenResponse
 from utils.email import send_verification_email, send_password_reset_email, send_password_changed_email
@@ -27,6 +27,36 @@ router = APIRouter(
     tags=["Lawyers"]
 )
 
+# Sri Lankan district coordinates (major districts)
+DISTRICT_COORDINATES = {
+    "Colombo": {"latitude": 6.9271, "longitude": 79.8612},
+    "Gampaha": {"latitude": 7.0910, "longitude": 80.0150},
+    "Kalutara": {"latitude": 6.5854, "longitude": 79.9607},
+    "Kandy": {"latitude": 7.2906, "longitude": 80.6337},
+    "Matale": {"latitude": 7.4675, "longitude": 80.6234},
+    "Nuwara Eliya": {"latitude": 6.9497, "longitude": 80.7891},
+    "Galle": {"latitude": 6.0535, "longitude": 80.2210},
+    "Matara": {"latitude": 5.9549, "longitude": 80.5550},
+    "Hambantota": {"latitude": 6.1429, "longitude": 81.1212},
+    "Jaffna": {"latitude": 9.6615, "longitude": 80.0255},
+    "Kilinochchi": {"latitude": 9.3961, "longitude": 80.3988},
+    "Mannar": {"latitude": 8.9810, "longitude": 79.9044},
+    "Vavuniya": {"latitude": 8.7542, "longitude": 80.4982},
+    "Mullaitivu": {"latitude": 9.2671, "longitude": 80.8142},
+    "Batticaloa": {"latitude": 7.7310, "longitude": 81.6747},
+    "Ampara": {"latitude": 7.2978, "longitude": 81.6747},
+    "Trincomalee": {"latitude": 8.5874, "longitude": 81.2152},
+    "Kurunegala": {"latitude": 7.4863, "longitude": 80.3623},
+    "Puttalam": {"latitude": 8.0362, "longitude": 79.8283},
+    "Anuradhapura": {"latitude": 8.3114, "longitude": 80.4037},
+    "Polonnaruwa": {"latitude": 7.9403, "longitude": 81.0188},
+    "Badulla": {"latitude": 6.9934, "longitude": 81.0550},
+    "Moneragala": {"latitude": 6.8728, "longitude": 81.3507},
+    "Ratnapura": {"latitude": 6.7056, "longitude": 80.3847},
+    "Kegalle": {"latitude": 7.2513, "longitude": 80.3464},
+    "Kalmunai": {"latitude": 7.4088, "longitude": 81.8358},  # Eastern city
+}
+
 @router.get("/", response_model=list[LawyerResponse])
 def get_lawyers(
     district: str | None = None,
@@ -42,6 +72,50 @@ def get_lawyers(
         query = query.filter(Lawyer.specialties.ilike(f"%{specialty}%"))
 
     return query.all()
+
+@router.get("/map", response_model=list[DistrictLawyersResponse])
+def get_lawyers_by_district_map(
+    specialty: str | None = None,
+    db: Session = Depends(get_db)
+):
+    """
+    Get lawyers grouped by district with geographic coordinates for map display.
+    Returns district name, coordinates, lawyer count, and lawyer list for each district.
+    """
+    from sqlalchemy import func
+    
+    # Base query with optional specialty filter
+    query = db.query(Lawyer).filter(Lawyer.is_active == True)
+    
+    if specialty:
+        query = query.filter(Lawyer.specialties.ilike(f"%{specialty}%"))
+    
+    # Get all lawyers
+    lawyers = query.all()
+    
+    # Group lawyers by district
+    district_groups = {}
+    for lawyer in lawyers:
+        district = lawyer.district
+        if district not in district_groups:
+            district_groups[district] = []
+        district_groups[district].append(lawyer)
+    
+    # Build response with coordinates
+    response = []
+    for district, district_lawyers in district_groups.items():
+        # Get coordinates, use default if district not found
+        coords = DISTRICT_COORDINATES.get(district, {"latitude": 7.8731, "longitude": 80.7718})  # Sri Lanka center as default
+        
+        response.append(DistrictLawyersResponse(
+            district=district,
+            latitude=coords["latitude"],
+            longitude=coords["longitude"],
+            lawyer_count=len(district_lawyers),
+            lawyers=[LawyerResponse.from_orm(lawyer) for lawyer in district_lawyers]
+        ))
+    
+    return response
 
 @router.post("/register", response_model=LawyerResponse)
 async def register_lawyer(

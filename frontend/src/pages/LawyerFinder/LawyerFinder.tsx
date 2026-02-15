@@ -12,8 +12,14 @@ import { Input } from "../../components/atoms/Input/Input";
 import { Badge } from "../../components/atoms/Badge/Badge";
 import type { NavItem } from "../../types";
 import type { UserProfile } from "../../types/auth";
-import { fetchLawyers, type Lawyer } from "../../services/lawyers";
+import {
+  fetchLawyers,
+  type Lawyer,
+  type DistrictLawyers,
+  lawyerService,
+} from "../../services/lawyers";
 import { MOCK_LAWYERS } from "../../data/mockLayers";
+import { LawyerMap } from "../../components/molecules/LawyerMap/LawyerMap";
 
 export interface LawyerFinderPageProps {
   user: UserProfile;
@@ -54,6 +60,9 @@ export function LawyerFinderPage({
   const [lawyers, setLawyers] = useState<Lawyer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"list" | "map">("list");
+  const [mapData, setMapData] = useState<DistrictLawyers[]>([]);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
 
   // Fetch lawyers from the backend
   useEffect(() => {
@@ -81,6 +90,77 @@ export function LawyerFinderPage({
     loadLawyers();
   }, [selectedSpecialization]);
 
+  // Fetch map data
+  useEffect(() => {
+    const loadMapData = async () => {
+      try {
+        const data = await lawyerService.getLawyersByDistrictMap(
+          selectedSpecialization || undefined,
+        );
+
+        // If backend returns empty data, use mock lawyers
+        if (!data || data.length === 0) {
+          // Fallback: Group MOCK_LAWYERS by district
+          const grouped: Record<string, Lawyer[]> = {};
+          MOCK_LAWYERS.forEach((lawyer) => {
+            if (!grouped[lawyer.district]) {
+              grouped[lawyer.district] = [];
+            }
+            grouped[lawyer.district].push(lawyer);
+          });
+
+          // Import district coordinates
+          const { DISTRICT_COORDINATES } =
+            await import("../../data/districtCoordinates");
+
+          // Convert to DistrictLawyers format with real coordinates
+          const mockMapData: DistrictLawyers[] = Object.entries(grouped).map(
+            ([district, districtLawyers]) => {
+              const coords = DISTRICT_COORDINATES[district] || {
+                latitude: 7.8731,
+                longitude: 80.7718,
+              };
+              return {
+                district,
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+                lawyer_count: districtLawyers.length,
+                lawyers: districtLawyers,
+              };
+            },
+          );
+          setMapData(mockMapData);
+        } else {
+          setMapData(data);
+        }
+      } catch (err) {
+        console.error("Failed to load map data:", err);
+        // Fallback: Group MOCK_LAWYERS by district
+        const grouped: Record<string, Lawyer[]> = {};
+        MOCK_LAWYERS.forEach((lawyer) => {
+          if (!grouped[lawyer.district]) {
+            grouped[lawyer.district] = [];
+          }
+          grouped[lawyer.district].push(lawyer);
+        });
+
+        // Convert to DistrictLawyers format with mock coordinates
+        const mockMapData: DistrictLawyers[] = Object.entries(grouped).map(
+          ([district, districtLawyers]) => ({
+            district,
+            latitude: 7.8731,
+            longitude: 80.7718,
+            lawyer_count: districtLawyers.length,
+            lawyers: districtLawyers,
+          }),
+        );
+        setMapData(mockMapData);
+      }
+    };
+
+    loadMapData();
+  }, [selectedSpecialization]);
+
   // Get unique specializations from all lawyers
   const specializations = [
     "All",
@@ -93,19 +173,32 @@ export function LawyerFinderPage({
     ),
   ];
 
-  const filteredLawyers = lawyers.filter((lawyer) => {
-    const matchesSearch =
-      lawyer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lawyer.specialties.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredLawyers = lawyers
+    .filter((lawyer) => {
+      const matchesSearch =
+        lawyer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lawyer.specialties.toLowerCase().includes(searchQuery.toLowerCase());
 
-    // Filter by specialization if selected (for mock data or client-side filtering)
-    const matchesSpecialization =
-      !selectedSpecialization ||
-      selectedSpecialization === "All" ||
-      lawyer.specialties.includes(selectedSpecialization);
+      // Filter by specialization if selected (for mock data or client-side filtering)
+      const matchesSpecialization =
+        !selectedSpecialization ||
+        selectedSpecialization === "All" ||
+        lawyer.specialties.includes(selectedSpecialization);
 
-    return matchesSearch && matchesSpecialization;
-  }).slice(0, 6);
+      // Filter by district if selected from map
+      const matchesDistrict =
+        !selectedDistrict || lawyer.district === selectedDistrict;
+
+      return matchesSearch && matchesSpecialization && matchesDistrict;
+    })
+    .slice(0, 6);
+
+  const handleDistrictClick = (district: DistrictLawyers) => {
+    setSelectedDistrict(district.district);
+    setViewMode("list");
+    // Scroll to lawyers list
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <DashboardLayout user={user} currentPath="/lawyers" onNavigate={onNavigate}>
@@ -151,11 +244,12 @@ export function LawyerFinderPage({
                 onClick={() =>
                   setSelectedSpecialization(spec === "All" ? null : spec)
                 }
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${(spec === "All" && !selectedSpecialization) ||
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  (spec === "All" && !selectedSpecialization) ||
                   selectedSpecialization === spec
-                  ? "bg-foreground text-background"
-                  : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
+                    ? "bg-foreground text-background"
+                    : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
               >
                 {spec}
               </button>
@@ -170,12 +264,35 @@ export function LawyerFinderPage({
           {loading
             ? "Loading..."
             : `${filteredLawyers.length} lawyer${filteredLawyers.length !== 1 ? "s" : ""} found`}
+          {selectedDistrict && (
+            <span className="ml-2">
+              in{" "}
+              <button
+                onClick={() => setSelectedDistrict(null)}
+                className="text-purple-400 hover:text-purple-300 underline"
+              >
+                {selectedDistrict} ×
+              </button>
+            </span>
+          )}
         </p>
         <div className="flex items-center gap-2">
-          <Icon name="MapPin" size="sm" className="text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">
-            Based on your location
-          </span>
+          <Button
+            variant={viewMode === "list" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("list")}
+          >
+            <Icon name="List" size="xs" />
+            List
+          </Button>
+          <Button
+            variant={viewMode === "map" ? "primary" : "ghost"}
+            size="sm"
+            onClick={() => setViewMode("map")}
+          >
+            <Icon name="Map" size="xs" />
+            Map
+          </Button>
         </div>
       </div>
 
@@ -199,181 +316,184 @@ export function LawyerFinderPage({
       )}
 
       {/* Lawyers list */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {filteredLawyers.map((lawyer) => {
-          const availability =
-            availabilityConfig[lawyer.availability] ||
-            availabilityConfig["Available"];
-          const specialtiesList = lawyer.specialties
-            .split(",")
-            .map((s) => s.trim());
+      {viewMode === "list" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filteredLawyers.map((lawyer) => {
+            const availability =
+              availabilityConfig[lawyer.availability] ||
+              availabilityConfig["Available"];
+            const specialtiesList = lawyer.specialties
+              .split(",")
+              .map((s) => s.trim());
 
-          return (
-            <Card
-              key={lawyer.id}
-              variant="interactive"
-              padding="lg"
-              className="animate-slide-up"
-            >
-              <div className="flex gap-4">
-                {/* Avatar */}
-                <div className="relative">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xl font-semibold">
-                    {lawyer.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .slice(0, 2)}
-                  </div>
-                  {/* Availability dot */}
-                  <div
-                    className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-background ${availability.bg}`}
-                  />
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
-                        {lawyer.name}
-                        {lawyer.rating >= 4.5 && (
-                          <Icon
-                            name="BadgeCheck"
-                            size="xs"
-                            className="text-blue-400"
-                          />
-                        )}
-                      </h3>
-                      <p className={`text-xs ${availability.color}`}>
-                        {availability.label}
-                      </p>
+            return (
+              <Card
+                key={lawyer.id}
+                variant="interactive"
+                padding="lg"
+                className="animate-slide-up"
+              >
+                <div className="flex gap-4">
+                  {/* Avatar */}
+                  <div className="relative">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-xl font-semibold">
+                      {lawyer.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .slice(0, 2)}
                     </div>
-                    <div className="text-right">
-                      <div className="flex items-center gap-1">
-                        <Icon
-                          name="Star"
-                          size="xs"
-                          className="text-yellow-400"
-                        />
-                        <span className="text-sm font-medium text-foreground">
-                          {lawyer.rating.toFixed(1)}
-                        </span>
+                    {/* Availability dot */}
+                    <div
+                      className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-background ${availability.bg}`}
+                    />
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+                          {lawyer.name}
+                          {lawyer.rating >= 4.5 && (
+                            <Icon
+                              name="BadgeCheck"
+                              size="xs"
+                              className="text-blue-400"
+                            />
+                          )}
+                        </h3>
+                        <p className={`text-xs ${availability.color}`}>
+                          {availability.label}
+                        </p>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {lawyer.reviews_count} reviews
-                      </p>
+                      <div className="text-right">
+                        <div className="flex items-center gap-1">
+                          <Icon
+                            name="Star"
+                            size="xs"
+                            className="text-yellow-400"
+                          />
+                          <span className="text-sm font-medium text-foreground">
+                            {lawyer.rating.toFixed(1)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {lawyer.reviews_count} reviews
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Specializations */}
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {specialtiesList.map((spec) => (
+                        <Badge
+                          key={spec}
+                          variant="outline"
+                          className="text-[10px]"
+                        >
+                          {spec}
+                        </Badge>
+                      ))}
+                    </div>
+
+                    {/* Meta */}
+                    <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Icon name="MapPin" size="xs" />
+                        {lawyer.district}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Icon name="Briefcase" size="xs" />
+                        {lawyer.experience_years} years
+                      </span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-2 mt-4">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        className="flex-1"
+                        disabled={lawyer.availability === "Offline"}
+                      >
+                        <Icon name="MessageCircle" size="xs" />
+                        Contact
+                      </Button>
+                      <Button variant="secondary" size="sm">
+                        <Icon name="User" size="xs" />
+                        Profile
+                      </Button>
                     </div>
                   </div>
-
-                  {/* Specializations */}
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {specialtiesList.map((spec) => (
-                      <Badge
-                        key={spec}
-                        variant="outline"
-                        className="text-[10px]"
-                      >
-                        {spec}
-                      </Badge>
-                    ))}
-                  </div>
-
-                  {/* Meta */}
-                  <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1">
-                      <Icon name="MapPin" size="xs" />
-                      {lawyer.district}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Icon name="Briefcase" size="xs" />
-                      {lawyer.experience_years} years
-                    </span>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex gap-2 mt-4">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      className="flex-1"
-                      disabled={lawyer.availability === "Offline"}
-                    >
-                      <Icon name="MessageCircle" size="xs" />
-                      Contact
-                    </Button>
-                    <Button variant="secondary" size="sm">
-                      <Icon name="User" size="xs" />
-                      Profile
-                    </Button>
-                  </div>
                 </div>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Empty state */}
-      {!loading && filteredLawyers.length === 0 && !error && (
-        <div className="text-center py-12">
-          <Icon
-            name="Scale"
-            size="xl"
-            className="text-muted-foreground/50 mx-auto mb-4"
-          />
-          <h3 className="text-lg font-medium text-foreground mb-2">
-            No lawyers found
-          </h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Try adjusting your search or filters
-          </p>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setSearchQuery("");
-              setSelectedSpecialization(null);
-            }}
-          >
-            Clear Filters
-          </Button>
+              </Card>
+            );
+          })}
         </div>
       )}
 
-      {/* Map placeholder */}
-      <Card
-        variant="default"
-        padding="none"
-        className="mt-6 overflow-hidden animate-slide-up"
-      >
-        <div className="h-64 bg-secondary/50 flex items-center justify-center border-b border-border">
-          <div className="text-center">
+      {viewMode === "list" &&
+        !loading &&
+        filteredLawyers.length === 0 &&
+        !error && (
+          <div className="text-center py-12">
             <Icon
-              name="Map"
+              name="Scale"
               size="xl"
-              className="text-muted-foreground/50 mx-auto mb-3"
+              className="text-muted-foreground/50 mx-auto mb-4"
             />
-            <p className="text-sm text-muted-foreground">
-              Map view coming soon
+            <h3 className="text-lg font-medium text-foreground mb-2">
+              No lawyers found
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Try adjusting your search or filters
             </p>
-            <p className="text-xs text-muted-foreground/80 mt-1">
-              Interactive map showing lawyer locations
-            </p>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setSearchQuery("");
+                setSelectedSpecialization(null);
+                setSelectedDistrict(null);
+              }}
+            >
+              Clear Filters
+            </Button>
           </div>
-        </div>
-        <div className="p-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Icon name="MapPin" size="sm" className="text-purple-400" />
-            <span className="text-sm text-muted-foreground">
-              Your location: Detected automatically
-            </span>
+        )}
+
+      {/* Map view */}
+      {viewMode === "map" && (
+        <Card
+          variant="default"
+          padding="none"
+          className="overflow-hidden animate-slide-up"
+        >
+          <div className="p-4 border-b border-border">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Icon name="MapPin" size="sm" className="text-purple-400" />
+                <span className="text-sm font-medium text-foreground">
+                  Lawyer Locations
+                </span>
+                <Badge variant="outline" className="text-xs">
+                  {mapData.reduce((sum, d) => sum + d.lawyer_count, 0)} lawyers
+                  across {mapData.length} districts
+                </Badge>
+              </div>
+              <span className="text-xs text-muted-foreground">
+                Click on a pin to view lawyer details
+              </span>
+            </div>
           </div>
-          <Button variant="ghost" size="sm">
-            <Icon name="RefreshCw" size="xs" />
-            Update
-          </Button>
-        </div>
-      </Card>
+          <LawyerMap
+            districtData={mapData}
+            onDistrictClick={handleDistrictClick}
+            selectedDistrict={selectedDistrict}
+            height="600px"
+          />
+        </Card>
+      )}
     </DashboardLayout>
   );
 }
