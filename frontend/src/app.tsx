@@ -18,6 +18,8 @@ import { Settings } from "./pages/Settings/Settings";
 import { AIChatPage } from "./pages/AIChat/AIChat";
 import { VerifyEmailPage } from "./pages/VerifyEmail/VerifyEmail";
 import { ResetPasswordPage } from "./pages/ResetPassword/ResetPassword";
+import { OAuthCallbackPage } from "./pages/OAuthCallback/OAuthCallback";
+import { CompleteProfilePage } from "./pages/CompleteProfile/CompleteProfile";
 import { ThemeProvider } from "./hooks/useTheme";
 import { AuthProvider, useAuth } from "./hooks/useAuth";
 import type { Incident, NavItem } from "./types";
@@ -45,7 +47,7 @@ function AppContent() {
 
   // Public routes accessible without authentication
   const currentPath = window.location.pathname;
-  const publicRoutes = ['/verify-email', '/reset-password'];
+  const publicRoutes = ['/verify-email', '/reset-password', '/oauth-callback', '/complete-profile'];
   const isPublicRoute = publicRoutes.some(route => currentPath.startsWith(route));
 
   // Show auth page if not authenticated or no user data (except for public routes)
@@ -146,6 +148,8 @@ function AppContent() {
       <AIChatPage path="/ai-chat" onNavigate={handleNavigate} />
       <VerifyEmailPage path="/verify-email" />
       <ResetPasswordPage path="/reset-password" />
+      <OAuthCallbackPage path="/oauth-callback" />
+      <CompleteProfilePage path="/complete-profile" />
       <Settings path="/settings" />
     </Router>
   );
