@@ -50,8 +50,8 @@ export function OAuthCallbackPage() {
           // New users need to complete their profile
           route(`/complete-profile?type=${userType}`);
         } else {
-          // Existing users go to dashboard
-          route("/dashboard");
+          // Existing users go to dashboard with full page refresh
+          window.location.href = "/dashboard";
         }
       }, 1500);
     } catch (error) {
