@@ -94,6 +94,8 @@ origins = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:8080",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:5173",
     "http://127.0.0.1:8080",
     "http://142.93.221.245:8080",  # Remote frontend
     "http://142.93.221.245:8001",  # Remote backend (for same-origin requests)
@@ -105,11 +107,18 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 # Session Middleware for OAuth (added after CORS)
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this-in-production-min-32-chars")
-app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+app.add_middleware(
+    SessionMiddleware, 
+    secret_key=SECRET_KEY,
+    session_cookie="sentilex_session",
+    max_age=3600,  # 1 hour for OAuth flow
+    same_site="lax"  # Works for OAuth redirects (top-level navigation)
+)
 
 # Include all routers AFTER middleware
 app.include_router(lawyers.router)
@@ -154,7 +163,7 @@ async def health_check():
 def main():
     uvicorn.run(
         "main:app", 
-        host="127.0.0.1", 
+        host="127.0.0.1",  # Match frontend's API_URL
         port=8001, 
         reload=True
     )
